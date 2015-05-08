@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace RogueLikeGame
 {
@@ -37,10 +38,10 @@ namespace RogueLikeGame
             if (moveUpdate >= 128)
             {
                 moveUpdate = 0;
-                if (state.IsKeyDown(Keys.W)) { player.moveUp(); }
-                if (state.IsKeyDown(Keys.A)) { player.moveLeft(); }
-                if (state.IsKeyDown(Keys.D)) { player.moveRight(); }
-                if (state.IsKeyDown(Keys.S)) { player.moveDown(); }
+                if (state.IsKeyDown(Keys.W)) { if (player.moveUp()) { playing.currentCorner[1]--; } }
+                else if (state.IsKeyDown(Keys.A)) { if (player.moveLeft()) { playing.currentCorner[0]--; } }
+                else if (state.IsKeyDown(Keys.D)) { if (player.moveRight()) { playing.currentCorner[0]++; } }
+                else if (state.IsKeyDown(Keys.S)) { if (player.moveDown()) { playing.currentCorner[1]++; } }
             }
 
             if (state.IsKeyDown(Keys.Escape) && escapeUpdate > 128)

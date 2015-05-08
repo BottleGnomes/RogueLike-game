@@ -18,10 +18,10 @@ namespace RogueLikeGame
             this.coords = coords;
             this.scene = scene;
         }
-        public void moveLeft() { facing = new int[] { -1, 0 }; this.coords[0]--; if (this.coords[0] < 0 || scene.collides(this.coords)) { this.coords[0]++; } }
-        public void moveRight() { facing = new int[] { 1, 0 }; this.coords[0]++; if (this.coords[0] > scene.getDimensions()[0] || scene.collides(this.coords)) { this.coords[0]--; } }
-        public void moveUp() { facing = new int[] { 0, 1 }; this.coords[1]--; if (this.coords[1] < 0 || scene.collides(this.coords)) { this.coords[1]++; } }
-        public void moveDown() { facing = new int[] { 0, -1 }; this.coords[1]++; if (this.coords[1] > scene.getDimensions()[1] || scene.collides(this.coords)) { this.coords[1]--; } }
+        public bool moveLeft() { facing = new int[] { -1, 0 }; if (scene.collides(new int[] {this.coords[0] + facing[0], this.coords[1] + facing[1]})) {return false; } return true; }
+        public bool moveRight() { facing = new int[] { 1, 0 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
+        public bool moveUp() { facing = new int[] { 0, -1 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
+        public bool moveDown() { facing = new int[] { 0, 1 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
 
     }
 

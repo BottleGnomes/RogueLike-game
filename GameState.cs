@@ -20,10 +20,10 @@ namespace RogueLikeGame
         SpriteBatch spriteBatch;
         ingameMenu menu;
 
-        int[] currentCorner = { 0, 0 };
-        int tileWidth = 32;
-        int screenTileWidth = 45;
-        int screenTileHeight = 30;
+        public int[] currentCorner = { 0, 0 };
+        int tileWidth = 28;
+        int tileHeight = 46;
+        int[] screenDim = { 50, 20 };
 
         Player player;
         List<Drawable> units = new List<Drawable>();
@@ -32,13 +32,13 @@ namespace RogueLikeGame
         {
             paused = new Paused(this);
             this.ingame = ingame;
-            scene = new Scene();
+            scene = new Scene(this);
             chess = ingame.Content.Load<SpriteFont>("Chess");
             output = ingame.Content.Load<SpriteFont>("Output18pt");
             this.spriteBatch = spriteBatch;
             menu  = new ingameMenu(ingame, output);
 
-            player = new Player(new int[] { 2, 3 }, scene);
+            player = new Player(new int[] { 24, 8 }, scene);
             units.Add(player);
 
             //pass in enemies and objects later
@@ -82,7 +82,7 @@ namespace RogueLikeGame
         {
             this.drawTiles();
 
-            spriteBatch.DrawString(chess, "\u265E", new Vector2(player.coords[0] * tileWidth, player.coords[1]* tileWidth), Color.White);
+            spriteBatch.DrawString(chess, "\u265E", new Vector2(player.coords[0] * tileWidth, player.coords[1]* tileHeight), Color.White);
 
             if (state == paused) 
             {
@@ -100,22 +100,25 @@ namespace RogueLikeGame
 
         public void drawTiles()
         {
-            for (int i = 0; i < screenTileWidth; i++)
+            for (int i = 0; i < screenDim[0]; i++)
             {
-                for (int j = 0; j < screenTileHeight; j++)
+                for (int j = 0; j < screenDim[1]; j++)
                 {
                     if (scene.includesTile(new int[] { i + currentCorner[0], j + currentCorner[1] }))
                     {
-                        //2588
-                        if (scene.getTile(new int[] { i, j }).getNum() == 1){ 
-                            spriteBatch.DrawString(chess, "\u2589", new Vector2(i * tileWidth, j * tileWidth), Color.Gray); }
-                        else if (scene.getTile(new int[] { i, j }).getNum() == 0)
-                        { 
-                            spriteBatch.DrawString(chess, "\u2588", new Vector2(i * tileWidth, j * tileWidth), Color.Blue); }
+                        if (scene.getTile(new int[] { i + currentCorner[0], j + currentCorner[1] }).getNum() == 1)
+                        {
+                            spriteBatch.DrawString(chess, "\u2589", new Vector2((i) * tileWidth, (j) * tileHeight), Color.Gray);
+                        }
+                        else if (scene.getTile(new int[] { i + currentCorner[0], j + currentCorner[1] }).getNum() == 0)
+                        {
+                            spriteBatch.DrawString(chess, "\u2591", new Vector2((i) * tileWidth, (j) * tileHeight), Color.Blue);
+                        }
                     }
                 }
             }
         }
+        public int getScreenDimension(int dim) { return screenDim[dim]; }
 
         public void entering()
         {

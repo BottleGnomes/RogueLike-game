@@ -12,14 +12,16 @@ namespace RogueLikeGame
     {
         int[] dimensions;
         Constructor constructor;
+        Playing playing;
 
-        public Scene() 
+        public Scene(Playing playing) 
         {
+            this.playing = playing;
             this.constructor = new Constructor();
             dimensions = constructor.getDimensions();
         }
         public int[] getDimensions() { return dimensions; }
-        public bool collides(int[] coordinates) { if (constructor.getTile(coordinates).getNum() == 1) { return true; } return false; }
+        public bool collides(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
         public bool includesTile(int[] coordinates) { return constructor.includesTile(coordinates); }
         public Tile getTile(int[] coordinates) { return constructor.getTile(coordinates); }
     }
@@ -43,7 +45,6 @@ namespace RogueLikeGame
             tileArray = new Tile[(ioArray[0].Length + 1) / 2, ioArray.GetLength(0)];
             for (int i = 0; i < ioArray.Length; i++)
             {
-                Debug.Print(ioArray[i]);
                 string[] lineSplit = ioArray[i].Split(',');
                 for (int j = 0; j < lineSplit.Length; j++)
                 {
