@@ -39,13 +39,13 @@ namespace RogueLikeGame
             escapeUpdate += gameTime.ElapsedGameTime.Milliseconds;
             attackUpdate += gameTime.ElapsedGameTime.Milliseconds;
 
-            if (moveUpdate >= 128)
+            if (moveUpdate >= 112)
             {
                 moveUpdate = 0;
                 if (state.IsKeyDown(Keys.W)) { if (player.moveUp()) { playing.currentCorner[1]--; } }
-                else if (state.IsKeyDown(Keys.A)) { if (player.moveLeft()) { playing.currentCorner[0]--; } }
-                else if (state.IsKeyDown(Keys.D)) { if (player.moveRight()) { playing.currentCorner[0]++; } }
-                else if (state.IsKeyDown(Keys.S)) { if (player.moveDown()) { playing.currentCorner[1]++; } }
+                if (state.IsKeyDown(Keys.A)) {  if (player.moveLeft()) { playing.currentCorner[0]--; } }
+                if (state.IsKeyDown(Keys.D)) { if (player.moveRight()) { playing.currentCorner[0]++; } }
+                if (state.IsKeyDown(Keys.S)) { if (player.moveDown()) { playing.currentCorner[1]++; } }
             }
 
             if (state.IsKeyDown(Keys.Escape) && escapeUpdate > 128)
@@ -54,21 +54,21 @@ namespace RogueLikeGame
                 playing.changeState("Paused");
             }
 
-            foreach (Enemy enemy in enemies) { if (enemy.speaking) { enemy.speak(gameTime); } }
-
-            if (state.IsKeyDown(Keys.Space) && attackUpdate > 380) { player.attacking = true; attackUpdate = 0; }
-            else if (player.attacking) 
-            { 
-                player.attack(gameTime); 
-            }
-
             foreach (Enemy enemy in enemies)
             {
                 if ((player.coords[0] + playing.currentCorner[0]) <= enemy.coords[0] + 1 && (player.coords[1] + playing.currentCorner[1]) <= enemy.coords[1] + 1 && (player.coords[0] + playing.currentCorner[0]) >= enemy.coords[0] - 1 && (player.coords[1] + playing.currentCorner[1]) >= enemy.coords[1] - 1)
                 {
                     enemy.speaking = true;
+                    enemy.speak(gameTime);
                 }
                 else { enemy.speaking = false; }
+
+            }
+
+            if (state.IsKeyDown(Keys.Space) && attackUpdate > 380) { player.attacking = true; attackUpdate = 0; }
+            else if (player.attacking) 
+            { 
+                player.attack(gameTime); 
             }
 
         }

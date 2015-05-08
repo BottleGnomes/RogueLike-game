@@ -21,13 +21,18 @@ namespace RogueLikeGame
         SpriteBatch spriteBatch;
         ingameMenu menu;
 
-        public int[] currentCorner = { 0, 0 };
+        public int[] currentCorner = { -15, 11 };
         int tileWidth = 28;
         int tileHeight = 46;
         int[] screenDim = { 50, 20 };
 
+        int[] textScroll = new int[] { -4, -2, -1, 0, 0, 1, 2, 4, 2, 1, 0, 0, -1, -2 };
+        int scrollTimer = 0;
+        int textScrollIndex = 0;
+
         Player player;
         List<Enemy> enemies;
+        List<Item> items;
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame) 
         {
@@ -39,9 +44,10 @@ namespace RogueLikeGame
             this.spriteBatch = spriteBatch;
             menu = new ingameMenu(ingame, output);
 
-            enemies = new List<Enemy> { new Enemy(new int[] {3,2},scene) };
+            enemies = new List<Enemy> { new Enemy(new int[] {3,21},scene) };
+            items =  new List<Item> { new Item(new int[] { 3,18 },scene,"life") };
             player = new Player(new int[] { 24, 8 }, scene);
-            
+
 
             //pass in enemies and objects later
             unpaused = new Unpaused(this, player, enemies);
@@ -77,30 +83,40 @@ namespace RogueLikeGame
 
         public void update(GameTime gameTime)
         {
+            scrollTimer += gameTime.ElapsedGameTime.Milliseconds;
             state.update(gameTime);
         }
 
         public void draw()
         {
+            //Debug.Print(Convert.ToString(currentCorner[0]) + "," + Convert.ToString(currentCorner[1]));
+
             this.drawTiles();
-            //player
-            spriteBatch.DrawString(chess, "\u265E", new Vector2(player.coords[0] * tileWidth, player.coords[1]* tileHeight), Color.White);
             //attack
             if (player.attacking) { spriteBatch.DrawString(chess, "\u2666", new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Color.SandyBrown); }
-            //enemies
+            
             Vector2 textVector = new Vector2();
+            if (textScrollIndex >= textScroll.Length - 1) { textScrollIndex = 0; } else if (scrollTimer > 168) { textScrollIndex++; scrollTimer = 0; }
+            //enemies
             foreach (Enemy enemy in enemies) 
             { 
-                spriteBatch.DrawString(chess, "\u2646", new Vector2((enemy.coords[0] - currentCorner[0])*tileWidth, (enemy.coords[1] - currentCorner[1])*tileHeight), Color.White);
+                spriteBatch.DrawString(chess, "\u2646", new Vector2((enemy.coords[0] - currentCorner[0])*tileWidth -5, (enemy.coords[1] - currentCorner[1])*tileHeight), Color.White);
                 if (enemy.speaking)
                 {
-                    textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth)-(tileWidth*10), ((enemy.coords[1] - currentCorner[1]) * tileHeight)-(tileHeight));
+                    textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth) - (tileWidth * 10), ((enemy.coords[1] - currentCorner[1]) * tileHeight) - (tileHeight) + textScroll[textScrollIndex]);
                     spriteBatch.DrawString(output, enemy.getDialog(), new Vector2(textVector.X - 2, textVector.Y - 1), Color.Black);
                     spriteBatch.DrawString(output, enemy.getDialog(), new Vector2(textVector.X + 2, textVector.Y + 1), Color.Black);
                     spriteBatch.DrawString(output, enemy.getDialog(), textVector, Color.White);
-                    //!!!add some kind of effect
+
                 }
             }
+            foreach (Item item in items)
+            {
+                spriteBatch.DrawString(chess, item.getUniVal(), new Vector2(((item.coords[0] - currentCorner[0]) * tileWidth), ((item.coords[1] - currentCorner[1]) * tileHeight) + textScroll[textScrollIndex]), item.color);
+            }
+
+            //player on top during unpaused
+            spriteBatch.DrawString(chess, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight), Color.White);
 
             if (state == paused) 
             {

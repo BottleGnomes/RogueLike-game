@@ -43,6 +43,32 @@ namespace RogueLikeGame
         }
     }
 
+    class Item : Drawable
+    {
+        Scene scene;
+        string uniValue;
+        public Color color;
+        int scrollIndex = 0;
+
+        public Item(int[] coords, Scene scene, string tag)
+        {
+            this.coords = coords;
+            this.setTag(tag);
+            this.setUniVal(this.getTag());
+        }
+        public void setUniVal(string tag)
+        {
+            switch (tag)
+            {
+                case "food": { uniValue = "\u2668"; this.color = Color.Indigo; break; }
+                case "sword": { uniValue = "\u26B5"; this.color = Color.Cyan; break; }
+                case "bow": { uniValue = "\u269E"; this.color = Color.Gold; break; }
+                case "life": { uniValue = "\u2665"; this.color = Color.Red; break; }
+            }
+        }
+        public string getUniVal() { return uniValue; }
+    }
+
     class Enemy : Drawable
     {
         Scene scene;
