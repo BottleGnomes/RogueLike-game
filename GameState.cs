@@ -37,7 +37,7 @@ namespace RogueLikeGame
             chess = ingame.Content.Load<SpriteFont>("Chess");
             output = ingame.Content.Load<SpriteFont>("Output18pt");
             this.spriteBatch = spriteBatch;
-            menu  = new ingameMenu(ingame, output);
+            menu = new ingameMenu(ingame, output);
 
             enemies = new List<Enemy> { new Enemy(new int[] {3,2},scene) };
             player = new Player(new int[] { 24, 8 }, scene);
@@ -88,7 +88,19 @@ namespace RogueLikeGame
             //attack
             if (player.attacking) { spriteBatch.DrawString(chess, "\u2666", new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Color.SandyBrown); }
             //enemies
-            foreach (Enemy enemy in enemies) { spriteBatch.DrawString(chess, "\u265F", new Vector2((enemy.coords[0] - currentCorner[0])*tileWidth, (enemy.coords[1] - currentCorner[1])*tileHeight), Color.White); }
+            Vector2 textVector = new Vector2();
+            foreach (Enemy enemy in enemies) 
+            { 
+                spriteBatch.DrawString(chess, "\u2646", new Vector2((enemy.coords[0] - currentCorner[0])*tileWidth, (enemy.coords[1] - currentCorner[1])*tileHeight), Color.White);
+                if (enemy.speaking)
+                {
+                    textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth)-(tileWidth*10), ((enemy.coords[1] - currentCorner[1]) * tileHeight)-(tileHeight));
+                    spriteBatch.DrawString(output, enemy.getDialog(), new Vector2(textVector.X - 2, textVector.Y - 1), Color.Black);
+                    spriteBatch.DrawString(output, enemy.getDialog(), new Vector2(textVector.X + 2, textVector.Y + 1), Color.Black);
+                    spriteBatch.DrawString(output, enemy.getDialog(), textVector, Color.White);
+                    //!!!add some kind of effect
+                }
+            }
 
             if (state == paused) 
             {

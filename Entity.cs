@@ -46,11 +46,26 @@ namespace RogueLikeGame
     class Enemy : Drawable
     {
         Scene scene;
+        public List<string> dialog = new List<string>() {"Your magic has no power in these lands, wizard!",
+                                  "You're just a horse.",
+                                  "I'm lost.",
+                                  "I don't believe you!",
+                                  "Forget the imitations"};
+        int dialogTimer = 0;
+        public bool speaking = false;
 
         public Enemy(int[] coords, Scene scene)
         {
             this.coords = coords;
             this.scene = scene;
+        }
+        public void speak(GameTime gameTime) { 
+            dialogTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (dialogTimer > 2000) { speaking = false; dialogTimer = 0; }
+        }
+        public string getDialog() 
+        {
+            return dialog[0];
         }
     }
 

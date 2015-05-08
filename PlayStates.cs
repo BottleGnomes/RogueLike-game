@@ -15,6 +15,7 @@ namespace RogueLikeGame
         KeyboardState state;
         Player player;
         Playing playing;
+        List<Enemy> enemies;
 
         //timers
         private int moveUpdate = 100;
@@ -26,6 +27,7 @@ namespace RogueLikeGame
         {
             this.playing = playing;
             this.player = player;
+            this.enemies = enemies;
         }
 
         public void update(GameTime gameTime)
@@ -52,8 +54,19 @@ namespace RogueLikeGame
                 playing.changeState("Paused");
             }
 
+            foreach (Enemy enemy in enemies) { if (enemy.speaking) { enemy.speak(gameTime); } }
+
             if (state.IsKeyDown(Keys.Space) && attackUpdate > 380) { player.attacking = true; attackUpdate = 0; }
-            else if (player.attacking) { player.attack(gameTime); }
+            else if (player.attacking) 
+            { 
+                player.attack(gameTime); 
+                foreach(Enemy enemy in enemies){
+                    if ((player.coords[0] + playing.currentCorner[0]) + player.facing[0] == enemy.coords[0] && (player.coords[1] + playing.currentCorner[1]) + player.facing[1] == enemy.coords[1])
+                    {
+                        enemy.speaking = true;
+                    }
+                }
+            }
 
         }
 
@@ -109,7 +122,7 @@ namespace RogueLikeGame
 
         public void leaving()
         {
-
+            
         }
 
         public string getTag()
