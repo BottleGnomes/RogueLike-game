@@ -19,17 +19,17 @@ namespace RogueLikeGame
             this.scene = scene;
         }
         public void moveLeft() { facing = new int[] { -1, 0 }; this.coords[0]--; if (this.coords[0] < 0 || scene.collides(this.coords)) { this.coords[0]++; } }
-        public void moveRight() { facing = new int[] { 1, 0 }; this.coords[0]++; if (this.coords[0] > scene.dimensions[0] || scene.collides(this.coords)) { this.coords[0]--; } }
+        public void moveRight() { facing = new int[] { 1, 0 }; this.coords[0]++; if (this.coords[0] > scene.getDimensions()[0] || scene.collides(this.coords)) { this.coords[0]--; } }
         public void moveUp() { facing = new int[] { 0, 1 }; this.coords[1]--; if (this.coords[1] < 0 || scene.collides(this.coords)) { this.coords[1]++; } }
-        public void moveDown() { facing = new int[] { 0, -1 }; this.coords[1]++; if (this.coords[1] > scene.dimensions[1] || scene.collides(this.coords)) { this.coords[1]--; } }
+        public void moveDown() { facing = new int[] { 0, -1 }; this.coords[1]++; if (this.coords[1] > scene.getDimensions()[1] || scene.collides(this.coords)) { this.coords[1]--; } }
 
     }
 
 
     class Drawable
     {
-        private string tag { get { return tag; } set { tag = value; } }
-        private double time = 0;
+        private string tag;
+        public  double time = 0;
         public int[] coords;
         public int level;
         public double rotation;
@@ -38,8 +38,10 @@ namespace RogueLikeGame
         public bool toBeDeleted = false;
         public bool escaped = false;
 
-        Rectangle spriteRectangle { get { return spriteRectangle; } set { spriteRectangle = value; } }
-        Rectangle locationRectangle { get { return locationRectangle; } set { locationRectangle = value; } }
+        public void setTag(string tag) { this.tag = tag; }
+        public string getTag() { return this.tag; }
+        public Rectangle spriteRectangle { get { return spriteRectangle; } set { spriteRectangle = value; } }
+        public Rectangle locationRectangle { get { return locationRectangle; } set { locationRectangle = value; } }
 
         public bool collides(Drawable other)
         {

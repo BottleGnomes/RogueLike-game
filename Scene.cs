@@ -2,15 +2,100 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using Microsoft.Xna.Framework;
+using System.Diagnostics;
 
 namespace RogueLikeGame
 {
     class Scene
     {
-        public int[] dimensions = { 20, 20 };
+        int[] dimensions;
+        Constructor constructor;
 
-        public Scene() { }
+        public Scene() 
+        {
+            this.constructor = new Constructor();
+            dimensions = constructor.getDimensions();
+        }
+        public int[] getDimensions() { return dimensions; }
+        public bool collides(int[] coordinates) { if (constructor.getTile(coordinates).getNum() == 1) { return true; } return false; }
+        public bool includesTile(int[] coordinates) { return constructor.includesTile(coordinates); }
+        public Tile getTile(int[] coordinates) { return constructor.getTile(coordinates); }
+    }
 
-        public bool collides(int[] coordinates) { return false; /* check map to find collisions */ }
+
+    class Constructor
+    {
+        Tile[,] tileArray;
+        string currentLevel;
+        string[] tileTypes = { "floor", "wall" };
+
+        public Constructor()
+        {
+            this.build();
+            currentLevel = "Collision.csv";
+        }
+
+        public void build()
+        {
+            string[] ioArray = File.ReadAllText(string.Format("Content//Collision.csv",this.currentLevel)).Split('\n');
+            tileArray = new Tile[(ioArray[0].Length + 1) / 2, ioArray.GetLength(0)];
+            for (int i = 0; i < ioArray.Length; i++)
+            {
+                Debug.Print(ioArray[i]);
+                string[] lineSplit = ioArray[i].Split(',');
+                for (int j = 0; j < lineSplit.Length; j++)
+                {
+                    int tileNumber = Convert.ToInt16(lineSplit[j]);
+                    tileArray[j, i] = new Tile(tileNumber, tileTypes[tileNumber], j, i);
+                    tileArray[j, i].setTag(tileTypes[tileNumber]);
+                }
+            }
+        }
+        
+        public int[] getDimensions()
+        {
+            int[] temp = new int[2];
+            temp[0] = this.tileArray.GetLength(0);
+            temp[1] = this.tileArray.GetLength(1);
+            return temp;
+        }
+
+        public bool includesTile(int x, int y)
+        {
+            //Debug.Print("x:"+Convert.ToString(x)+"\ny:"+Convert.ToString(y)+"\ndim0:"+Convert.ToString(tileArray.GetLength(0))+"\ndim1:"+Convert.ToString(tileArray.GetLength(1)));
+            if (x < 0 || x >= this.tileArray.GetLength(0)) { return false; }
+            if (y < 0 || y >= this.tileArray.GetLength(1)) { return false; }
+            return true;
+        }
+        public bool includesTile(int[] coords)
+        {
+            int x = coords[0];
+            int y = coords[1];
+            //Debug.Print("x:"+Convert.ToString(x)+"\ny:"+Convert.ToString(y)+"\ndim0:"+Convert.ToString(tileArray.GetLength(0))+"\ndim1:"+Convert.ToString(tileArray.GetLength(1)));
+            if (x < 0 || x >= this.tileArray.GetLength(0)) { return false; }
+            if (y < 0 || y >= this.tileArray.GetLength(1)) { return false; }
+            return true;
+        }
+
+        public Tile getTile(int x, int y) { return tileArray[x, y]; }
+        public Tile getTile(int[] coordinates) { return tileArray[coordinates[0], coordinates[1]]; }
+
+    }
+
+    class Tile : Drawable
+    {
+        string tileType;
+        int tileNum;
+        public Tile(int tileNum, string tileType, int x, int y)
+        {
+            this.tileNum = tileNum;
+            this.tileType = tileType;
+            this.coords = new int[] { x, y }; 
+        }
+        public int[] getCoords() { return coords; }
+        public int getNum() { return this.tileNum; }
+        public string getType() { return this.tileType; }
     }
 }

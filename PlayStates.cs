@@ -34,7 +34,7 @@ namespace RogueLikeGame
             pauseUpdate += gameTime.ElapsedGameTime.Milliseconds;
             escapeUpdate += gameTime.ElapsedGameTime.Milliseconds;
 
-            if (moveUpdate >= 96)
+            if (moveUpdate >= 128)
             {
                 moveUpdate = 0;
                 if (state.IsKeyDown(Keys.W)) { player.moveUp(); }

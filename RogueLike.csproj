@@ -75,12 +75,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Chess.xnb">
+    <Content Include="Content\Collision.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Chess2.xnb">
+    <Content Include="Content\Chess.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

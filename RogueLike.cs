@@ -22,7 +22,7 @@ namespace RogueLikeGame
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1360;
+            graphics.PreferredBackBufferWidth = 1440;
             graphics.PreferredBackBufferHeight = 960;
             graphics.IsFullScreen = false;
             graphics.ApplyChanges();
