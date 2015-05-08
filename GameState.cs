@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System.Diagnostics;
 
 namespace RogueLikeGame
 {
@@ -26,7 +27,7 @@ namespace RogueLikeGame
         int[] screenDim = { 50, 20 };
 
         Player player;
-        List<Drawable> units = new List<Drawable>();
+        List<Enemy> enemies;
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame) 
         {
@@ -38,11 +39,12 @@ namespace RogueLikeGame
             this.spriteBatch = spriteBatch;
             menu  = new ingameMenu(ingame, output);
 
+            enemies = new List<Enemy> { new Enemy(new int[] {3,2},scene) };
             player = new Player(new int[] { 24, 8 }, scene);
-            units.Add(player);
+            
 
             //pass in enemies and objects later
-            unpaused = new Unpaused(this, player);
+            unpaused = new Unpaused(this, player, enemies);
 
             state = unpaused;
             
@@ -81,8 +83,12 @@ namespace RogueLikeGame
         public void draw()
         {
             this.drawTiles();
-
+            //player
             spriteBatch.DrawString(chess, "\u265E", new Vector2(player.coords[0] * tileWidth, player.coords[1]* tileHeight), Color.White);
+            //attack
+            if (player.attacking) { spriteBatch.DrawString(chess, "\u2666", new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Color.SandyBrown); }
+            //enemies
+            foreach (Enemy enemy in enemies) { spriteBatch.DrawString(chess, "\u265F", new Vector2((enemy.coords[0] - currentCorner[0])*tileWidth, (enemy.coords[1] - currentCorner[1])*tileHeight), Color.White); }
 
             if (state == paused) 
             {

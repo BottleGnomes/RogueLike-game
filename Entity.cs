@@ -11,7 +11,9 @@ namespace RogueLikeGame
     class Player : Drawable
     {
         Scene scene;
-        int[] facing = { 1, 0 };
+        public int[] facing = { 0, 1 };
+        public bool attacking = false;
+        int attackTimer = 0;
 
         public Player(int[] coords, Scene scene)
         {
@@ -23,8 +25,34 @@ namespace RogueLikeGame
         public bool moveUp() { facing = new int[] { 0, -1 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
         public bool moveDown() { facing = new int[] { 0, 1 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
 
+        public void attack(GameTime gameTime) 
+        {
+            attackTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (attackTimer > 80) { attacking = false; attackTimer = 0; }
+        }
     }
 
+    class Projectile : Drawable
+    {
+        Scene scene;
+
+        public Projectile(int[] coords, Scene scene)
+        {
+            this.coords = coords;
+            this.scene = scene;
+        }
+    }
+
+    class Enemy : Drawable
+    {
+        Scene scene;
+
+        public Enemy(int[] coords, Scene scene)
+        {
+            this.coords = coords;
+            this.scene = scene;
+        }
+    }
 
     class Drawable
     {

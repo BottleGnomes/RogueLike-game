@@ -20,8 +20,9 @@ namespace RogueLikeGame
         private int moveUpdate = 100;
         private int pauseUpdate = 128;
         private int escapeUpdate = 0;
+        private int attackUpdate = 0;
 
-        public Unpaused(Playing playing, Player player) 
+        public Unpaused(Playing playing, Player player, List<Enemy> enemies) 
         {
             this.playing = playing;
             this.player = player;
@@ -34,6 +35,7 @@ namespace RogueLikeGame
             moveUpdate += gameTime.ElapsedGameTime.Milliseconds;
             pauseUpdate += gameTime.ElapsedGameTime.Milliseconds;
             escapeUpdate += gameTime.ElapsedGameTime.Milliseconds;
+            attackUpdate += gameTime.ElapsedGameTime.Milliseconds;
 
             if (moveUpdate >= 128)
             {
@@ -49,6 +51,9 @@ namespace RogueLikeGame
                 escapeUpdate = 0;
                 playing.changeState("Paused");
             }
+
+            if (state.IsKeyDown(Keys.Space) && attackUpdate > 380) { player.attacking = true; attackUpdate = 0; }
+            else if (player.attacking) { player.attack(gameTime); }
 
         }
 
