@@ -51,3 +51,5 @@ C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\obj\x86\
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Output18pt.xnb
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\overlay.png
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Output128pt.xnb
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Chess.xnb
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Chess2.xnb

@@ -8,12 +8,29 @@ using System.Diagnostics;
 
 namespace RogueLikeGame
 {
+    class Player : Drawable
+    {
+        Scene scene;
+        int[] facing = { 1, 0 };
+
+        public Player(int[] coords, Scene scene)
+        {
+            this.coords = coords;
+            this.scene = scene;
+        }
+        public void moveLeft() { facing = new int[] { -1, 0 }; this.coords[0]--; if (this.coords[0] < 0 || scene.collides(this.coords)) { this.coords[0]++; } }
+        public void moveRight() { facing = new int[] { 1, 0 }; this.coords[0]++; if (this.coords[0] > scene.dimensions[0] || scene.collides(this.coords)) { this.coords[0]--; } }
+        public void moveUp() { facing = new int[] { 0, 1 }; this.coords[1]--; if (this.coords[1] < 0 || scene.collides(this.coords)) { this.coords[1]++; } }
+        public void moveDown() { facing = new int[] { 0, -1 }; this.coords[1]++; if (this.coords[1] > scene.dimensions[1] || scene.collides(this.coords)) { this.coords[1]--; } }
+
+    }
+
 
     class Drawable
     {
         private string tag { get { return tag; } set { tag = value; } }
         private double time = 0;
-        public int[] coords = new int[2];
+        public int[] coords;
         public int level;
         public double rotation;
         //use level for animated sprites
