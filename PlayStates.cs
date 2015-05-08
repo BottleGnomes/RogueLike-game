@@ -60,12 +60,15 @@ namespace RogueLikeGame
             else if (player.attacking) 
             { 
                 player.attack(gameTime); 
-                foreach(Enemy enemy in enemies){
-                    if ((player.coords[0] + playing.currentCorner[0]) + player.facing[0] == enemy.coords[0] && (player.coords[1] + playing.currentCorner[1]) + player.facing[1] == enemy.coords[1])
-                    {
-                        enemy.speaking = true;
-                    }
+            }
+
+            foreach (Enemy enemy in enemies)
+            {
+                if ((player.coords[0] + playing.currentCorner[0]) <= enemy.coords[0] + 1 && (player.coords[1] + playing.currentCorner[1]) <= enemy.coords[1] + 1 && (player.coords[0] + playing.currentCorner[0]) >= enemy.coords[0] - 1 && (player.coords[1] + playing.currentCorner[1]) >= enemy.coords[1] - 1)
+                {
+                    enemy.speaking = true;
                 }
+                else { enemy.speaking = false; }
             }
 
         }
