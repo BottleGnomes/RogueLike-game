@@ -1,0 +1,53 @@
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\Game1.exe
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\Game1.pdb
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\MonoGame.Framework.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.MediaFoundation.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.XAudio2.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.Direct3D11.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.DXGI.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.Direct2D1.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.XInput.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.RawInput.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.Direct3D9.dll
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\MonoGame.Framework.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.MediaFoundation.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.XAudio2.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.Direct3D11.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.DXGI.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.Direct2D1.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.XInput.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.RawInput.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\bin\Windows\Debug\SharpDX.Direct3D9.xml
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\obj\x86\Debug\RogueLike.csprojResolveAssemblyReference.cache
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\obj\x86\Debug\Game1.exe
+C:\Users\HANK\AppData\Local\Temporary Projects\Game1\obj\x86\Debug\Game1.pdb
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\obj\x86\Debug\RogueLike.csprojResolveAssemblyReference.cache
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\RogueLike.exe
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\RogueLike.pdb
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\MonoGame.Framework.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.MediaFoundation.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.XAudio2.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.Direct3D11.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.DXGI.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.Direct2D1.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.XInput.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.RawInput.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.Direct3D9.dll
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\MonoGame.Framework.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.MediaFoundation.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.XAudio2.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.Direct3D11.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.DXGI.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.Direct2D1.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.XInput.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.RawInput.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\SharpDX.Direct3D9.xml
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\obj\x86\Debug\RogueLike.exe
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\obj\x86\Debug\RogueLike.pdb
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Output18pt.xnb
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\overlay.png
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Output128pt.xnb
