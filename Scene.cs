@@ -124,5 +124,6 @@ namespace RogueLikeGame
         public int[] getCoords() { return coords; }
         public int getNum() { return this.tileNum; }
         public string getType() { return this.tileType; }
+        public int distance(Tile inTile) { return Math.Abs(this.coords[0] - inTile.coords[0]) + Math.Abs(this.coords[1] - inTile.coords[1]); }
     }
 }

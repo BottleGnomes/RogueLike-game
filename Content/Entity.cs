@@ -18,7 +18,7 @@ namespace RogueLikeGame
         public string attackSymbol = "\u2666";
         public int damage = 5;
         public Color color = Color.White;
-        public int sight = 8;
+        public int sight = 12;
 
         public Player(int[] coords, Scene scene)
         {

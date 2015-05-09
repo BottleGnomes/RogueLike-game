@@ -155,32 +155,74 @@ namespace RogueLikeGame
         public void drawTiles()
         {
             string[] tiles = { "\u2591", "\u2589", "\u2593" };
-            Color[,] colors = { { Color.Gainsboro, Color.Gray, Color.DarkSlateGray, Color.Black }, { Color.Blue, Color.MidnightBlue, Color.DarkSlateGray, Color.Black } };
-            Tile startingTile = scene.getTile(player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1]);
+            Color[,] colors = { { Color.Gainsboro, Color.Gray, Color.DarkSlateGray, Color.Black }, { Color.Blue, Color.MidnightBlue, Color.DarkSlateGray, Color.Black }, { Color.Gainsboro, Color.Gray, Color.DarkSlateGray, Color.Black } };
+            int[] startingTile = new int[] {player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1]};
+            List<List<int[]>> tileQuerry = new List<List<int[]>>();
 
-            List<Tile> tileQuerry =
-                (from tile in scene.getArray().Cast<Tile>()
-                 where (Math.Abs(tile.coords[0] - startingTile.coords[0]) + Math.Abs(tile.coords[1] - startingTile.coords[1]) == player.sight)
-                 select tile).ToList<Tile>();
-            
+            int x = player.sight;
+            int y = 0;
+            int radiusError = 1 - x;
+            int r = player.sight;
+            while(x >= y)
+            {
+                tileQuerry.Add(getTilesInbetween(new int[] { x + startingTile[0], y + startingTile[1] },new int[] { (-1) * x + startingTile[0], y + startingTile[1] }));
+                tileQuerry.Add(getTilesInbetween(new int[] { y + startingTile[0], x + startingTile[1] }, new int[] { (-1) * y + startingTile[0], x + startingTile[1] }));
+                tileQuerry.Add(getTilesInbetween(new int[] { (-1) * x + startingTile[0], (-1) * y + startingTile[1] }, new int[] { x + startingTile[0], (-1) * y + startingTile[1] }));
+                tileQuerry.Add(getTilesInbetween(new int[] { (-1) * y + startingTile[0], (-1) * x + startingTile[1] }, new int[] { y + startingTile[0], (-1) * x + startingTile[1] }));
+                y++;
+                if (radiusError < 0) { radiusError += 2 * y + 1; }
+                else {x--; radiusError += 2 * (y - x) + 1; }
+            }
+            //foreach (int[] a in tileQuerry) { Debug.Print(Convert.ToString(a[0]) + "," + Convert.ToString(a[1])); }
                 
-                foreach (Tile tile in tileQuerry)
+                foreach (List<int[]> tileList in tileQuerry)
                 {
-                    List<Tile> tileList = getTilesInbetween(startingTile,tile);
-                    tileList.Sort();
-                    foreach (Tile lineTile in tileList)
+                    List<int[]> list = tileList.OrderByDescending(f => Math.Abs(f[0] - startingTile[0]) + Math.Abs(f[1] - startingTile[1])).ToList();
+                    list.Reverse();
+                    List<int[]> listForward = new List<int[]>();
+                    List<int[]> listBackwards = new List<int[]>();
+                    for(int i = 0; i < list.Count; i++)
                     {
-                        int[] distance = { startingTile.coords[0] - lineTile.coords[0], startingTile.coords[1] - lineTile.coords[1] };
-                        if (Math.Abs(distance[0]) + Math.Abs(distance[1]) <= player.sight) 
-                        {
-                            spriteBatch.DrawString(symbols, tiles[lineTile.getNum()], new Vector2((lineTile.coords[0] - currentCorner[0]) * tileWidth, (lineTile.coords[1] - currentCorner[1]) * tileHeight), colors[lineTile.getNum(), 0]);
-                            if (scene.collides(new int[]{lineTile.coords[0] -currentCorner[0],lineTile.coords[1] - currentCorner[1]})) { break; }
-                        }
+                        if (i % 2 == 0) { listForward.Add(list[i]); }
+                        else { listBackwards.Add(list[i]); }
+                    }
+                    //foreach (int[] whatever in listForward) { Debug.Print(Convert.ToString(whatever[0]) + "," + Convert.ToString(whatever[1])); }
+                   
+                    foreach (int[] lineTile in listForward)
+                    {
+                        //if (Math.Abs(distance[0]) + Math.Abs(distance[1]) <= player.sight) 
+                        //{
+                        if(scene.includesTile(lineTile)){
+                            spriteBatch.DrawString(symbols, tiles[scene.getTile(lineTile).getNum()], new Vector2((lineTile[0] - currentCorner[0]) * tileWidth, (lineTile[1] - currentCorner[1]) * tileHeight), colors[scene.getTile(lineTile).getNum(), 0]);
+                            //if (scene.collides(new int[]{lineTile[0] -currentCorner[0],lineTile[1] - currentCorner[1]})) { break; }
+                        }//}
                         
+                    }
+                    foreach (int[] lineTile in listBackwards)
+                    {
+                        //if (Math.Abs(distance[0]) + Math.Abs(distance[1]) <= player.sight) 
+                        //{
+                        if (scene.includesTile(lineTile))
+                        {
+                            spriteBatch.DrawString(symbols, tiles[scene.getTile(lineTile).getNum()], new Vector2((lineTile[0] - currentCorner[0]) * tileWidth, (lineTile[1] - currentCorner[1]) * tileHeight), colors[scene.getTile(lineTile).getNum(), 0]);
+                            //if (scene.collides(new int[]{lineTile[0] -currentCorner[0],lineTile[1] - currentCorner[1]})) { break; }
+                        }//}
+
                     }
                     //process tile afterwards
                     //it's excluded in getTilesInbetween
                 }
+
+        }
+        public List<int[]> getTilesInbetween(int[] A, int[] B)
+        {
+            List<int[]> tileArray = new List<int[]>();
+            if (((A[0] + B[0]) / 2 == A[0] && (A[1] + B[1]) / 2 == A[1]) || ((A[0] + B[0]) / 2 == B[0] && (A[1] + B[1]) / 2 == B[1]))
+            { return tileArray; }
+            tileArray.Add(new int[] {(A[0] + B[0]) / 2, (A[1] + B[1]) / 2});
+            tileArray.AddRange(getTilesInbetween(A, new int[]{(A[0] + B[0])/2, (A[1] + B[1])/2}));
+            tileArray.AddRange(getTilesInbetween(new int[] {(A[0] + B[0]) / 2, (A[1] + B[1]) / 2}, B));
+            return tileArray;
         }
         public List<Tile> getTilesInbetween(Tile A, Tile B)
         {
