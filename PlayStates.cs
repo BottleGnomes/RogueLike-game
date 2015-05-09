@@ -16,38 +16,61 @@ namespace RogueLikeGame
         Player player;
         Playing playing;
         List<Enemy> enemies;
+        List<Item> items;
+        List<Particle> particles;
+        Scene scene;
 
         //timers
         private int moveUpdate = 100;
         private int pauseUpdate = 128;
         private int escapeUpdate = 0;
         private int attackUpdate = 0;
+        private int damageUpdate = 0;
+        private int hitUpdate = 0;
+        private bool damaged = false;
 
-        public Unpaused(Playing playing, Player player, List<Enemy> enemies) 
+        public Unpaused(Playing playing, Scene scene, Player player, List<Enemy> enemies, List<Item> items, List<Particle> particles) 
         {
             this.playing = playing;
             this.player = player;
             this.enemies = enemies;
+            this.items = items;
+            this.particles = particles;
+            this.scene = scene;
         }
 
         public void update(GameTime gameTime)
         {
             state = Keyboard.GetState();
 
+            hitUpdate += gameTime.ElapsedGameTime.Milliseconds;
             moveUpdate += gameTime.ElapsedGameTime.Milliseconds;
             pauseUpdate += gameTime.ElapsedGameTime.Milliseconds;
             escapeUpdate += gameTime.ElapsedGameTime.Milliseconds;
             attackUpdate += gameTime.ElapsedGameTime.Milliseconds;
+            if (damaged == true) { damageUpdate += gameTime.ElapsedGameTime.Milliseconds; } else { damageUpdate = 0; }
 
-            if (moveUpdate >= 112)
+            foreach (Particle particle in particles) { particle.update(gameTime); }
+
+            if (moveUpdate >= 128)
             {
                 moveUpdate = 0;
                 if (state.IsKeyDown(Keys.W)) { if (player.moveUp()) { playing.currentCorner[1]--; } }
-                if (state.IsKeyDown(Keys.A)) {  if (player.moveLeft()) { playing.currentCorner[0]--; } }
+                if (state.IsKeyDown(Keys.A)) { if (player.moveLeft()) { playing.currentCorner[0]--; } }
                 if (state.IsKeyDown(Keys.D)) { if (player.moveRight()) { playing.currentCorner[0]++; } }
                 if (state.IsKeyDown(Keys.S)) { if (player.moveDown()) { playing.currentCorner[1]++; } }
+                if (hitUpdate > 40)
+                {
+                    player.color = Color.White;
+                    hitUpdate = 0;
+                    Enemy enemy = null;
+                    enemy = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == player.coords[0] && a.coords[1] - playing.currentCorner[1] == player.coords[1]);
+                    if (enemy != null) { player.color = Color.Red; player.hit(1, new int[] { 0, 0 }); playing.currentCorner[0] -= player.facing[0]; playing.currentCorner[1] -= player.facing[1]; }
+                }
             }
-
+            Item pickup = null;
+            pickup = items.Find(item => item.coords[0] - playing.currentCorner[0] == player.coords[0] && item.coords[1] - playing.currentCorner[1] == player.coords[1]);
+            if (pickup != null) { player.process(pickup); items.Remove(pickup); }
             if (state.IsKeyDown(Keys.Escape) && escapeUpdate > 128)
             {
                 escapeUpdate = 0;
@@ -56,20 +79,33 @@ namespace RogueLikeGame
 
             foreach (Enemy enemy in enemies)
             {
-                if ((player.coords[0] + playing.currentCorner[0]) <= enemy.coords[0] + 1 && (player.coords[1] + playing.currentCorner[1]) <= enemy.coords[1] + 1 && (player.coords[0] + playing.currentCorner[0]) >= enemy.coords[0] - 1 && (player.coords[1] + playing.currentCorner[1]) >= enemy.coords[1] - 1)
+                if (damageUpdate > 40)
                 {
-                    enemy.speaking = true;
-                    enemy.speak(gameTime);
+                    damaged = false;
+                    enemy.setColor(Color.White);
                 }
+                if ((player.coords[0] + playing.currentCorner[0]) <= enemy.coords[0] + 1 && (player.coords[1] + playing.currentCorner[1]) <= enemy.coords[1] + 1 && (player.coords[0] + playing.currentCorner[0]) >= enemy.coords[0] - 1 && (player.coords[1] + playing.currentCorner[1]) >= enemy.coords[1] - 1)
+                {enemy.speaking = true;}
+
                 else { enemy.speaking = false; }
-
+                if (enemy.dying) { enemy.death(gameTime); if (enemy.toBeDeleted) { items.Add(new Item(enemy.coords, scene, enemy.drop)); } playing.addParticle(new Particle(enemy.coords, "stars")); }
             }
+            
 
-            if (state.IsKeyDown(Keys.Space) && attackUpdate > 380) { player.attacking = true; attackUpdate = 0; }
-            else if (player.attacking) 
+            if (state.IsKeyDown(Keys.Space) && attackUpdate > 380) 
             { 
-                player.attack(gameTime); 
+                player.attacking = true; attackUpdate = 0;
+                Enemy hit = null;
+                hit = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == player.coords[0] + player.facing[0] && a.coords[1] - playing.currentCorner[1] == player.coords[1] + player.facing[1]);
+                if (hit != null)
+                {
+                    damaged = true;
+                    hit.setColor(Color.Red);
+                    hit.hit(player.damage, player.facing);
+                    if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1])) { hit.coords[0] -= player.facing[0]; hit.coords[1] -= player.facing[1]; }
+                }
             }
+            else if (player.attacking) { player.attack(gameTime); }
 
         }
 

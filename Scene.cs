@@ -13,17 +13,42 @@ namespace RogueLikeGame
         int[] dimensions;
         Constructor constructor;
         Playing playing;
+        int[,] eventArray;
 
         public Scene(Playing playing) 
         {
             this.playing = playing;
             this.constructor = new Constructor();
             dimensions = constructor.getDimensions();
+
+            string[] ioArray = File.ReadAllText("Content//Event.csv").Split('\n');
+            eventArray = new int[(ioArray[0].Length + 1) / 2, ioArray.GetLength(0)];
+            for (int i = 0; i < ioArray.Length; i++)
+            {
+                string[] lineSplit = ioArray[i].Split(',');
+                for (int j = 0; j < lineSplit.Length; j++)
+                {
+                    eventArray[j, i] = Convert.ToInt16(lineSplit[j]);
+                }
+            }
         }
+        public Tile[,] getArray() { return constructor.getTileArray(); }
         public int[] getDimensions() { return dimensions; }
         public bool collides(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
+        public bool collides(int x, int y) { if (constructor.getTile(new int[] {x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
+        public bool trigger(int[] coordinates) { return eventArray[coordinates[0], coordinates[1]] != 0; }
+        public string getEvent(int[] coordinates) 
+        {
+            int num = eventArray[coordinates[0], coordinates[1]];
+            switch (num)
+            {
+                case 1: { return "exit"; break; }
+                default: { return "error"; break; }
+            }
+        }
         public bool includesTile(int[] coordinates) { return constructor.includesTile(coordinates); }
         public Tile getTile(int[] coordinates) { return constructor.getTile(coordinates); }
+        public Tile getTile(int x, int y) { return constructor.getTile(x,y); }
     }
 
 
@@ -31,7 +56,7 @@ namespace RogueLikeGame
     {
         Tile[,] tileArray;
         string currentLevel;
-        string[] tileTypes = { "floor", "wall" };
+        string[] tileTypes = { "floor", "wall","hatch" };
 
         public Constructor()
         {
@@ -79,7 +104,7 @@ namespace RogueLikeGame
             if (y < 0 || y >= this.tileArray.GetLength(1)) { return false; }
             return true;
         }
-
+        public Tile[,] getTileArray() { return this.tileArray; }
         public Tile getTile(int x, int y) { return tileArray[x, y]; }
         public Tile getTile(int[] coordinates) { return tileArray[coordinates[0], coordinates[1]]; }
 
@@ -89,6 +114,7 @@ namespace RogueLikeGame
     {
         string tileType;
         int tileNum;
+        public Color color;
         public Tile(int tileNum, string tileType, int x, int y)
         {
             this.tileNum = tileNum;

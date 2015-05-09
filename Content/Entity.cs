@@ -14,6 +14,11 @@ namespace RogueLikeGame
         public int[] facing = { 0, 1 };
         public bool attacking = false;
         int attackTimer = 0;
+        public int health = 8;
+        public string attackSymbol = "\u2666";
+        public int damage = 5;
+        public Color color = Color.White;
+        public int sight = 8;
 
         public Player(int[] coords, Scene scene)
         {
@@ -29,6 +34,20 @@ namespace RogueLikeGame
         {
             attackTimer += gameTime.ElapsedGameTime.Milliseconds;
             if (attackTimer > 80) { attacking = false; attackTimer = 0; }
+        }
+        public void process(Item item) 
+        {
+            switch (item.getTag())
+            {
+                case "life": { this.health++; break; }
+                case "sword": { this.attackSymbol = "\u266E"; this.damage = 10; break; }
+            }
+        }
+        public void hit(int damage, int[] direction)
+        {
+            this.health -= damage;
+            this.coords[0] += direction[0];
+            this.coords[1] += direction[1];
         }
     }
 
@@ -48,7 +67,6 @@ namespace RogueLikeGame
         Scene scene;
         string uniValue;
         public Color color;
-        int scrollIndex = 0;
 
         public Item(int[] coords, Scene scene, string tag)
         {
@@ -58,40 +76,109 @@ namespace RogueLikeGame
         }
         public void setUniVal(string tag)
         {
+            Debug.Print(tag);
             switch (tag)
             {
                 case "food": { uniValue = "\u2668"; this.color = Color.Indigo; break; }
-                case "sword": { uniValue = "\u26B5"; this.color = Color.Cyan; break; }
+                case "sword": { uniValue = "\u2628"; this.color = Color.LightSteelBlue; break; }
                 case "bow": { uniValue = "\u269E"; this.color = Color.Gold; break; }
                 case "life": { uniValue = "\u2665"; this.color = Color.Red; break; }
+                default: { uniValue = "\u2639"; this.color = Color.Purple; break; }
             }
         }
         public string getUniVal() { return uniValue; }
     }
+    class Particle : Drawable 
+    {
+        int[] direction;
+        double[] velocity;
+        int[] location;
+        public int[] pixMod = new int[] {0,0};
+        public Color color;
+        string[] icon;
+        string[] stars = new string[] { "\u273A", "\u2739", "\u2738", "\u2737", "\u2736" };
 
+        Random rand = new Random(Guid.NewGuid().GetHashCode());
+
+        public Particle(int[] start, string type) 
+        {
+            this.color = Color.PowderBlue;
+            this.level = 1;
+            switch (type)
+            {
+                case "stars": { this.setTag(stars[0]); this.icon = stars; break; }
+                default: { this.setTag(stars[0]); this.icon = stars; break; }
+            }
+            location = start;
+            direction = new int[] { rand.Next(-1, 2), rand.Next(-1, 2) };
+            Debug.Print("dire: "+Convert.ToString(direction[0]) + "," + Convert.ToString(direction[1]));
+            velocity = new double[] { rand.NextDouble(),rand.NextDouble()};
+        }
+        public void update(GameTime gameTime)
+        {
+            this.time += gameTime.ElapsedGameTime.Milliseconds;
+            if (this.time > 250) { this.toBeDeleted = true;}
+            else 
+            {
+                if (this.time > 60) { this.setTag(icon[1]); }
+                if (this.time > 130) { this.setTag(icon[2]); }
+                if (this.time > 190) { this.setTag(icon[3]); }
+                if (this.time > 230) { this.setTag(icon[4]); }
+                this.pixMod = new int[] { (int)(4 * direction[0] * velocity[0]) + pixMod[0], (int)(4 * direction[1] * velocity[1]) + pixMod[1] };
+            }
+        }
+        public int[] getLocation() { return location; }
+    }
     class Enemy : Drawable
     {
         Scene scene;
-        public List<string> dialog = new List<string>() {"Your magic has no power in these lands, wizard!",
-                                  "You're just a horse.",
-                                  "I'm lost.",
-                                  "I don't believe you!",
-                                  "Forget the imitations"};
+        public string dialog;
         int dialogTimer = 0;
         public bool speaking = false;
+        public Color color;
+        public bool dying;
+        public int health;
+        public string uniVal;
+        public string drop;
 
-        public Enemy(int[] coords, Scene scene)
+        public Enemy(int[] coords, Scene scene, int health, string uniVal,string dialog,string drop)
         {
             this.coords = coords;
             this.scene = scene;
-        }
-        public void speak(GameTime gameTime) { 
-            dialogTimer += gameTime.ElapsedGameTime.Milliseconds;
-            if (dialogTimer > 2000) { speaking = false; dialogTimer = 0; }
+            this.color = Color.White;
+            this.dialog = dialog;
+            this.health = health;
+            this.uniVal = uniVal;
+            this.drop = drop;
+            dying = false;
         }
         public string getDialog() 
         {
-            return dialog[0];
+            return dialog;
+        }
+        public void setColor(Color color) { this.color = color; }
+        public void death(GameTime gameTime)
+        {
+            this.time += gameTime.ElapsedGameTime.Milliseconds;
+            if (time > 200) { this.toBeDeleted = true; }
+            else 
+            {
+                if (time > 40) { this.color = Color.Red; }
+                if (time > 80) { this.color = Color.White; }
+                if (time > 120) { this.color = Color.Red; }
+                if (time > 160) { this.color = Color.White; }
+            }
+        }
+        public void hit(int damage, int[] direction)
+        {
+            this.health -= damage;
+            if (health <= 0) { this.dying = true; }
+            else
+            {
+                int[] oldcoords = coords;
+                this.coords[0] += direction[0];
+                this.coords[1] += direction[1];
+            }
         }
     }
 

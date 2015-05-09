@@ -38,7 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Entity.cs" />
+    <Compile Include="Content\Entity.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="RogueLike.cs" />
     <Compile Include="GameState.cs" />
@@ -47,6 +47,7 @@
     <Compile Include="PlayStates.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="TitleCard.cs" />
+    <Compile Include="UI.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
@@ -80,7 +81,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Chess.xnb">
+    <Content Include="Content\symbols.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Event.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

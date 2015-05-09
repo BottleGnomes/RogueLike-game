@@ -14,14 +14,15 @@ namespace RogueLikeGame
         Unpaused unpaused;
         Paused paused;
         RogueLike ingame;
+        UI ui;
         GameState state;
         Scene scene;
-        SpriteFont chess;
+        SpriteFont symbols;
         SpriteFont output;
         SpriteBatch spriteBatch;
         ingameMenu menu;
 
-        public int[] currentCorner = { -15, 11 };
+        public int[] currentCorner = { -15, 14 };
         int tileWidth = 28;
         int tileHeight = 46;
         int[] screenDim = { 50, 20 };
@@ -33,24 +34,28 @@ namespace RogueLikeGame
         Player player;
         List<Enemy> enemies;
         List<Item> items;
+        List<Particle> particles;
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame) 
         {
             paused = new Paused(this);
             this.ingame = ingame;
             scene = new Scene(this);
-            chess = ingame.Content.Load<SpriteFont>("Chess");
+            symbols = ingame.Content.Load<SpriteFont>("symbols");
             output = ingame.Content.Load<SpriteFont>("Output18pt");
             this.spriteBatch = spriteBatch;
             menu = new ingameMenu(ingame, output);
 
-            enemies = new List<Enemy> { new Enemy(new int[] {3,21},scene) };
+            enemies = new List<Enemy> { new Enemy(new int[] { 3, 21 }, scene, 20, "\u2646","Your magic has no power in these lands, wizard!","sword") };
+            enemies.Add(new Enemy(new int[] {3,5},scene,20,"\u2645","I am DEATH, nigh on apocalypse! Die, cur!","life"));
             items =  new List<Item> { new Item(new int[] { 3,18 },scene,"life") };
-            player = new Player(new int[] { 24, 8 }, scene);
+            particles = new List<Particle>();
+            player = new Player(new int[] { 24, 5 }, scene);
+            ui = new UI(player);
 
 
             //pass in enemies and objects later
-            unpaused = new Unpaused(this, player, enemies);
+            unpaused = new Unpaused(this, scene, player, enemies, items, particles);
 
             state = unpaused;
             
@@ -84,6 +89,8 @@ namespace RogueLikeGame
         public void update(GameTime gameTime)
         {
             scrollTimer += gameTime.ElapsedGameTime.Milliseconds;
+            particles.RemoveAll(a => a.toBeDeleted);
+            enemies.RemoveAll(a => a.toBeDeleted);
             state.update(gameTime);
         }
 
@@ -92,15 +99,22 @@ namespace RogueLikeGame
             //Debug.Print(Convert.ToString(currentCorner[0]) + "," + Convert.ToString(currentCorner[1]));
 
             this.drawTiles();
+            //particles
+            foreach (Particle particle in particles) 
+            {
+                Debug.Print(Convert.ToString(particle.getLocation()[0] - currentCorner[0]) + "," + Convert.ToString(particle.getLocation()[1] - currentCorner[1]));
+                spriteBatch.DrawString(symbols, particle.getTag(), new Vector2 ((particle.getLocation()[0] - currentCorner[0])*tileWidth + particle.pixMod[0], (particle.getLocation()[1] - currentCorner[1])*tileHeight+particle.pixMod[1]), particle.color); 
+            }
+
             //attack
-            if (player.attacking) { spriteBatch.DrawString(chess, "\u2666", new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Color.SandyBrown); }
+            if (player.attacking) { spriteBatch.DrawString(symbols, player.attackSymbol, new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Color.SandyBrown); }
             
             Vector2 textVector = new Vector2();
             if (textScrollIndex >= textScroll.Length - 1) { textScrollIndex = 0; } else if (scrollTimer > 168) { textScrollIndex++; scrollTimer = 0; }
             //enemies
             foreach (Enemy enemy in enemies) 
             { 
-                spriteBatch.DrawString(chess, "\u2646", new Vector2((enemy.coords[0] - currentCorner[0])*tileWidth -5, (enemy.coords[1] - currentCorner[1])*tileHeight), Color.White);
+                spriteBatch.DrawString(symbols, enemy.uniVal, new Vector2((enemy.coords[0] - currentCorner[0])*tileWidth -5, (enemy.coords[1] - currentCorner[1])*tileHeight), enemy.color);
                 if (enemy.speaking)
                 {
                     textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth) - (tileWidth * 10), ((enemy.coords[1] - currentCorner[1]) * tileHeight) - (tileHeight) + textScroll[textScrollIndex]);
@@ -112,11 +126,15 @@ namespace RogueLikeGame
             }
             foreach (Item item in items)
             {
-                spriteBatch.DrawString(chess, item.getUniVal(), new Vector2(((item.coords[0] - currentCorner[0]) * tileWidth), ((item.coords[1] - currentCorner[1]) * tileHeight) + textScroll[textScrollIndex]), item.color);
+                spriteBatch.DrawString(symbols, item.getUniVal(), new Vector2(((item.coords[0] - currentCorner[0]) * tileWidth), ((item.coords[1] - currentCorner[1]) * tileHeight) + textScroll[textScrollIndex]), item.color);
             }
 
+            //UI
+            spriteBatch.DrawString(symbols, ui.getHealth(), new Vector2(10, 10), Color.Red);
+            spriteBatch.DrawString(symbols, ui.getMissingHealth(), new Vector2((ui.getHealth().Length * 27) + 4, 10), Color.Gray);
+
             //player on top during unpaused
-            spriteBatch.DrawString(chess, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight), Color.White);
+            spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight), player.color);
 
             if (state == paused) 
             {
@@ -131,28 +149,51 @@ namespace RogueLikeGame
                 spriteBatch.DrawString(output, menu.draw(), new Vector2(225, 175), Color.White);
             }
         }
+        //gainsboro, gray, darkslategray, black
+        //blue, midnightblue, darkslatgray, black
 
         public void drawTiles()
         {
-            for (int i = 0; i < screenDim[0]; i++)
-            {
-                for (int j = 0; j < screenDim[1]; j++)
+            string[] tiles = { "\u2591", "\u2589", "\u2593" };
+            Color[,] colors = { { Color.Gainsboro, Color.Gray, Color.DarkSlateGray, Color.Black }, { Color.Blue, Color.MidnightBlue, Color.DarkSlateGray, Color.Black } };
+            Tile startingTile = scene.getTile(player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1]);
+
+            List<Tile> tileQuerry =
+                (from tile in scene.getArray().Cast<Tile>()
+                 where (Math.Abs(tile.coords[0] - startingTile.coords[0]) + Math.Abs(tile.coords[1] - startingTile.coords[1]) == player.sight)
+                 select tile).ToList<Tile>();
+            
+                
+                foreach (Tile tile in tileQuerry)
                 {
-                    if (scene.includesTile(new int[] { i + currentCorner[0], j + currentCorner[1] }))
+                    List<Tile> tileList = getTilesInbetween(startingTile,tile);
+                    tileList.Sort();
+                    foreach (Tile lineTile in tileList)
                     {
-                        if (scene.getTile(new int[] { i + currentCorner[0], j + currentCorner[1] }).getNum() == 1)
+                        int[] distance = { startingTile.coords[0] - lineTile.coords[0], startingTile.coords[1] - lineTile.coords[1] };
+                        if (Math.Abs(distance[0]) + Math.Abs(distance[1]) <= player.sight) 
                         {
-                            spriteBatch.DrawString(chess, "\u2589", new Vector2((i) * tileWidth, (j) * tileHeight), Color.Gray);
+                            spriteBatch.DrawString(symbols, tiles[lineTile.getNum()], new Vector2((lineTile.coords[0] - currentCorner[0]) * tileWidth, (lineTile.coords[1] - currentCorner[1]) * tileHeight), colors[lineTile.getNum(), 0]);
+                            if (scene.collides(new int[]{lineTile.coords[0] -currentCorner[0],lineTile.coords[1] - currentCorner[1]})) { break; }
                         }
-                        else if (scene.getTile(new int[] { i + currentCorner[0], j + currentCorner[1] }).getNum() == 0)
-                        {
-                            spriteBatch.DrawString(chess, "\u2591", new Vector2((i) * tileWidth, (j) * tileHeight), Color.Blue);
-                        }
+                        
                     }
+                    //process tile afterwards
+                    //it's excluded in getTilesInbetween
                 }
-            }
+        }
+        public List<Tile> getTilesInbetween(Tile A, Tile B)
+        {
+            List<Tile> tileArray = new List<Tile>();
+            if (((A.coords[0] + B.coords[0]) / 2 == A.coords[0] && (A.coords[1] + B.coords[1]) / 2 == A.coords[1]) || ((A.coords[0] + B.coords[0]) / 2 == B.coords[0] && (A.coords[1] + B.coords[1]) / 2 == B.coords[1]))
+            { return tileArray; }
+            tileArray.Add(scene.getTile((A.coords[0] + B.coords[0]) / 2, (A.coords[1] + B.coords[1]) / 2));
+            tileArray.AddRange(getTilesInbetween(A, scene.getTile((A.coords[0] + B.coords[0]) / 2, (A.coords[1] + B.coords[1]) / 2)));
+            tileArray.AddRange(getTilesInbetween(scene.getTile((A.coords[0] + B.coords[0]) / 2, (A.coords[1] + B.coords[1]) / 2), B));
+            return tileArray;
         }
         public int getScreenDimension(int dim) { return screenDim[dim]; }
+        public void addParticle(Particle particle) { this.particles.Add(particle); }
 
         public void entering()
         {
