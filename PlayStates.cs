@@ -52,7 +52,7 @@ namespace RogueLikeGame
 
             foreach (Particle particle in particles) { particle.update(gameTime); }
 
-            if (moveUpdate >= 128)
+            if (moveUpdate >= 120)
             {
                 moveUpdate = 0;
                 if (state.IsKeyDown(Keys.W)) { if (player.moveUp()) { playing.currentCorner[1]--; } }

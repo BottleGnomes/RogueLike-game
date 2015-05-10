@@ -42,8 +42,8 @@ namespace RogueLikeGame
             int num = eventArray[coordinates[0], coordinates[1]];
             switch (num)
             {
-                case 1: { return "exit"; break; }
-                default: { return "error"; break; }
+                case 1: { return "exit";  }
+                default: { return "error";  }
             }
         }
         public bool includesTile(int[] coordinates) { return constructor.includesTile(coordinates); }
