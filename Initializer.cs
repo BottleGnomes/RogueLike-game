@@ -43,6 +43,7 @@ namespace RogueLikeGame
             {
                 entry += Convert.ToString(key);
             }
+            if (keyboard.IsKeyDown(Keys.Escape)) { entry = ""; }
             string[] outputSplit = outputText.Split('\n');
             if (outputSplit.Length > ingame.GraphicsDevice.Viewport.Height / 32)
             {

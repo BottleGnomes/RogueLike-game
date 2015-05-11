@@ -81,12 +81,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\symbols.xnb">
+    <Content Include="Content\Event.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Event.csv">
+    <Content Include="Content\symbols.xnb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

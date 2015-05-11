@@ -17,8 +17,9 @@ namespace RogueLikeGame
         {
             this.player = player;
         }
-        public string getHealth() { return String.Concat(Enumerable.Repeat("\u2665", player.health)); }
+        public string getHealth() { return String.Concat(Enumerable.Repeat("\u2665", Math.Abs(player.health))); }
         public string getMissingHealth() { return String.Concat(Enumerable.Repeat("\u2665", maxHealth - player.health)); }
+        public int getMaxHealth() { return maxHealth; }
 
     }
 }

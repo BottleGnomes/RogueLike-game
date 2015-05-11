@@ -43,6 +43,9 @@ namespace RogueLikeGame
             switch (num)
             {
                 case 1: { return "exit";  }
+                case 2: { return "open"; }
+                case 3: { return "dialog"; }
+                case 4: { return "speak"; }
                 default: { return "error";  }
             }
         }

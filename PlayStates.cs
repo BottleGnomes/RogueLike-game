@@ -18,6 +18,7 @@ namespace RogueLikeGame
         List<Enemy> enemies;
         List<Item> items;
         List<Particle> particles;
+        List<Projectile> projectiles;
         Scene scene;
 
         //timers
@@ -27,13 +28,15 @@ namespace RogueLikeGame
         private int attackUpdate = 0;
         private int damageUpdate = 0;
         private int hitUpdate = 0;
+        private int selectSwitchUpdate = 0;
         private bool damaged = false;
 
-        public Unpaused(Playing playing, Scene scene, Player player, List<Enemy> enemies, List<Item> items, List<Particle> particles) 
+        public Unpaused(Playing playing, Scene scene, Player player, List<Enemy> enemies, List<Item> items, List<Particle> particles, List<Projectile> projectiles)
         {
             this.playing = playing;
             this.player = player;
             this.enemies = enemies;
+            this.projectiles = projectiles;
             this.items = items;
             this.particles = particles;
             this.scene = scene;
@@ -48,9 +51,29 @@ namespace RogueLikeGame
             pauseUpdate += gameTime.ElapsedGameTime.Milliseconds;
             escapeUpdate += gameTime.ElapsedGameTime.Milliseconds;
             attackUpdate += gameTime.ElapsedGameTime.Milliseconds;
+            selectSwitchUpdate += gameTime.ElapsedGameTime.Milliseconds;
             if (damaged == true) { damageUpdate += gameTime.ElapsedGameTime.Milliseconds; } else { damageUpdate = 0; }
 
             foreach (Particle particle in particles) { particle.update(gameTime); }
+            foreach (Projectile projectile in projectiles)
+            {
+                if (scene.collides(new int[] { player.facing[0] + projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0], player.facing[1] + projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1] })) { projectile.toBeDeleted = true; }
+                else { projectile.update(gameTime); }
+                
+                Enemy hit = null;
+                hit = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0] && a.coords[1] - playing.currentCorner[1] == projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1]);
+                if (hit != null)
+                {
+                    projectile.toBeDeleted = true;
+                    damaged = true;
+                    hit.setColor(Color.Red);
+                    hit.hit(Item.getDamage(player.inventory[player.select]), player.facing);
+                    if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1])) 
+                        { hit.coords[0] -= player.facing[0]; hit.coords[1] -= player.facing[1]; }
+                    playing.addParticle(new Particle(hit.coords, player.facing, 120, string.Format("-{0}", Item.getDamage(player.inventory[player.select])))); 
+                    
+                }
+            }
 
             if (moveUpdate >= 120)
             {
@@ -62,10 +85,9 @@ namespace RogueLikeGame
                 if (hitUpdate > 40)
                 {
                     player.color = Color.White;
-                    hitUpdate = 0;
                     Enemy enemy = null;
                     enemy = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == player.coords[0] && a.coords[1] - playing.currentCorner[1] == player.coords[1]);
-                    if (enemy != null) { player.color = Color.Red; player.hit(1, new int[] { 0, 0 }); playing.currentCorner[0] -= player.facing[0]; playing.currentCorner[1] -= player.facing[1]; }
+                    if (enemy != null) { hitUpdate = 0; player.color = Color.Red; player.hit(1, new int[] { 0, 0 }); playing.currentCorner[0] -= player.facing[0]; playing.currentCorner[1] -= player.facing[1]; }
                 }
             }
             Item pickup = null;
@@ -85,24 +107,48 @@ namespace RogueLikeGame
                     enemy.setColor(Color.White);
                 }
                 if ((player.coords[0] + playing.currentCorner[0]) <= enemy.coords[0] + 1 && (player.coords[1] + playing.currentCorner[1]) <= enemy.coords[1] + 1 && (player.coords[0] + playing.currentCorner[0]) >= enemy.coords[0] - 1 && (player.coords[1] + playing.currentCorner[1]) >= enemy.coords[1] - 1)
-                {enemy.speaking = true;}
+                { enemy.speaking = true; }
 
                 else { enemy.speaking = false; }
-                if (enemy.dying) { enemy.death(gameTime); if (enemy.toBeDeleted) { items.Add(new Item(enemy.coords, scene, enemy.drop)); } playing.addParticle(new Particle(enemy.coords, "stars")); }
+                if (enemy.dying) { enemy.death(gameTime); if (enemy.toBeDeleted) { items.Add(new Item(enemy.coords, scene, enemy.drop)); } playing.addParticle(new Particle(enemy.coords, player.facing, 250, "stars")); }
+                
             }
-            
 
-            if (state.IsKeyDown(Keys.Space) && attackUpdate > 380) 
-            { 
-                player.attacking = true; attackUpdate = 0;
-                Enemy hit = null;
-                hit = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == player.coords[0] + player.facing[0] && a.coords[1] - playing.currentCorner[1] == player.coords[1] + player.facing[1]);
-                if (hit != null)
+            if (state.IsKeyDown(Keys.Tab) && selectSwitchUpdate > 128) 
+            {
+                if (player.select < player.inventory.Count-1) { player.select++; }
+                else { player.select = 0; }
+                selectSwitchUpdate = 0;
+            }
+
+            if (state.IsKeyDown(Keys.Space) && attackUpdate > 380)
+            {
+                attackUpdate = 0;
+                switch (player.inventory[player.select])
                 {
-                    damaged = true;
-                    hit.setColor(Color.Red);
-                    hit.hit(player.damage, player.facing);
-                    if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1])) { hit.coords[0] -= player.facing[0]; hit.coords[1] -= player.facing[1]; }
+                    case "fist":
+                        {
+                            player.attacking = true; 
+                            Enemy hit = null;
+                            hit = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == player.coords[0] + player.facing[0] && a.coords[1] - playing.currentCorner[1] == player.coords[1] + player.facing[1]);
+                            if (hit != null)
+                            {
+                                playing.addParticle(new Particle(hit.coords, player.facing, 250, string.Format("-{0}", Item.getDamage(player.inventory[player.select])))); 
+                                damaged = true;
+                                hit.setColor(Color.Red);
+                                hit.hit(Item.getDamage(player.inventory[player.select]), player.facing);
+                                if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1])) { hit.coords[0] -= player.facing[0]; hit.coords[1] -= player.facing[1]; }
+                            }
+                            break;
+                        }
+                    case "bow":
+                        {
+                            player.attacking = true; 
+                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1]}, player.facing, "arrow", scene));
+                            break;
+                        }
+                    case "sword": { goto case "fist"; }
+                    case "food": { if (player.health > 6) { player.health = 10; } else { player.health += 3; } player.inventory.RemoveAt(player.select); if (player.select > player.inventory.Count - 1) { player.select--; } break; }
                 }
             }
             else if (player.attacking) { player.attack(gameTime); }
@@ -111,17 +157,17 @@ namespace RogueLikeGame
 
         public void draw()
         {
-            
+
         }
 
         public void entering()
         {
-            
+
         }
 
         public void leaving()
         {
-            
+
         }
 
         public string getTag()
@@ -161,7 +207,7 @@ namespace RogueLikeGame
 
         public void leaving()
         {
-            
+
         }
 
         public string getTag()
