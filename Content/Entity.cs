@@ -12,12 +12,16 @@ namespace RogueLikeGame
     {
         Scene scene;
         public int[] facing = { 0, 1 };
+
         public bool attacking = false;
+        public bool damaged = false;
+        public int damageTimer = 0;
+
         int attackTimer = 0;
         public int health = 8;
         public int select = 0;
         public Color color = Color.White;
-        public int sight = 20;
+        public int sight = 12;
         public List<string> inventory = new List<string>();
 
         public Player(int[] coords, Scene scene)
@@ -26,6 +30,12 @@ namespace RogueLikeGame
             this.coords = coords;
             this.scene = scene;
         }
+        public void update(GameTime gameTime)
+        {
+            if (damaged) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
+            if (damageTimer > 180) { this.color = Color.White; damageTimer = 0; damaged = false; }
+        }
+
         public bool moveLeft() { facing = new int[] { -1, 0 }; if (scene.collides(new int[] {this.coords[0] + facing[0], this.coords[1] + facing[1]})) {return false; } return true; }
         public bool moveRight() { facing = new int[] { 1, 0 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
         public bool moveUp() { facing = new int[] { 0, -1 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
@@ -41,13 +51,17 @@ namespace RogueLikeGame
             switch (item.getTag())
             {
                 case "life": { this.health++; break; }
-                case "sword": { if (!inventory.Contains("sword")) { inventory.Add("sword"); select = inventory.IndexOf("sword"); } break; }
+                case "sword": { if (!inventory.Contains("sword")) { inventory.Add("sword");} select = inventory.IndexOf("sword");  break; }
+                case "long sword": { if (!inventory.Contains("long sword")) { inventory.Add("long sword");} select = inventory.IndexOf("long sword");  break;}
                 case "bow": { if (!inventory.Contains("bow")) { inventory.Add("bow"); } select = inventory.IndexOf("bow"); break; }
                 case "food": { inventory.Add("food"); break; }
+                default: { inventory.Add(item.getTag()); break; }
             }
         }
         public void hit(int damage, int[] direction)
         {
+            damaged = true;
+            this.color = Color.Red;
             this.health -= damage;
             this.coords[0] += direction[0];
             this.coords[1] += direction[1];
@@ -94,28 +108,26 @@ namespace RogueLikeGame
 
         Random rand = new Random(Guid.NewGuid().GetHashCode());
 
-        public Particle(int[] start, int[] direction, int lifespan, string type)
+        public Particle(int[] start, int[] direction, int lifespan, string type, Color color)
         {
             this.lifespan = lifespan;
             this.level = 1;
+            this.color = color; 
             switch (type)
             {
                 case "stars": { 
                     this.icon = new string[] { "\u273A", "\u2739", "\u2738", "\u2737", "\u2736" }; 
                     this.setTag(icon[0]); 
-                    this.color = Color.PowderBlue; 
                     this.direction = new int[] { rand.Next(-1, 2), rand.Next(-1, 2) };
                     break; }
                 case "blood": { 
                     this.icon = new string[] { "\u273F", "\u273F", "\u273F", "\u273E", "\u273E" }; 
                     this.setTag(icon[0]); 
-                    this.color = Color.Crimson;
                     this.direction = direction;
                     break; }
                 default: {
                     this.icon = new string[] { type, type, type, type, type };
                     this.setTag(icon[0]);
-                    this.color = Color.Crimson;
                     this.direction = new int[] { rand.Next(-1, 2), rand.Next(-1, 2) };
                     break;}
             }
@@ -157,7 +169,9 @@ namespace RogueLikeGame
                 case "food": { uniValue = "\u2668"; this.color = Color.Cornsilk; break; }
                 case "sword": { uniValue = "\u2628"; this.color = Color.CadetBlue; break; }
                 case "bow": { uniValue = "\u2608"; this.color = Color.BurlyWood; break; }
+                case "long sword": { uniValue = "\u2627"; this.color = Color.SlateBlue; break; }
                 case "life": { uniValue = "\u2665"; this.color = Color.Red; break; }
+                case "key": { uniValue = "\u2669"; this.color = Color.Gold; break; }
                 default: { uniValue = "\u2639"; this.color = Color.Purple; break; }
             }
         }
@@ -170,8 +184,10 @@ namespace RogueLikeGame
                 case "fist": { return Color.SandyBrown; }
                 case "food": { return Color.Cornsilk;  }
                 case "sword": { return Color.CadetBlue;  }
+                case "long sword": { return Color.SlateBlue; }
                 case "bow": { return Color.BurlyWood; }
                 case "life": { return Color.Red;  }
+                case "key": { return Color.Gold; }
                 default: { return Color.Purple;  }
             }
         }
@@ -182,8 +198,10 @@ namespace RogueLikeGame
                 case "fist": { return "\u2666"; }
                 case "food": { return "\u2668"; }
                 case "sword": { return "\u2628"; }
+                case "long sword": { return "\u2627"; }
                 case "bow": { return "\u2608"; }
                 case "life": { return "\u2665"; }
+                case "key": { return "\u2669"; }
                 default: { return "\u2639"; }
             }
         }
@@ -193,6 +211,7 @@ namespace RogueLikeGame
             {
                 case "fist": { return 5; }
                 case "sword": { return 10; }
+                case "long sword": { return 8; }
                 case "bow": { return 4; }
                 default: { return 0; }
             }
@@ -202,6 +221,7 @@ namespace RogueLikeGame
             switch (id)
             {
                 case "sword": { return "\u266E"; }
+                case "long sword": { return "\u266F"; }
                 case "bow": { return "\u2625"; }
                 case "fist": { return "\u2666"; }
                 default: { return "?"; }
@@ -213,12 +233,14 @@ namespace RogueLikeGame
         Scene scene;
         int dialogTimer = 0;
         int damageTimer = 0;
+        int attackTimer = 0;
 
         public Color color;
 
         public bool speaking = false;
         public bool damaged = false;
         public bool dying;
+        public bool attacking;
         
         public int health;
 
@@ -245,6 +267,12 @@ namespace RogueLikeGame
         public string getDialog() 
         {
             return dialog;
+        }
+
+        public void attack(GameTime gameTime)
+        {
+            attackTimer += gameTime.ElapsedGameTime.Milliseconds;
+            if (attackTimer > 80) { attacking = false; attackTimer = 0; }
         }
         public void death(GameTime gameTime)
         {

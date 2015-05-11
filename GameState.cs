@@ -45,6 +45,7 @@ namespace RogueLikeGame
 
         private bool collide;
 
+
         public Playing(SpriteBatch spriteBatch, RogueLike ingame)
         {
             paused = new Paused(this);
@@ -56,16 +57,15 @@ namespace RogueLikeGame
             menu = new ingameMenu(ingame, output);
             seenArray = new int[scene.getDimensions()[0], scene.getDimensions()[1]];
 
-            enemies = new List<Enemy> { new Enemy(new int[] { 3, 21 }, scene, 20, "\u2646", "Your magic has no power in these lands, wizard!", "sword") };
+            enemies = new List<Enemy> { new Enemy(new int[] { 3, 21 }, scene, 20, "\u2646", "Your magic has no power in these lands, wizard!", "key") };
             enemies.Add(new Enemy(new int[] { 3, 5 }, scene, 20, "\u2645", "I am DEATH, nigh on apocalypse! Die, cur!", "bow"));
 
             items = new List<Item> { new Item(new int[] { 3, 18 }, scene, "life") };
-            items.Add(new Item(new int[] { 8, 18 }, scene, "bow"));
-            items.Add(new Item(new int[] { 5, 17 }, scene, "food"));
+            items.Add(new Item(new int[] { 4, 21 }, scene, "long sword"));
 
             particles = new List<Particle>();
             projectiles = new List<Projectile>();
-            player = new Player(new int[] { 24, 8 }, scene);
+            player = new Player(new int[] { 24, 6 }, scene);
             ui = new UI(player);
 
 
@@ -129,7 +129,16 @@ namespace RogueLikeGame
             //attack
             if (player.attacking) 
             {
-                spriteBatch.DrawString(symbols, Item.getAttackSymbol(player.inventory[player.select]), new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Item.getColor(player.inventory[player.select])); 
+                switch(player.inventory[player.select]){
+                    case "long sword":
+                        {
+                            spriteBatch.DrawString(symbols, Item.getAttackSymbol(player.inventory[player.select]), new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Item.getColor(player.inventory[player.select]));
+                            spriteBatch.DrawString(symbols, Item.getAttackSymbol(player.inventory[player.select]), new Vector2((player.coords[0] + player.facing[0] + player.facing[1]) * tileWidth, (player.coords[1] + player.facing[1] + player.facing[0]) * tileHeight), Item.getColor(player.inventory[player.select]));
+                            spriteBatch.DrawString(symbols, Item.getAttackSymbol(player.inventory[player.select]), new Vector2((player.coords[0] + player.facing[0] - player.facing[1]) * tileWidth, (player.coords[1] + player.facing[1] - player.facing[0]) * tileHeight), Item.getColor(player.inventory[player.select]));
+                            break;
+                        }
+                    default: { spriteBatch.DrawString(symbols, Item.getAttackSymbol(player.inventory[player.select]), new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Item.getColor(player.inventory[player.select])); break; } 
+                }
             }
 
             Vector2 textVector = new Vector2();
@@ -142,7 +151,7 @@ namespace RogueLikeGame
                 }
                 if (enemy.speaking)
                 {
-                    textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth) - (tileWidth * 10), ((enemy.coords[1] - currentCorner[1]) * tileHeight) - (tileHeight) + textScroll[textScrollIndex]);
+                    textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth) - (enemy.getDialog().Length/2*13), ((enemy.coords[1] - currentCorner[1]) * tileHeight) - (tileHeight) + textScroll[textScrollIndex]);
                     spriteBatch.DrawString(output, enemy.getDialog(), new Vector2(textVector.X - 2, textVector.Y - 1), Color.Black);
                     spriteBatch.DrawString(output, enemy.getDialog(), new Vector2(textVector.X + 2, textVector.Y + 1), Color.Black);
                     spriteBatch.DrawString(output, enemy.getDialog(), textVector, Color.White);
@@ -167,19 +176,20 @@ namespace RogueLikeGame
             //UI
             for (int i = 0; i < player.health; i++) { spriteBatch.DrawString(symbols, "\u2665", new Vector2(10 + (i * 30), 10), Color.Red); }
             for (int i = 0; i < ui.getMaxHealth()- player.health; i++) { spriteBatch.DrawString(symbols, "\u2665", new Vector2(10+(30*player.health)+(i*30),10), Color.Gray); }
-            foreach (string item in player.inventory)
+            for (int i = 0; i < player.inventory.Count; i++)
             {
-                    if (item == player.inventory[player.select])
+                if (i == player.select)
                 {
-                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (40 * player.inventory.IndexOf(item)) - 2, 55), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (40 * player.inventory.IndexOf(item)) + 2, 55), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (40 * player.inventory.IndexOf(item)), 57), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (40 * player.inventory.IndexOf(item)), 53), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i) - 2, 55), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i) + 2, 55), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 57), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 53), Color.Yellow);
                 }
 
                 //player
-                spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10+( 40 * player.inventory.IndexOf(item) ), 55), Item.getColor(item));
+                spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 55), Item.getColor(player.inventory[i]));
             }
+            spriteBatch.DrawString(output, player.inventory[player.select], new Vector2(10, 105), Color.White);
 
             spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight+4), player.color);
 
@@ -195,8 +205,9 @@ namespace RogueLikeGame
                 menu.update();
                 spriteBatch.DrawString(output, menu.draw(), new Vector2(225, 75), Color.White);
             }
-            spriteBatch.DrawString(output, "FPS: " + Convert.ToString(frames), new Vector2(10, 800), Color.White);
-            spriteBatch.DrawString(output, "Facing: " + Convert.ToString(player.facing[0]+","+player.facing[1]), new Vector2(10, 830), Color.White);
+            spriteBatch.DrawString(output, "FPS: " + Convert.ToString(frames), new Vector2(10, 750), Color.White);
+            spriteBatch.DrawString(output, "Facing: " + Convert.ToString(player.facing[0]+","+player.facing[1]), new Vector2(10, 780), Color.White);
+            spriteBatch.DrawString(output, "Corner: " + Convert.ToString(currentCorner[0] + "," + currentCorner[1]), new Vector2(10, 810), Color.White);
 
             Array.Clear(drawArray,0,drawArray.Length);
         }
@@ -260,10 +271,20 @@ namespace RogueLikeGame
                         if (drawArray[lineTile[0], lineTile[1]] != 1) { spriteBatch.DrawString(symbols, tiles[scene.getTile(lineTile).getNum()], new Vector2((lineTile[0] - currentCorner[0]) * tileWidth, (lineTile[1] - currentCorner[1]) * tileHeight), colors[scene.getTile(lineTile).getNum(), scene.getTile(lineTile).getNum() / 4]); }
                         drawArray[lineTile[0], lineTile[1]] = 1;
                         if (scene.collides(new int[] { lineTile[0] - currentCorner[0], lineTile[1] - currentCorner[1] })) { collide = true; }
-                    }//}
-
+                        if (seenArray[lineTile[0], lineTile[1]] != 1) { seenArray[lineTile[0], lineTile[1]] = 1; }
+                    }
                 }
-
+            }
+            for (int i = 0; i < seenArray.GetLength(0); i++)
+            {
+                for (int j = 0; j < seenArray.GetLength(1); j++)
+                {
+                    if (seenArray[i, j] == 1 && drawArray[i, j] != 1)
+                    {
+                        Tile tile = scene.getTile(new int[] {i,j});
+                        spriteBatch.DrawString(symbols, tiles[tile.getNum()], new Vector2((tile.coords[0] - currentCorner[0])*tileWidth, (tile.coords[1] - currentCorner[1])*tileHeight), Color.LightGray);
+                    }
+                }
             }
 
         }
