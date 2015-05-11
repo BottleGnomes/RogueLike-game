@@ -119,12 +119,7 @@ namespace RogueLikeGame
         {
             //Debug.Print(Convert.ToString(currentCorner[0]) + "," + Convert.ToString(currentCorner[1]));
             this.drawTiles();
-            //particles
-            foreach (Particle particle in particles)
-            {
-                //Debug.Print(Convert.ToString(particle.getLocation()[0] - currentCorner[0]) + "," + Convert.ToString(particle.getLocation()[1] - currentCorner[1]));
-                spriteBatch.DrawString(symbols, particle.getTag(), new Vector2((particle.getLocation()[0] - currentCorner[0]) * tileWidth + particle.pixMod[0], (particle.getLocation()[1] - currentCorner[1]) * tileHeight + particle.pixMod[1]), particle.color);
-            }
+
             //projectiles
             foreach (Projectile projectile in projectiles)
             {
@@ -153,7 +148,14 @@ namespace RogueLikeGame
                     spriteBatch.DrawString(output, enemy.getDialog(), textVector, Color.White);
 
                 }
-            }
+            } 
+
+            //particles
+            foreach (Particle particle in particles)
+                {
+                //Debug.Print(Convert.ToString(particle.getLocation()[0] - currentCorner[0]) + "," + Convert.ToString(particle.getLocation()[1] - currentCorner[1]));
+                spriteBatch.DrawString(symbols, particle.getTag(), new Vector2((particle.getLocation()[0] - currentCorner[0]) * tileWidth + particle.pixMod[0], (particle.getLocation()[1] - currentCorner[1]) * tileHeight + particle.pixMod[1]), particle.color);
+                }
             foreach (Item item in items)
             {
                 if (drawArray[item.coords[0], item.coords[1]] == 1)
@@ -169,27 +171,17 @@ namespace RogueLikeGame
             {
                     if (item == player.inventory[player.select])
                 {
-                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (35 * player.inventory.IndexOf(item)) - 2, 55), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (35 * player.inventory.IndexOf(item)) + 2, 55), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (35 * player.inventory.IndexOf(item)), 57), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (35 * player.inventory.IndexOf(item)), 53), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (40 * player.inventory.IndexOf(item)) - 2, 55), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (40 * player.inventory.IndexOf(item)) + 2, 55), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (40 * player.inventory.IndexOf(item)), 57), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10 + (40 * player.inventory.IndexOf(item)), 53), Color.Yellow);
                 }
 
-                spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10+( 35 * player.inventory.IndexOf(item) ), 55), Item.getColor(item));
+                //player
+                spriteBatch.DrawString(symbols, Item.getUniVal(item), new Vector2(10+( 40 * player.inventory.IndexOf(item) ), 55), Item.getColor(item));
             }
-            //player on top during unpaused
-            switch (string.Join("",player.facing))
-            {
-                //right
-                case "10": { spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth, player.coords[1] * tileHeight), player.color, 0, new Vector2(0, 0), 1f, SpriteEffects.FlipHorizontally, 0f); break; }
-                //left
-                case "-10": { spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth, player.coords[1] * tileHeight), player.color); break; }
-                //up
-                case "0-1": { spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth, player.coords[1] * tileHeight), player.color, 0, new Vector2(0, 0), 1f, SpriteEffects.FlipVertically, 0f); break; }
-                //down
-                case "01": { spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth, player.coords[1] * tileHeight), player.color); break; }
-            }
-            //spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight+4), player.color);
+
+            spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight+4), player.color);
 
             if (state == paused)
             {
@@ -214,7 +206,7 @@ namespace RogueLikeGame
         public void drawTiles()
         {
             string[] tiles = { "\u2591", "\u2588", "\u2593" };
-            Color[,] colors = { { Color.DimGray, Color.Gray, Color.DarkSlateGray, Color.Black }, { Color.DarkCyan, Color.MidnightBlue, Color.DarkSlateGray, Color.Black }, { Color.Gainsboro, Color.Gray, Color.DarkSlateGray, Color.Black } };
+            Color[,] colors = { { Color.DimGray, Color.Gray, Color.DarkSlateGray, Color.Black }, { Color.DarkCyan, Color.MidnightBlue, Color.DarkSlateGray, Color.Black }, { Color.BurlyWood, Color.Gray, Color.DarkSlateGray, Color.Black } };
             int[] startingTile = new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] };
             List<List<int[]>> tileQuerry = new List<List<int[]>>();
             drawArray = new int[scene.getArray().GetLength(0), scene.getArray().GetLength(1)];

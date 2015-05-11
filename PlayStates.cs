@@ -26,10 +26,8 @@ namespace RogueLikeGame
         private int pauseUpdate = 128;
         private int escapeUpdate = 0;
         private int attackUpdate = 0;
-        private int damageUpdate = 0;
         private int hitUpdate = 0;
         private int selectSwitchUpdate = 0;
-        private bool damaged = false;
 
         public Unpaused(Playing playing, Scene scene, Player player, List<Enemy> enemies, List<Item> items, List<Particle> particles, List<Projectile> projectiles)
         {
@@ -52,7 +50,6 @@ namespace RogueLikeGame
             escapeUpdate += gameTime.ElapsedGameTime.Milliseconds;
             attackUpdate += gameTime.ElapsedGameTime.Milliseconds;
             selectSwitchUpdate += gameTime.ElapsedGameTime.Milliseconds;
-            if (damaged == true) { damageUpdate += gameTime.ElapsedGameTime.Milliseconds; } else { damageUpdate = 0; }
 
             foreach (Particle particle in particles) { particle.update(gameTime); }
             foreach (Projectile projectile in projectiles)
@@ -65,11 +62,9 @@ namespace RogueLikeGame
                 if (hit != null)
                 {
                     projectile.toBeDeleted = true;
-                    damaged = true;
-                    hit.setColor(Color.Red);
-                    hit.hit(Item.getDamage(player.inventory[player.select]), player.facing);
+                    hit.hit(Item.getDamage(player.inventory[player.select]), projectile.direction);
                     if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1])) 
-                        { hit.coords[0] -= player.facing[0]; hit.coords[1] -= player.facing[1]; }
+                        { hit.coords[0] -= projectile.direction[0]; hit.coords[1] -= projectile.direction[1]; }
                     playing.addParticle(new Particle(hit.coords, player.facing, 120, string.Format("-{0}", Item.getDamage(player.inventory[player.select])))); 
                     
                 }
@@ -101,15 +96,13 @@ namespace RogueLikeGame
 
             foreach (Enemy enemy in enemies)
             {
-                if (damageUpdate > 40)
-                {
-                    damaged = false;
-                    enemy.setColor(Color.White);
-                }
+                enemy.update(gameTime);
+
                 if ((player.coords[0] + playing.currentCorner[0]) <= enemy.coords[0] + 1 && (player.coords[1] + playing.currentCorner[1]) <= enemy.coords[1] + 1 && (player.coords[0] + playing.currentCorner[0]) >= enemy.coords[0] - 1 && (player.coords[1] + playing.currentCorner[1]) >= enemy.coords[1] - 1)
                 { enemy.speaking = true; }
 
                 else { enemy.speaking = false; }
+
                 if (enemy.dying) { enemy.death(gameTime); if (enemy.toBeDeleted) { items.Add(new Item(enemy.coords, scene, enemy.drop)); } playing.addParticle(new Particle(enemy.coords, player.facing, 250, "stars")); }
                 
             }
@@ -134,8 +127,6 @@ namespace RogueLikeGame
                             if (hit != null)
                             {
                                 playing.addParticle(new Particle(hit.coords, player.facing, 250, string.Format("-{0}", Item.getDamage(player.inventory[player.select])))); 
-                                damaged = true;
-                                hit.setColor(Color.Red);
                                 hit.hit(Item.getDamage(player.inventory[player.select]), player.facing);
                                 if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1])) { hit.coords[0] -= player.facing[0]; hit.coords[1] -= player.facing[1]; }
                             }
@@ -148,7 +139,7 @@ namespace RogueLikeGame
                             break;
                         }
                     case "sword": { goto case "fist"; }
-                    case "food": { if (player.health > 6) { player.health = 10; } else { player.health += 3; } player.inventory.RemoveAt(player.select); if (player.select > player.inventory.Count - 1) { player.select--; } break; }
+                    case "food": { if (player.health > 6) { player.health = 10; } else { player.health += 3; } player.inventory.RemoveAt(player.select); player.select--; break; }
                 }
             }
             else if (player.attacking) { player.attack(gameTime); }

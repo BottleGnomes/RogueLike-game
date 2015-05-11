@@ -22,6 +22,7 @@ namespace RogueLikeGame
 
         public Player(int[] coords, Scene scene)
         {
+            inventory.Add("fist");
             this.coords = coords;
             this.scene = scene;
         }
@@ -57,7 +58,7 @@ namespace RogueLikeGame
     {
         //\u2736
         Scene scene;
-        int[] direction;
+        public int[] direction;
         double[] velocity;
         public int[] pixMod = new int[] { 0, 0 };
         public Color color;
@@ -202,6 +203,7 @@ namespace RogueLikeGame
             {
                 case "sword": { return "\u266E"; }
                 case "bow": { return "\u2625"; }
+                case "fist": { return "\u2666"; }
                 default: { return "?"; }
             }
         }
@@ -209,13 +211,19 @@ namespace RogueLikeGame
     class Enemy : Drawable
     {
         Scene scene;
-        public string dialog;
         int dialogTimer = 0;
-        public bool speaking = false;
+        int damageTimer = 0;
+
         public Color color;
+
+        public bool speaking = false;
+        public bool damaged = false;
         public bool dying;
+        
         public int health;
+
         public string uniVal;
+        public string dialog;
         public string drop;
 
         public Enemy(int[] coords, Scene scene, int health, string uniVal,string dialog,string drop)
@@ -229,11 +237,15 @@ namespace RogueLikeGame
             this.drop = drop;
             dying = false;
         }
+        public void update(GameTime gameTime)
+        {
+            if (this.damaged == true) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
+            if (damageTimer >= 180) { color = Color.White; damageTimer = 0; this.damaged = false; }
+        }
         public string getDialog() 
         {
             return dialog;
         }
-        public void setColor(Color color) { this.color = color; }
         public void death(GameTime gameTime)
         {
             this.time += gameTime.ElapsedGameTime.Milliseconds;
@@ -248,6 +260,8 @@ namespace RogueLikeGame
         }
         public void hit(int damage, int[] direction)
         {
+            this.damaged = true;
+            this.color = Color.Red;
             this.health -= damage;
             if (health <= 0) { this.dying = true; }
             else
