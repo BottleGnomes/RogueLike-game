@@ -20,6 +20,7 @@ namespace RogueLikeGame
         List<Particle> particles;
         List<Projectile> projectiles;
         Scene scene;
+        TextBox textBox;
 
         //timers
         private int moveUpdate = 100;
@@ -29,7 +30,7 @@ namespace RogueLikeGame
         private int hitUpdate = 0;
         private int selectSwitchUpdate = 0;
 
-        public Unpaused(Playing playing, Scene scene, Player player, List<Enemy> enemies, List<Item> items, List<Particle> particles, List<Projectile> projectiles)
+        public Unpaused(Playing playing, Scene scene, Player player, List<Enemy> enemies, List<Item> items, List<Particle> particles, List<Projectile> projectiles, TextBox textBox)
         {
             this.playing = playing;
             this.player = player;
@@ -38,6 +39,7 @@ namespace RogueLikeGame
             this.items = items;
             this.particles = particles;
             this.scene = scene;
+            this.textBox = textBox;
         }
 
         public void update(GameTime gameTime)
@@ -52,6 +54,7 @@ namespace RogueLikeGame
             selectSwitchUpdate += gameTime.ElapsedGameTime.Milliseconds;
 
             player.update(gameTime);
+            textBox.update(gameTime);
 
             foreach (Particle particle in particles) { particle.update(gameTime); }
             foreach (Projectile projectile in projectiles)
@@ -98,12 +101,6 @@ namespace RogueLikeGame
             foreach (Enemy enemy in enemies)
             {
                 enemy.update(gameTime);
-
-                if ((player.coords[0] + playing.currentCorner[0]) <= enemy.coords[0] + 1 && (player.coords[1] + playing.currentCorner[1]) <= enemy.coords[1] + 1 && (player.coords[0] + playing.currentCorner[0]) >= enemy.coords[0] - 1 && (player.coords[1] + playing.currentCorner[1]) >= enemy.coords[1] - 1)
-                { enemy.speaking = true; }
-
-                else { enemy.speaking = false; }
-
                 if (enemy.dying) { enemy.death(gameTime); if (enemy.toBeDeleted) { items.Add(new Item(enemy.coords, scene, enemy.drop)); } playing.addParticle(new Particle(enemy.coords, player.facing, 250, "stars", Color.Cyan)); }
                 
             }

@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using System.Xml;
 
 namespace RogueLikeGame
 {
@@ -13,42 +14,64 @@ namespace RogueLikeGame
         int[] dimensions;
         Constructor constructor;
         Playing playing;
-        int[,] eventArray;
+        List<Event> events = new List<Event>();
+        TextBox textBox;
+        int[,] triggerArray;
 
-        public Scene(Playing playing) 
+        public Scene(Playing playing, TextBox textBox) 
         {
+            this.textBox = textBox;
             this.playing = playing;
             this.constructor = new Constructor();
             dimensions = constructor.getDimensions();
 
+
             string[] ioArray = File.ReadAllText("Content//Event.csv").Split('\n');
-            eventArray = new int[(ioArray[0].Length + 1) / 2, ioArray.GetLength(0)];
+            triggerArray = new int[(ioArray[0].Length + 1) / 2, ioArray.GetLength(0)];
             for (int i = 0; i < ioArray.Length; i++)
             {
                 string[] lineSplit = ioArray[i].Split(',');
                 for (int j = 0; j < lineSplit.Length; j++)
                 {
-                    eventArray[j, i] = Convert.ToInt16(lineSplit[j]);
+                    triggerArray[j, i] = Convert.ToInt16(lineSplit[j]);
                 }
             }
+
+            XmlDocument xmlReader = new XmlDocument();
+            xmlReader.Load("Content/eventText.xml");
+            XmlNode levels = xmlReader.ChildNodes[1];
+            foreach (XmlNode node in levels.ChildNodes[0]) 
+            {
+                Debug.Print(node.Name);
+                if(node.Name.Equals("initial"))
+                {
+                    foreach (XmlNode initial in node.ChildNodes) { textBox.addLine(initial.InnerText, Convert.ToInt16(initial.Attributes[0].Value),initial.Attributes[1].Value); }
+                }
+                if (node.Name == "timed")
+                {
+                    foreach (XmlNode timed in node.ChildNodes) 
+                    { 
+                        Debug.Print(timed.InnerText); 
+                        textBox.addWaitLine(timed.InnerText, Convert.ToInt32(timed.Attributes[0].Value), timed.Attributes[1].Value); 
+                    }
+                }
+                if (node.Name == "event")
+                {
+                    //events.Add(new Event(this,
+                }
+                //Debug.Print(node.Attributes);
+            }
+
         }
         public Tile[,] getArray() { return constructor.getTileArray(); }
         public int[] getDimensions() { return dimensions; }
-        public bool collides(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
-        public bool collides(int x, int y) { if (constructor.getTile(new int[] {x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
-        public bool trigger(int[] coordinates) { return eventArray[coordinates[0], coordinates[1]] != 0; }
-        public string getEvent(int[] coordinates) 
-        {
-            int num = eventArray[coordinates[0], coordinates[1]];
-            switch (num)
-            {
-                case 1: { return "exit";  }
-                case 2: { return "open"; }
-                case 3: { return "dialog"; }
-                case 4: { return "speak"; }
-                default: { return "error";  }
-            }
-        }
+
+        public bool collides(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
+        public bool collides(int x, int y) { if (constructor.getTile(new int[] {x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
+        
+        public bool trigger(int[] coordinates) { return triggerArray[coordinates[0],coordinates[1]] != 0; }
+        public Event getEvent(int[] coordinates) {return events.Find(a => a.id == triggerArray[coordinates[0],coordinates[1]]); }
+
         public bool includesTile(int[] coordinates) { return constructor.includesTile(coordinates); }
         public Tile getTile(int[] coordinates) { return constructor.getTile(coordinates); }
         public Tile getTile(int x, int y) { return constructor.getTile(x,y); }

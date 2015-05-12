@@ -248,20 +248,22 @@ namespace RogueLikeGame
         public string dialog;
         public string drop;
 
-        public Enemy(int[] coords, Scene scene, int health, string uniVal,string dialog,string drop)
+        public Enemy(int[] coords, Scene scene, int health, string uniVal,string drop)
         {
             this.coords = coords;
             this.scene = scene;
             this.color = Color.White;
-            this.dialog = dialog;
             this.health = health;
             this.uniVal = uniVal;
             this.drop = drop;
             dying = false;
         }
+        public void speak(string dialog) { this.dialog = dialog; this.speaking = true; }
         public void update(GameTime gameTime)
         {
-            if (this.damaged == true) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
+            if (this.speaking) { dialogTimer += gameTime.ElapsedGameTime.Milliseconds; }
+            if (dialogTimer >= 1500) { speaking = false; }
+            if (this.damaged) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
             if (damageTimer >= 180) { color = Color.White; damageTimer = 0; this.damaged = false; }
         }
         public string getDialog() 

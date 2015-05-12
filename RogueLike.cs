@@ -5,9 +5,6 @@ using System;
 
 namespace RogueLikeGame
 {
-    /// <summary>
-    /// This is the main type for your game
-    /// </summary>
     public class RogueLike : Game
     {
         GraphicsDeviceManager graphics;
@@ -31,8 +28,6 @@ namespace RogueLikeGame
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
         }
         protected override void OnDeactivated(object sender, EventArgs args)

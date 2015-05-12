@@ -21,6 +21,8 @@ namespace RogueLikeGame
         SpriteFont output;
         SpriteBatch spriteBatch;
         ingameMenu menu;
+        TextBox textBox;
+        Dictionary<string, Color> colorDict = new Dictionary<string,Color>();
 
         public int[] currentCorner = { -15, 11 };
         int tileWidth = 26;
@@ -50,18 +52,23 @@ namespace RogueLikeGame
         {
             paused = new Paused(this);
             this.ingame = ingame;
-            scene = new Scene(this);
             symbols = ingame.Content.Load<SpriteFont>("symbols");
             output = ingame.Content.Load<SpriteFont>("Output18pt");
             this.spriteBatch = spriteBatch;
             menu = new ingameMenu(ingame, output);
+            this.textBox = new TextBox(scene);
+            scene = new Scene(this, textBox);
             seenArray = new int[scene.getDimensions()[0], scene.getDimensions()[1]];
 
-            enemies = new List<Enemy> { new Enemy(new int[] { 3, 21 }, scene, 20, "\u2646", "Your magic has no power in these lands, wizard!", "key") };
-            enemies.Add(new Enemy(new int[] { 3, 5 }, scene, 20, "\u2645", "I am DEATH, nigh on apocalypse! Die, cur!", "bow"));
+            colorDict["White"] = Color.White;
+            colorDict["Red"] = Color.Red;
+            colorDict["Blue"] = Color.Blue;
+            colorDict["Yellow"] = Color.Yellow;
+
+            enemies = new List<Enemy> { new Enemy(new int[] { 3, 21 }, scene, 20, "\u2646",  "key") };
+            enemies.Add(new Enemy(new int[] { 3, 5 }, scene, 20, "\u2645", "bow"));
 
             items = new List<Item> { new Item(new int[] { 3, 18 }, scene, "life") };
-            items.Add(new Item(new int[] { 4, 21 }, scene, "long sword"));
 
             particles = new List<Particle>();
             projectiles = new List<Projectile>();
@@ -70,7 +77,7 @@ namespace RogueLikeGame
 
 
             //pass in enemies and objects later
-            unpaused = new Unpaused(this, scene, player, enemies, items, particles, projectiles);
+            unpaused = new Unpaused(this, scene, player, enemies, items, particles, projectiles, textBox);
 
             state = unpaused;
 
@@ -193,6 +200,18 @@ namespace RogueLikeGame
 
             spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight+4), player.color);
 
+            //textBox
+            Texture2D textBox1 = new Texture2D(ingame.GraphicsDevice, 1, 1);
+            Texture2D textBox2 = new Texture2D(ingame.GraphicsDevice, 1, 1);
+            textBox1.SetData(new Color[] { Color.Gray });
+            spriteBatch.Draw(textBox1, new Rectangle(0, 618, 1380, 600), Color.Gray);
+            textBox2.SetData(new Color[] { Color.Black });
+            spriteBatch.Draw(textBox2, new Rectangle(0, 628, 1380, 600), Color.Gray);
+            List<TextLine> lines = textBox.getText().ToList<TextLine>();
+            for(int i = 0; i < lines.Count; i++)
+            {
+                spriteBatch.DrawString(output, lines[i].text, new Vector2(20, 633 + (20*i)), colorDict[lines[i].color]);
+            }
             if (state == paused)
             {
                 Texture2D dummyTexture = new Texture2D(ingame.GraphicsDevice, 1, 1);
@@ -205,11 +224,10 @@ namespace RogueLikeGame
                 menu.update();
                 spriteBatch.DrawString(output, menu.draw(), new Vector2(225, 75), Color.White);
             }
-            spriteBatch.DrawString(output, "FPS: " + Convert.ToString(frames), new Vector2(10, 750), Color.White);
-            spriteBatch.DrawString(output, "Facing: " + Convert.ToString(player.facing[0]+","+player.facing[1]), new Vector2(10, 780), Color.White);
-            spriteBatch.DrawString(output, "Corner: " + Convert.ToString(currentCorner[0] + "," + currentCorner[1]), new Vector2(10, 810), Color.White);
+            spriteBatch.DrawString(output, "FPS: " + Convert.ToString(frames), new Vector2(1150, 5), Color.White);
+            spriteBatch.DrawString(output, "Facing: " + Convert.ToString(player.facing[0]+","+player.facing[1]), new Vector2(1150, 35), Color.White);
+            spriteBatch.DrawString(output, "Corner: " + Convert.ToString(currentCorner[0] + "," + currentCorner[1]), new Vector2(1150, 65), Color.White);
 
-            Array.Clear(drawArray,0,drawArray.Length);
         }
         //gainsboro, gray, darkslategray, black
         //blue, midnightblue, darkslatgray, black
