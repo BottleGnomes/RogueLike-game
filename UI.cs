@@ -26,7 +26,7 @@ namespace RogueLikeGame
     }
     class TextBox : Drawable
     {
-        int textTimer = 0;
+        int textTimer = 1500;
         int waitTimer = 0;
         public Queue<TextLine> waitOutput = new Queue<TextLine>();
         public Queue<TextLine> output = new Queue<TextLine>();
@@ -37,8 +37,13 @@ namespace RogueLikeGame
         {
             this.scene = scene;
         }
-        public void addLine(string line, int timer, string color) { output.Enqueue(new TextLine(line,timer,color)); }
-        public void addWaitLine(string line, int timer, string color) { waitOutput.Enqueue(new TextLine(line,timer,color)); }
+        public void addLine(string line, int timer, string color, string type) { output.Enqueue(new TextLine(line,timer,color, type)); }
+        public void addLines(Queue<TextLine> lines) { foreach (TextLine line in lines.ToArray()) { output.Enqueue(line); }; }
+        public void setLines(Queue<TextLine> lines) { foreach (TextLine line in output.ToArray()) { text.Enqueue(line); } output = lines; }
+
+        public void addWaitLine(string line, int timer, string color, string type) { waitOutput.Enqueue(new TextLine(line, timer, color, type)); }
+        public void addLine(TextLine line) { output.Enqueue(line); }
+        public void addWaitLine(TextLine line) { waitOutput.Enqueue(line); }
         public void update(GameTime gameTime)
         {
             textTimer += gameTime.ElapsedGameTime.Milliseconds;
@@ -51,7 +56,7 @@ namespace RogueLikeGame
         }
         public Queue<TextLine> getText()
         {
-            if (text.Count > 8) { text.Dequeue(); }
+            if (text.Count > 12) { text.Dequeue(); }
             return text;
         }
     }
@@ -60,11 +65,14 @@ namespace RogueLikeGame
         public string text;
         public int time;
         public string color;
-        public TextLine(string text, int time, string color)
+        public string type;
+
+        public TextLine(string text, int time, string color, string type)
         {
             this.text = text;
             this.time = time;
             this.color = color;
+            this.type = type;
         }
     }
 }

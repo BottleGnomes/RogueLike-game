@@ -40,10 +40,10 @@ namespace RogueLikeGame
         int frameTimer = 0;
 
         Player player;
-        List<Enemy> enemies;
-        List<Item> items;
-        List<Particle> particles;
-        List<Projectile> projectiles;
+        List<Enemy> enemies = new List<Enemy>();
+        List<Item> items = new List<Item>();
+        List<Particle> particles = new List<Particle>();
+        List<Projectile> projectiles = new List<Projectile>();
 
         private bool collide;
 
@@ -65,13 +65,6 @@ namespace RogueLikeGame
             colorDict["Blue"] = Color.Blue;
             colorDict["Yellow"] = Color.Yellow;
 
-            enemies = new List<Enemy> { new Enemy(new int[] { 3, 21 }, scene, 20, "\u2646",  "key") };
-            enemies.Add(new Enemy(new int[] { 3, 5 }, scene, 20, "\u2645", "bow"));
-
-            items = new List<Item> { new Item(new int[] { 3, 18 }, scene, "life") };
-
-            particles = new List<Particle>();
-            projectiles = new List<Projectile>();
             player = new Player(new int[] { 24, 6 }, scene);
             ui = new UI(player);
 
@@ -158,10 +151,10 @@ namespace RogueLikeGame
                 }
                 if (enemy.speaking)
                 {
-                    textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth) - (enemy.getDialog().Length/2*13), ((enemy.coords[1] - currentCorner[1]) * tileHeight) - (tileHeight) + textScroll[textScrollIndex]);
-                    spriteBatch.DrawString(output, enemy.getDialog(), new Vector2(textVector.X - 2, textVector.Y - 1), Color.Black);
-                    spriteBatch.DrawString(output, enemy.getDialog(), new Vector2(textVector.X + 2, textVector.Y + 1), Color.Black);
-                    spriteBatch.DrawString(output, enemy.getDialog(), textVector, Color.White);
+                    textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth) - (enemy.getDialog().text.Length/2*13), ((enemy.coords[1] - currentCorner[1]) * tileHeight) - (tileHeight) + textScroll[textScrollIndex]);
+                    spriteBatch.DrawString(output, enemy.getDialog().text, new Vector2(textVector.X - 2, textVector.Y - 1), Color.Black);
+                    spriteBatch.DrawString(output, enemy.getDialog().text, new Vector2(textVector.X + 2, textVector.Y + 1), Color.Black);
+                    spriteBatch.DrawString(output, enemy.getDialog().text, textVector, Color.White);
 
                 }
             } 
@@ -330,6 +323,12 @@ namespace RogueLikeGame
         public int getScreenDimension(int dim) { return screenDim[dim]; }
         public void addParticle(Particle particle) { this.particles.Add(particle); }
         public void addProjectile(Projectile projectile) { this.projectiles.Add(projectile); }
+        public void addEnemy(Enemy enemy) { this.enemies.Add(enemy); }
+        public void addItem(Item item) { this.items.Add(item); }
+
+        public Projectile getProjectile(int index) { return projectiles[index]; }
+        public Enemy getEnemy(string tag) { return enemies.Find(a=>a.getTag()==tag); }
+        public Item getItem(int index) { return items[index]; }
 
         public void entering()
         {

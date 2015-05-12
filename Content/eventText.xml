@@ -2,33 +2,48 @@
 <levels>
   <level id ="jail">
     <initial>
-      <text speed ="1500" color ="White">You are awake.</text>
-      <text speed ="1500" color ="White">It's dark.</text>
-      <text speed ="2000" color ="White">You hear a voice slither out of the corner...</text>
-      <text speed ="1500" color ="Red">"I have a secret."</text>
-      <text speed ="1500" color ="White">You listen closer.</text>
+      <text speed ="1500" color ="White" type ="text">You are awake.</text>
+      <text speed ="1500" color ="White" type ="text">It's dark.</text>
+      <text speed ="2000" color ="White" type ="text">You hear a voice slither out of the corner...</text>
+      <text speed ="1500" color ="Red" type ="dialog">I have a secret.</text>
+      <text speed ="1500" color ="White" type ="text">You listen closer.</text>
+      <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger"></enemy>
+      <enemy x="3" y="5" health="20" drop="bow" deathEvent ="-1" tag="guard"></enemy>
+      <item x="3" y="18" tag="life"></item>
     </initial>
+    
     <timed>
-      <text speed ="50000" color ="White">You were a wizard, once.</text>
-      <text speed ="1500" color ="White">Not anymore, though.</text>
-      <text speed ="1500" color ="White">You swish your finger, but nothing happens.</text>
-      <text speed ="1000" color ="White">Magic's all gone.</text>
-      <text speed ="50000" color ="White">You kick around the dust a bit.</text>
-      <text speed ="1500" color ="White">There's a long wait ahead of you.</text>
-      <text speed ="60000" color ="White">It seems without your magic you are useless...</text>
-      <text speed ="1500" color ="White">You wish they had covered this in wizard school.</text>
+      <text speed ="50000" color ="White" type ="text">You were a wizard, once.</text>
+      <text speed ="1500" color ="White" type ="text">Not anymore, though.</text>
+      <text speed ="1500" color ="White" type ="text">You swish your finger, but nothing happens.</text>
+      <text speed ="1000" color ="White" type ="text">Magic's all gone.</text>
+      <text speed ="50000" color ="White" type ="text">You kick around the dust a bit.</text>
+      <text speed ="1500" color ="White" type ="text">There's a long wait ahead of you.</text>
+      <text speed ="60000" color ="White" type ="text">It seems without your magic you are useless...</text>
+      <text speed ="1500" color ="White" type ="text">You wish they had covered this in wizard school.</text>
     </timed>
-    <event id ="1" type="proximity" command="speak">
-      <text speed ="1500" color ="White">"I have a secret, I said.</text>
-      <text speed ="1500" color ="White">Your magic has no power here, wizard.</text>
-      <text speed ="1500" color ="White">And I know why.</text>
-      <text speed ="1500" color ="White">But I won't tell."</text>
-      <text speed ="1500" color ="White">You ask yourself, how do you solve things without magic?</text>
-      <text speed ="1500" color ="White">Violence, you reason.</text>
-      <text speed ="1500" color ="White">The solution is violence.</text>
+    
+    <event id ="1" type="proximity" command="speak stranger">
+      <text speed ="1500" color ="Red" type ="dialog">I have a secret, I said.</text>
+      <text speed ="1500" color ="Red" type ="dialog">Your magic has no power here, wizard.</text>
+      <text speed ="1500" color ="Red" type ="dialog">And I know why.</text>
+      <text speed ="1500" color ="Red" type ="dialog">But I won't tell.</text>
+      <text speed ="1500" color ="White" type ="text">How does one solve a problem without magic, you ask yourself.</text>
+      <text speed ="1500" color ="White" type ="text">Violence, you reason.</text>
+      <text speed ="1500" color ="White" type ="text">The solution is violence.</text>
     </event>
-    <event is="2" type="proximity" command="clear">
-      <text speed ="1500" color ="White">The door is locked.</text>
+    
+    <event id="2" type="proximity" command="clear">
+      <text speed ="200" color ="White" type ="text">The door is locked.</text>
+    </event>
+    <event id="3" type="death" command="none">
+      <text speed="1500" color="White" type="text">He crumples to the floor.</text>
+      <text speed="1500" color="White" type="text">Seems like his secret goes with him.</text>
+      <text speed="1500" color="White" type="text">It looks like he dropped something.</text>
+    </event>
+
+    <event id="4" type="proximity" command="next hallway">
+      <text speed="1500" color="White" type="dialog"></text>
     </event>
   </level>
 </levels>

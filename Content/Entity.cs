@@ -243,32 +243,40 @@ namespace RogueLikeGame
         public bool attacking;
         
         public int health;
+        public int eventId;
 
         public string uniVal;
-        public string dialog;
+        public Queue<TextLine> dialog = new Queue<TextLine>();
         public string drop;
 
-        public Enemy(int[] coords, Scene scene, int health, string uniVal,string drop)
+        public Enemy(int[] coords, Scene scene, int health,string drop,int eventId,string tag)
         {
+            Debug.Print(uniVal);
+            this.setTag(tag);
             this.coords = coords;
             this.scene = scene;
             this.color = Color.White;
             this.health = health;
-            this.uniVal = uniVal;
+            this.uniVal = "\u2646";
             this.drop = drop;
+            this.eventId = eventId;
             dying = false;
         }
-        public void speak(string dialog) { this.dialog = dialog; this.speaking = true; }
+        public void speak(TextLine dialog) { this.dialog.Enqueue(dialog); this.speaking = true; }
+        public void speak(Queue<TextLine> dialog) { this.dialog = dialog; this.speaking = true; }
         public void update(GameTime gameTime)
         {
             if (this.speaking) { dialogTimer += gameTime.ElapsedGameTime.Milliseconds; }
-            if (dialogTimer >= 1500) { speaking = false; }
+
+            if (dialog.Count > 0 && dialogTimer > dialog.Peek().time) { dialog.Dequeue(); dialogTimer = 0; }
+            if ( dialog.Count == 0 ) { speaking = false; }
+
             if (this.damaged) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
             if (damageTimer >= 180) { color = Color.White; damageTimer = 0; this.damaged = false; }
         }
-        public string getDialog() 
+        public TextLine getDialog() 
         {
-            return dialog;
+            return dialog.Peek();
         }
 
         public void attack(GameTime gameTime)
@@ -279,7 +287,7 @@ namespace RogueLikeGame
         public void death(GameTime gameTime)
         {
             this.time += gameTime.ElapsedGameTime.Milliseconds;
-            if (time > 200) { this.toBeDeleted = true; }
+            if (time > 200) { this.toBeDeleted = true; if (this.eventId > 0) { scene.events.Find(a => a.id == this.eventId).trigger(); } }
             else 
             {
                 if (time > 40) { this.color = Color.Red; }

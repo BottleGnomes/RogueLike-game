@@ -56,6 +56,8 @@ namespace RogueLikeGame
             player.update(gameTime);
             textBox.update(gameTime);
 
+            if (scene.trigger(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] })) { scene.getEvent(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }).trigger(); }
+
             foreach (Particle particle in particles) { particle.update(gameTime); }
             foreach (Projectile projectile in projectiles)
             {
@@ -160,6 +162,28 @@ namespace RogueLikeGame
                             break;
                         }
                     case "food": { if (player.health > 6) { player.health = 10; } else { player.health += 3; } player.inventory.RemoveAt(player.select); player.select--; break; }
+                    case "key":
+                        {
+                            if (scene.getTile(new int[] { player.coords[0] + player.facing[0] + playing.currentCorner[0], player.coords[1] + player.facing[1] + playing.currentCorner[1] }).getNum() == 2)
+                            {
+                                List<int[]> tiles = new List<int[]>();
+                                int[] local = new int[] { player.coords[0] + player.facing[0] + playing.currentCorner[0], player.coords[1] + player.facing[1] + playing.currentCorner[1] };
+                                tiles.Add(local);
+
+                                if (scene.getTile(new int[] { local[0] + 1, local[1] }).getNum() == 2) { tiles.Add(new int[] { local[0] + 1, local[1] }); }
+                                if (scene.getTile(new int[] { local[0], local[1]+1 }).getNum() == 2) { tiles.Add(new int[] { local[0], local[1]+1 }); }
+                                if (scene.getTile(new int[] { local[0] - 1, local[1] }).getNum() == 2 ) { tiles.Add(new int[] { local[0] - 1, local[1] }); }
+                                if (scene.getTile(new int[] { local[0], local[1]-1 }).getNum() == 2 ) { tiles.Add(new int[] { local[0], local[1]-1 }); }
+                                
+                                foreach (int[] tile in tiles) 
+                                {
+                                    scene.setCollision(tile[0],tile[1],0);
+                                }
+                                player.inventory.RemoveAt(player.select);
+                                player.select--;
+                            } 
+                            break;
+                        }
                 }
             }
             else if (player.attacking) { player.attack(gameTime); }

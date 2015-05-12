@@ -14,7 +14,7 @@ namespace RogueLikeGame
         int[] dimensions;
         Constructor constructor;
         Playing playing;
-        List<Event> events = new List<Event>();
+        public List<Event> events = new List<Event>();
         TextBox textBox;
         int[,] triggerArray;
 
@@ -45,19 +45,33 @@ namespace RogueLikeGame
                 Debug.Print(node.Name);
                 if(node.Name.Equals("initial"))
                 {
-                    foreach (XmlNode initial in node.ChildNodes) { textBox.addLine(initial.InnerText, Convert.ToInt16(initial.Attributes[0].Value),initial.Attributes[1].Value); }
+                    foreach (XmlNode initial in node.ChildNodes)
+                    {
+                        switch (initial.Name)
+                        {
+                            case "text": { textBox.addLine(initial.InnerText, Convert.ToInt16(initial.Attributes[0].Value), initial.Attributes[1].Value, initial.Attributes[2].Value); break; }
+                            case "enemy": { playing.addEnemy(new Enemy(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, Convert.ToInt16(initial.Attributes[2].Value), initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value),initial.Attributes[5].Value)); break; }
+                            case "item": { playing.addItem(new Item(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, initial.Attributes[2].Value)); break; }
+                            
+                        }
+                    }
                 }
                 if (node.Name == "timed")
                 {
                     foreach (XmlNode timed in node.ChildNodes) 
                     { 
-                        Debug.Print(timed.InnerText); 
-                        textBox.addWaitLine(timed.InnerText, Convert.ToInt32(timed.Attributes[0].Value), timed.Attributes[1].Value); 
+                        Debug.Print(timed.InnerText);
+                        textBox.addWaitLine(timed.InnerText, Convert.ToInt32(timed.Attributes[0].Value), timed.Attributes[1].Value, timed.Attributes[2].Value); 
                     }
                 }
                 if (node.Name == "event")
                 {
-                    //events.Add(new Event(this,
+                    Event newEvent = new Event(this, playing, textBox, Convert.ToInt16(node.Attributes[0].Value), node.Attributes[1].Value, node.Attributes[2].Value);
+                    events.Add(newEvent);
+                    foreach (XmlNode eventNode in node.ChildNodes)
+                    {
+                        newEvent.addLine(new TextLine(eventNode.InnerText,Convert.ToInt32(eventNode.Attributes[0].Value),eventNode.Attributes[1].Value,eventNode.Attributes[2].Value));
+                    }
                 }
                 //Debug.Print(node.Attributes);
             }
@@ -68,8 +82,9 @@ namespace RogueLikeGame
 
         public bool collides(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
         public bool collides(int x, int y) { if (constructor.getTile(new int[] {x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
-        
-        public bool trigger(int[] coordinates) { return triggerArray[coordinates[0],coordinates[1]] != 0; }
+        public void setCollision(int x, int y, int coll) { constructor.getTile(new int[] { x, y }).setNum(coll); }
+
+        public bool trigger(int[] coordinates) { return events.Exists(a => a.id == triggerArray[coordinates[0],coordinates[1]]); }
         public Event getEvent(int[] coordinates) {return events.Find(a => a.id == triggerArray[coordinates[0],coordinates[1]]); }
 
         public bool includesTile(int[] coordinates) { return constructor.includesTile(coordinates); }
@@ -149,6 +164,7 @@ namespace RogueLikeGame
         }
         public int[] getCoords() { return coords; }
         public int getNum() { return this.tileNum; }
+        public void setNum(int num) { this.tileNum = num; }
         public string getType() { return this.tileType; }
         public int distance(Tile inTile) { return Math.Abs(this.coords[0] - inTile.coords[0]) + Math.Abs(this.coords[1] - inTile.coords[1]); }
     }
