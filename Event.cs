@@ -41,7 +41,12 @@ namespace RogueLikeGame
                         scene.events.Remove(this);
                         break;
                     }
-                case "next": { break; }
+                case "next": 
+                    { 
+                        //!!! add code to move on to next region
+                        //"hallway"
+                        break; 
+                    }
                 default: { textBox.setLines(lines); scene.events.Remove(this); break; }
             }
         }
