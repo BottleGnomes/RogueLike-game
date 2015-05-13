@@ -19,9 +19,12 @@ namespace RogueLikeGame
         List<Item> items;
         List<Particle> particles;
         List<Projectile> projectiles;
-        List<Box>boxes;
+        List<Box> boxes;
         Scene scene;
         TextBox textBox;
+
+        Random rand = new Random();
+        Color[] magicColors = { Color.Orange,Color.MediumAquamarine, Color.Purple, Color.Purple, Color.Red, Color.Red };
 
         //timers
         private int moveUpdate = 100;
@@ -63,33 +66,57 @@ namespace RogueLikeGame
             foreach (Particle particle in particles) { particle.update(gameTime); }
             foreach (Projectile projectile in projectiles)
             {
-                if (scene.collides(new int[] { player.facing[0] + projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0], player.facing[1] + projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1] })) { projectile.toBeDeleted = true; playing.addParticle(new Particle(new int[] { player.facing[0] + projectile.coords[0] + projectile.pixMod[0] / 26, player.facing[1] + projectile.coords[1] + projectile.pixMod[1] / 44 }, projectile.direction, 120, "\u2737",Color.LightGray)); }
-                else { projectile.update(gameTime); }
-                
-                Enemy hit = null;
-                hit = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0] && a.coords[1] - playing.currentCorner[1] == projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1]);
-                if (hit != null)
+                switch (projectile.type)
                 {
-                    projectile.toBeDeleted = true;
-                    hit.hit(Item.getDamage(player.inventory[player.select]), projectile.direction);
-                    if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1])) 
-                        { hit.coords[0] -= projectile.direction[0]; hit.coords[1] -= projectile.direction[1]; }
-                    playing.addParticle(new Particle(hit.coords, player.facing, 120, string.Format("-{0}", Item.getDamage(player.inventory[player.select])), Color.Crimson));
+                    case "copper": 
+                        {
+                            projectile.update(gameTime);
+                            if (projectile.velocity[0] * projectile.direction[0] < 0 || projectile.velocity[1] * projectile.direction[1] < 0
+                               || scene.collides(new int[] { projectile.direction[0] + projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0], projectile.direction[1] + projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1] }))
+                            {
+                                for (int i = 0; i < 50; i++)
+                                {
+                                    playing.addParticle(new Particle(new int[] { projectile.direction[0] + projectile.coords[0] + projectile.pixMod[0] / 26, projectile.direction[1] + projectile.coords[1] + projectile.pixMod[1] / 44 },new int[]{ rand.Next(-1,2),rand.Next(-1,2)},120,"magic",magicColors[rand.Next(0,6)]));
+                                }
+                                projectile.toBeDeleted = true; 
+                            }
+                            else if(projectile.time % 80 < 5){ playing.addParticle(new Particle(new int[] { projectile.coords[0] + projectile.pixMod[0] / 26, projectile.coords[1] + projectile.pixMod[1] / 44 }, new int[] { (-1) * projectile.direction[0], (-1) * projectile.direction[1] }, 120, "magic", Color.Tomato)); }
+
+
+                            break; 
+                        }
+                    case "arrow":
+                        {
+                            if (scene.collides(new int[] { projectile.direction[0] + projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0], projectile.direction[1] + projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1] })) { projectile.toBeDeleted = true; playing.addParticle(new Particle(new int[] { projectile.direction[0] + projectile.coords[0] + projectile.pixMod[0] / 26, projectile.direction[1] + projectile.coords[1] + projectile.pixMod[1] / 44 }, projectile.direction, 120, "\u2737", Color.LightGray)); }
+                            else { projectile.update(gameTime); }
+
+                            Enemy hit = null;
+                            hit = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0] && a.coords[1] - playing.currentCorner[1] == projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1]);
+                            if (hit != null)
+                            {
+                                projectile.toBeDeleted = true;
+                                hit.hit(Projectile.getDamage(projectile.type), projectile.direction);
+                                if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1]))
+                                { hit.coords[0] -= projectile.direction[0]; hit.coords[1] -= projectile.direction[1]; }
+                                playing.addParticle(new Particle(hit.coords, player.facing, 120, string.Format("-{0}", Projectile.getDamage(projectile.type)), Color.Crimson));
+                            }
+                            Box box = null;
+                            box = boxes.Find(a => a.coords[0] - playing.currentCorner[0] == projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0] && a.coords[1] - playing.currentCorner[1] == projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1]);
+                            if (box != null)
+                            {
+                                projectile.toBeDeleted = true;
+                                box.toBeDeleted = true;
+                                items.Add(new Item(box.coords, scene, box.drop));
+                                if (box.eventId > 0) { scene.events.Find(a => a.id == box.eventId).trigger(); }
+                                playing.addParticle(new Particle(box.coords, player.facing, 160, "stars", Color.Beige));
+                                playing.addParticle(new Particle(box.coords, player.facing, 160, "stars", Color.Beige));
+                                playing.addParticle(new Particle(box.coords, player.facing, 160, "stars", Color.Beige));
+                                playing.addParticle(new Particle(box.coords, player.facing, 160, "stars", Color.Beige));
+                            }
+                            //HIT boxes
+                            break;
+                        }
                 }
-                Box box = null;
-                box = boxes.Find(a => a.coords[0] - playing.currentCorner[0] == projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0] && a.coords[1] - playing.currentCorner[1] == projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1]);
-                if (box != null)
-                {
-                    projectile.toBeDeleted = true;
-                    box.toBeDeleted = true;
-                    items.Add(new Item(box.coords, scene, box.drop));
-                    if (box.eventId > 0) { scene.events.Find(a => a.id == box.eventId).trigger(); }
-                    playing.addParticle(new Particle(box.coords, player.facing, 160, "stars", Color.Beige));
-                    playing.addParticle(new Particle(box.coords, player.facing, 160, "stars", Color.Beige));
-                    playing.addParticle(new Particle(box.coords, player.facing, 160, "stars", Color.Beige));
-                    playing.addParticle(new Particle(box.coords, player.facing, 160, "stars", Color.Beige));
-                }
-                //HIT boxes
             }
 
             if (moveUpdate >= 120)
@@ -102,11 +129,11 @@ namespace RogueLikeGame
                 Enemy enemy = null;
                 enemy = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == player.coords[0] && a.coords[1] - playing.currentCorner[1] == player.coords[1]);
                 if (enemy != null) { hitUpdate = 0; playing.currentCorner[0] -= player.facing[0]; playing.currentCorner[1] -= player.facing[1]; }
-                
+
                 Box box = null;
                 box = boxes.Find(a => a.coords[0] - playing.currentCorner[0] == player.coords[0] && a.coords[1] - playing.currentCorner[1] == player.coords[1]);
                 if (box != null) { hitUpdate = 0; playing.currentCorner[0] -= player.facing[0]; playing.currentCorner[1] -= player.facing[1]; }
-                
+
             }
             Item pickup = null;
             pickup = items.Find(item => item.coords[0] - playing.currentCorner[0] == player.coords[0] && item.coords[1] - playing.currentCorner[1] == player.coords[1]);
@@ -121,12 +148,12 @@ namespace RogueLikeGame
             {
                 enemy.update(gameTime);
                 if (enemy.dying) { enemy.death(gameTime); if (enemy.toBeDeleted) { items.Add(new Item(enemy.coords, scene, enemy.drop)); } playing.addParticle(new Particle(enemy.coords, player.facing, 250, "stars", Color.Cyan)); }
-                
+
             }
 
-            if (state.IsKeyDown(Keys.Tab) && selectSwitchUpdate > 128) 
+            if (state.IsKeyDown(Keys.Tab) && selectSwitchUpdate > 128)
             {
-                if (player.select < player.inventory.Count-1) { player.select++; }
+                if (player.select < player.inventory.Count - 1) { player.select++; }
                 else { player.select = 0; }
                 selectSwitchUpdate = 0;
             }
@@ -138,12 +165,12 @@ namespace RogueLikeGame
                 {
                     case "fist":
                         {
-                            player.attacking = true; 
+                            player.attacking = true;
                             Enemy hit = null;
                             hit = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == player.coords[0] + player.facing[0] && a.coords[1] - playing.currentCorner[1] == player.coords[1] + player.facing[1]);
                             if (hit != null)
                             {
-                                playing.addParticle(new Particle(hit.coords, player.facing, 250, string.Format("-{0}", Item.getDamage(player.inventory[player.select])),Color.Crimson)); 
+                                playing.addParticle(new Particle(hit.coords, player.facing, 250, string.Format("-{0}", Item.getDamage(player.inventory[player.select])), Color.Crimson));
                                 hit.hit(Item.getDamage(player.inventory[player.select]), player.facing);
                                 if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1])) { hit.coords[0] -= player.facing[0]; hit.coords[1] -= player.facing[1]; }
                             }
@@ -163,12 +190,12 @@ namespace RogueLikeGame
                         }
                     case "bow":
                         {
-                            player.attacking = true; 
-                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1]}, player.facing, "arrow", scene));
+                            player.attacking = true;
+                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }, player.facing, "arrow", scene));
                             break;
                         }
                     case "sword": { goto case "fist"; }
-                    case "long sword": 
+                    case "long sword":
                         {
                             player.attacking = true;
                             List<Enemy> hit = new List<Enemy>();
@@ -179,14 +206,14 @@ namespace RogueLikeGame
                                 );
                             foreach (Enemy enemy in hit)
                             {
-                                playing.addParticle(new Particle(enemy.coords, player.facing, 250, string.Format("-{0}", Item.getDamage(player.inventory[player.select])),Color.Crimson));
+                                playing.addParticle(new Particle(enemy.coords, player.facing, 250, string.Format("-{0}", Item.getDamage(player.inventory[player.select])), Color.Crimson));
                                 enemy.hit(Item.getDamage(player.inventory[player.select]), player.facing);
                                 if (scene.collides(enemy.coords[0] - playing.currentCorner[0], enemy.coords[1] - playing.currentCorner[1])) { enemy.coords[0] -= player.facing[0]; enemy.coords[1] -= player.facing[1]; }
                             }
                             //hit boxes
                             if (scene.collides(new int[] { player.coords[0] + player.facing[0], player.coords[1] + player.facing[1] })) { playing.addParticle(new Particle(new int[] { player.coords[0] + player.facing[0] + playing.currentCorner[0], player.coords[1] + player.facing[1] + playing.currentCorner[1] }, player.facing, 140, "\u2737", Color.LightGray)); }
-                            if (scene.collides(new int[] { player.coords[0] + player.facing[0] + player.facing[1], player.coords[1] + player.facing[1] + player.facing[0] })) { playing.addParticle(new Particle(new int[] { player.coords[0] + player.facing[0] + player.facing[0] + playing.currentCorner[0], player.coords[1] + player.facing[1] + player.facing[0]+ playing.currentCorner[1] }, player.facing, 140, "\u2737", Color.LightGray)); }
-                            if (scene.collides(new int[] { player.coords[0] + player.facing[0] - player.facing[1], player.coords[1] + player.facing[1] - player.facing[1] })) { playing.addParticle(new Particle(new int[] { player.coords[0] + player.facing[0] - player.facing[0] + playing.currentCorner[0], player.coords[1] + player.facing[1] - player.facing[0]+ playing.currentCorner[1] }, player.facing, 140, "\u2737", Color.LightGray)); }
+                            if (scene.collides(new int[] { player.coords[0] + player.facing[0] + player.facing[1], player.coords[1] + player.facing[1] + player.facing[0] })) { playing.addParticle(new Particle(new int[] { player.coords[0] + player.facing[0] + player.facing[0] + playing.currentCorner[0], player.coords[1] + player.facing[1] + player.facing[0] + playing.currentCorner[1] }, player.facing, 140, "\u2737", Color.LightGray)); }
+                            if (scene.collides(new int[] { player.coords[0] + player.facing[0] - player.facing[1], player.coords[1] + player.facing[1] - player.facing[1] })) { playing.addParticle(new Particle(new int[] { player.coords[0] + player.facing[0] - player.facing[0] + playing.currentCorner[0], player.coords[1] + player.facing[1] - player.facing[0] + playing.currentCorner[1] }, player.facing, 140, "\u2737", Color.LightGray)); }
                             break;
                         }
                     case "food": { if (player.health > 6) { player.health = 10; } else { player.health += 3; } player.inventory.RemoveAt(player.select); player.select--; break; }
@@ -199,17 +226,29 @@ namespace RogueLikeGame
                                 tiles.Add(local);
 
                                 if (scene.getTile(new int[] { local[0] + 1, local[1] }).getNum() == 2) { tiles.Add(new int[] { local[0] + 1, local[1] }); }
-                                if (scene.getTile(new int[] { local[0], local[1]+1 }).getNum() == 2) { tiles.Add(new int[] { local[0], local[1]+1 }); }
-                                if (scene.getTile(new int[] { local[0] - 1, local[1] }).getNum() == 2 ) { tiles.Add(new int[] { local[0] - 1, local[1] }); }
-                                if (scene.getTile(new int[] { local[0], local[1]-1 }).getNum() == 2 ) { tiles.Add(new int[] { local[0], local[1]-1 }); }
-                                
-                                foreach (int[] tile in tiles) 
+                                if (scene.getTile(new int[] { local[0], local[1] + 1 }).getNum() == 2) { tiles.Add(new int[] { local[0], local[1] + 1 }); }
+                                if (scene.getTile(new int[] { local[0] - 1, local[1] }).getNum() == 2) { tiles.Add(new int[] { local[0] - 1, local[1] }); }
+                                if (scene.getTile(new int[] { local[0], local[1] - 1 }).getNum() == 2) { tiles.Add(new int[] { local[0], local[1] - 1 }); }
+
+                                foreach (int[] tile in tiles)
                                 {
-                                    scene.setCollision(tile[0],tile[1],0);
+                                    scene.setCollision(tile[0], tile[1], 0);
                                 }
                                 player.inventory.RemoveAt(player.select);
                                 player.select--;
-                            } 
+                            }
+                            break;
+                        }
+                    case "copper tome":
+                        {
+                            player.attacking = true;
+                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }, player.facing, "copper", scene));
+                            break;
+                        }
+                    case "malachite tome":
+                        {
+                            player.attacking = true;
+                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }, player.facing, "malachite", scene));
                             break;
                         }
                 }
