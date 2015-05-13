@@ -18,7 +18,7 @@ namespace RogueLikeGame
         public int damageTimer = 0;
 
         int attackTimer = 0;
-        public int health = 8;
+        public int health = 4;
         public int select = 0;
         public Color color = Color.White;
         public int sight = 12;
@@ -65,6 +65,23 @@ namespace RogueLikeGame
             this.health -= damage;
             this.coords[0] += direction[0];
             this.coords[1] += direction[1];
+        }
+    }
+
+    class Box : Drawable
+    {
+        Scene scene;
+        public string uniVal;
+        public string drop;
+        public int eventId;
+
+        public Box(int[] coords, Scene scene, string uniVal, string drop, int eventId)
+        {
+            this.scene = scene;
+            this.coords = coords;
+            this.uniVal = "\u25A6";
+            this.drop = drop;
+            this.eventId = eventId;
         }
     }
 

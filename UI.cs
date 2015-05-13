@@ -32,6 +32,7 @@ namespace RogueLikeGame
         public Queue<TextLine> output = new Queue<TextLine>();
         public Queue<TextLine> text = new Queue<TextLine>();
         Scene scene;
+        public bool writing = false;
 
         public TextBox(Scene scene) 
         {
@@ -47,9 +48,10 @@ namespace RogueLikeGame
         public void update(GameTime gameTime)
         {
             textTimer += gameTime.ElapsedGameTime.Milliseconds;
-            if (output.Count > 0 && textTimer > output.Peek().time) { text.Enqueue(output.Dequeue()); textTimer = 0; }
+            if (output.Count > 0 && textTimer > output.Peek().time) { writing = true; text.Enqueue(output.Dequeue()); textTimer = 0; }
             else 
             {
+                if (output.Count == 0) { writing = false; }
                 waitTimer += gameTime.ElapsedGameTime.Milliseconds;
                 if (waitOutput.Count > 0 && waitTimer >= waitOutput.Peek().time) { text.Enqueue(waitOutput.Dequeue()); waitTimer = 0; }
             }

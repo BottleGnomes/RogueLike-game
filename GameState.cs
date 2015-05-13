@@ -24,7 +24,7 @@ namespace RogueLikeGame
         TextBox textBox;
         Dictionary<string, Color> colorDict = new Dictionary<string,Color>();
 
-        public int[] currentCorner = { -15, 11 };
+        public int[] currentCorner = { -13, 12 };
         int tileWidth = 26;
         int tileHeight = 44;
         int[] screenDim = { 50, 20 };
@@ -44,13 +44,13 @@ namespace RogueLikeGame
         List<Item> items = new List<Item>();
         List<Particle> particles = new List<Particle>();
         List<Projectile> projectiles = new List<Projectile>();
+        List<Box> boxes = new List<Box>();
 
         private bool collide;
 
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame)
         {
-            paused = new Paused(this);
             this.ingame = ingame;
             symbols = ingame.Content.Load<SpriteFont>("symbols");
             output = ingame.Content.Load<SpriteFont>("Output18pt");
@@ -64,13 +64,15 @@ namespace RogueLikeGame
             colorDict["Red"] = Color.Red;
             colorDict["Blue"] = Color.Blue;
             colorDict["Yellow"] = Color.Yellow;
+            colorDict["Brown"] = Color.Brown;
+            colorDict["Gold"] = Color.Gold;
+            colorDict["Salmon"] = Color.Salmon;
 
             player = new Player(new int[] { 24, 6 }, scene);
             ui = new UI(player);
 
-
-            //pass in enemies and objects later
-            unpaused = new Unpaused(this, scene, player, enemies, items, particles, projectiles, textBox);
+            unpaused = new Unpaused(this, scene, player, enemies, items, particles, projectiles, textBox, boxes);
+            paused = new Paused(this, menu);
 
             state = unpaused;
 
@@ -109,6 +111,7 @@ namespace RogueLikeGame
             particles.RemoveAll(a => a.toBeDeleted);
             projectiles.RemoveAll(a => a.toBeDeleted);
             enemies.RemoveAll(a => a.toBeDeleted);
+            boxes.RemoveAll(a => a.toBeDeleted);
             state.update(gameTime);
 
             frameCount++;
@@ -165,6 +168,10 @@ namespace RogueLikeGame
                 //Debug.Print(Convert.ToString(particle.getLocation()[0] - currentCorner[0]) + "," + Convert.ToString(particle.getLocation()[1] - currentCorner[1]));
                 spriteBatch.DrawString(symbols, particle.getTag(), new Vector2((particle.getLocation()[0] - currentCorner[0]) * tileWidth + particle.pixMod[0], (particle.getLocation()[1] - currentCorner[1]) * tileHeight + particle.pixMod[1]), particle.color);
                 }
+            foreach (Box box in boxes)
+            {
+                spriteBatch.DrawString(symbols, box.uniVal, new Vector2((box.coords[0] - currentCorner[0]) * tileWidth, (box.coords[1] - currentCorner[1]) * tileHeight), Color.Beige);
+            }
             foreach (Item item in items)
             {
                 if (drawArray[item.coords[0], item.coords[1]] == 1)
@@ -220,6 +227,7 @@ namespace RogueLikeGame
             spriteBatch.DrawString(output, "FPS: " + Convert.ToString(frames), new Vector2(1150, 5), Color.White);
             spriteBatch.DrawString(output, "Facing: " + Convert.ToString(player.facing[0]+","+player.facing[1]), new Vector2(1150, 35), Color.White);
             spriteBatch.DrawString(output, "Corner: " + Convert.ToString(currentCorner[0] + "," + currentCorner[1]), new Vector2(1150, 65), Color.White);
+            spriteBatch.DrawString(output, "Area: " + scene.currentArea, new Vector2(1150, 95), Color.White);
 
         }
         //gainsboro, gray, darkslategray, black
@@ -227,8 +235,8 @@ namespace RogueLikeGame
         
         public void drawTiles()
         {
-            string[] tiles = { "\u2591", "\u2588", "\u2593" };
-            Color[,] colors = { { Color.DimGray, Color.Gray, Color.DarkSlateGray, Color.Black }, { Color.DarkCyan, Color.MidnightBlue, Color.DarkSlateGray, Color.Black }, { Color.BurlyWood, Color.Gray, Color.DarkSlateGray, Color.Black } };
+            string[] tiles = { "\u2591", "\u2588", "\u2593","\u2592" };
+            Color[] colors = {Color.DimGray,Color.DarkCyan,Color.BurlyWood,Color.Aqua };
             int[] startingTile = new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] };
             List<List<int[]>> tileQuerry = new List<List<int[]>>();
             drawArray = new int[scene.getArray().GetLength(0), scene.getArray().GetLength(1)];
@@ -263,7 +271,7 @@ namespace RogueLikeGame
                 else { x--; radiusError += 2 * (y - x) + 1; }
             }
             //foreach (int[] a in tileQuerry) { Debug.Print(Convert.ToString(a[0]) + "," + Convert.ToString(a[1])); }
-            spriteBatch.DrawString(symbols, tiles[scene.getTile(new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] }).getNum()], new Vector2(player.coords[0] * tileWidth, player.coords[1] * tileHeight), colors[scene.getTile(new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] }).getNum(),0]);
+            spriteBatch.DrawString(symbols, tiles[scene.getTile(new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] }).getNum()], new Vector2(player.coords[0] * tileWidth, player.coords[1] * tileHeight), colors[scene.getTile(new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] }).getNum()]);
 
             foreach (List<int[]> tileList in tileQuerry)
             {
@@ -278,10 +286,10 @@ namespace RogueLikeGame
                     //{
                     if (scene.includesTile(lineTile))
                     {
-                        if (!scene.collides(new int[] { lineTile[0] - currentCorner[0], lineTile[1] - currentCorner[1] }) && collide) { break; }
-                        if (drawArray[lineTile[0], lineTile[1]] != 1) { spriteBatch.DrawString(symbols, tiles[scene.getTile(lineTile).getNum()], new Vector2((lineTile[0] - currentCorner[0]) * tileWidth, (lineTile[1] - currentCorner[1]) * tileHeight), colors[scene.getTile(lineTile).getNum(), scene.getTile(lineTile).getNum() / 4]); }
+                        if (!scene.isSolid(new int[] { lineTile[0] - currentCorner[0], lineTile[1] - currentCorner[1] }) && collide) { break; }
+                        if (drawArray[lineTile[0], lineTile[1]] != 1) { spriteBatch.DrawString(symbols, tiles[scene.getTile(lineTile).getNum()], new Vector2((lineTile[0] - currentCorner[0]) * tileWidth, (lineTile[1] - currentCorner[1]) * tileHeight), colors[scene.getTile(lineTile).getNum()]); }
                         drawArray[lineTile[0], lineTile[1]] = 1;
-                        if (scene.collides(new int[] { lineTile[0] - currentCorner[0], lineTile[1] - currentCorner[1] })) { collide = true; }
+                        if (scene.isSolid(new int[] { lineTile[0] - currentCorner[0], lineTile[1] - currentCorner[1] })) { collide = true; }
                         if (seenArray[lineTile[0], lineTile[1]] != 1) { seenArray[lineTile[0], lineTile[1]] = 1; }
                     }
                 }
@@ -325,6 +333,7 @@ namespace RogueLikeGame
         public void addProjectile(Projectile projectile) { this.projectiles.Add(projectile); }
         public void addEnemy(Enemy enemy) { this.enemies.Add(enemy); }
         public void addItem(Item item) { this.items.Add(item); }
+        public void addBox(Box box) { this.boxes.Add(box); }
 
         public Projectile getProjectile(int index) { return projectiles[index]; }
         public Enemy getEnemy(string tag) { return enemies.Find(a=>a.getTag()==tag); }

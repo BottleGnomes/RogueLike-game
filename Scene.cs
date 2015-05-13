@@ -17,6 +17,7 @@ namespace RogueLikeGame
         public List<Event> events = new List<Event>();
         TextBox textBox;
         int[,] triggerArray;
+        public string currentArea;
 
         public Scene(Playing playing, TextBox textBox) 
         {
@@ -36,32 +37,40 @@ namespace RogueLikeGame
                     triggerArray[j, i] = Convert.ToInt16(lineSplit[j]);
                 }
             }
+            processXML("jail");
 
+        }
+
+        public void processXML(string area)
+        {
+            this.currentArea = area;
             XmlDocument xmlReader = new XmlDocument();
             xmlReader.Load("Content/eventText.xml");
             XmlNode levels = xmlReader.ChildNodes[1];
-            foreach (XmlNode node in levels.ChildNodes[0]) 
+            XmlNode level = levels.ChildNodes[1];
+            foreach (XmlNode node in levels) { if (node.Attributes[0].Value == area) { level = node; break; } }
+            foreach (XmlNode node in level)
             {
                 Debug.Print(node.Name);
-                if(node.Name.Equals("initial"))
+                if (node.Name.Equals("initial"))
                 {
                     foreach (XmlNode initial in node.ChildNodes)
                     {
                         switch (initial.Name)
                         {
                             case "text": { textBox.addLine(initial.InnerText, Convert.ToInt16(initial.Attributes[0].Value), initial.Attributes[1].Value, initial.Attributes[2].Value); break; }
-                            case "enemy": { playing.addEnemy(new Enemy(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, Convert.ToInt16(initial.Attributes[2].Value), initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value),initial.Attributes[5].Value)); break; }
+                            case "enemy": { playing.addEnemy(new Enemy(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, Convert.ToInt16(initial.Attributes[2].Value), initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value), initial.Attributes[5].Value)); break; }
                             case "item": { playing.addItem(new Item(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, initial.Attributes[2].Value)); break; }
-                            
+                            case "box": { playing.addBox(new Box(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, initial.Attributes[2].Value, initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value))); break; }
                         }
                     }
                 }
                 if (node.Name == "timed")
                 {
-                    foreach (XmlNode timed in node.ChildNodes) 
-                    { 
+                    foreach (XmlNode timed in node.ChildNodes)
+                    {
                         Debug.Print(timed.InnerText);
-                        textBox.addWaitLine(timed.InnerText, Convert.ToInt32(timed.Attributes[0].Value), timed.Attributes[1].Value, timed.Attributes[2].Value); 
+                        textBox.addWaitLine(timed.InnerText, Convert.ToInt32(timed.Attributes[0].Value), timed.Attributes[1].Value, timed.Attributes[2].Value);
                     }
                 }
                 if (node.Name == "event")
@@ -70,18 +79,20 @@ namespace RogueLikeGame
                     events.Add(newEvent);
                     foreach (XmlNode eventNode in node.ChildNodes)
                     {
-                        newEvent.addLine(new TextLine(eventNode.InnerText,Convert.ToInt32(eventNode.Attributes[0].Value),eventNode.Attributes[1].Value,eventNode.Attributes[2].Value));
+                        newEvent.addLine(new TextLine(eventNode.InnerText, Convert.ToInt32(eventNode.Attributes[0].Value), eventNode.Attributes[1].Value, eventNode.Attributes[2].Value));
                     }
                 }
                 //Debug.Print(node.Attributes);
             }
-
         }
+
         public Tile[,] getArray() { return constructor.getTileArray(); }
         public int[] getDimensions() { return dimensions; }
 
         public bool collides(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
-        public bool collides(int x, int y) { if (constructor.getTile(new int[] {x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
+        public bool collides(int x, int y) { if (constructor.getTile(new int[] { x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
+        public bool isSolid(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
+        public bool isSolid(int x, int y) { if (constructor.getTile(new int[] { x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
         public void setCollision(int x, int y, int coll) { constructor.getTile(new int[] { x, y }).setNum(coll); }
 
         public bool trigger(int[] coordinates) { return events.Exists(a => a.id == triggerArray[coordinates[0],coordinates[1]]); }
@@ -97,7 +108,7 @@ namespace RogueLikeGame
     {
         Tile[,] tileArray;
         string currentLevel;
-        string[] tileTypes = { "floor", "wall","hatch" };
+        string[] tileTypes = { "floor", "wall","hatch","window","box" };
 
         public Constructor()
         {

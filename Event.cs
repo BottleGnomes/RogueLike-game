@@ -32,22 +32,27 @@ namespace RogueLikeGame
                 case "clear": { textBox.setLines(lines); scene.events.Remove(this); break; }
                 case "speak":
                     {
-                        Enemy enemy = playing.getEnemy(command.Split(' ')[1]);
-                        textBox.setLines(lines);
-                        foreach (TextLine line in lines) 
+                        if (!textBox.writing)
                         {
-                            if (line.type == "dialog") { enemy.speak(line); }
-                        } 
-                        scene.events.Remove(this);
+                            Enemy enemy = playing.getEnemy(command.Split(' ')[1]);
+                            textBox.setLines(lines);
+                            foreach (TextLine line in lines)
+                            {
+                                if (line.type == "dialog") { enemy.speak(line); }
+                            }
+                            scene.events.Remove(this);
+                        }
                         break;
                     }
                 case "next": 
                     { 
                         //!!! add code to move on to next region
                         //"hallway"
+                        scene.events.Clear();
+                        scene.processXML(command.Split(' ')[1]);
                         break; 
                     }
-                default: { textBox.setLines(lines); scene.events.Remove(this); break; }
+                default: { if (!textBox.writing) { textBox.setLines(lines); scene.events.Remove(this); } break; }
             }
         }
     }

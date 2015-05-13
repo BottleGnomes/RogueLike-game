@@ -1,15 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <levels>
-  <level id ="jail">
+  <area id ="jail">
     <initial>
       <text speed ="1500" color ="White" type ="text">You are awake.</text>
       <text speed ="1500" color ="White" type ="text">It's dark.</text>
       <text speed ="2000" color ="White" type ="text">You hear a voice slither out of the corner...</text>
-      <text speed ="1500" color ="Red" type ="dialog">I have a secret.</text>
+      <text speed ="1500" color ="Brown" type ="dialog">Fallen one - you're awake.</text>
+      <text speed ="1500" color ="Brown" type ="dialog">I keep a secret...</text>
       <text speed ="1500" color ="White" type ="text">You listen closer.</text>
       <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger"></enemy>
       <enemy x="3" y="5" health="20" drop="bow" deathEvent ="-1" tag="guard"></enemy>
       <item x="3" y="18" tag="life"></item>
+      <box x="13" y="23" uniVal="25A6" drop="key" destroyEvent="-1"></box>
+      <box x="13" y="22" uniVal="25A6" drop="food" destroyEvent="-1"></box>
+      <box x="12" y="23" uniVal="25A6" drop="life" destroyEvent="-1"></box>
     </initial>
     
     <timed>
@@ -24,16 +28,23 @@
     </timed>
     
     <event id ="1" type="proximity" command="speak stranger">
-      <text speed ="1500" color ="Red" type ="dialog">I have a secret, I said.</text>
-      <text speed ="1500" color ="Red" type ="dialog">Your magic has no power here, wizard.</text>
-      <text speed ="1500" color ="Red" type ="dialog">And I know why.</text>
-      <text speed ="1500" color ="Red" type ="dialog">But I won't tell.</text>
-      <text speed ="1500" color ="White" type ="text">How does one solve a problem without magic, you ask yourself.</text>
-      <text speed ="1500" color ="White" type ="text">Violence, you reason.</text>
-      <text speed ="1500" color ="White" type ="text">The solution is violence.</text>
+      <text speed ="2000" color ="Brown" type ="dialog">I keep a secret, I said.</text>
+      <text speed ="2000" color ="Brown" type ="dialog">Your magic has been lost?</text>
+      <text speed ="2000" color ="Brown" type ="dialog">Your spells won't move dust!</text>
+      <text speed ="2800" color ="Brown" type ="dialog">I know! I know, But I won't tell.</text>
+      <text speed ="2000" color ="Brown" type ="dialog">Not before you unbind me!</text>
+      <text speed ="2800" color ="Brown" type ="dialog">The one before you had a plan, you see.</text>
+      <text speed ="2400" color ="Brown" type ="dialog">Stole something very important...</text>
+      <text speed ="1800" color ="Brown" type ="dialog">Hid it away...</text>
+      <text speed ="2800" color ="Brown" type ="dialog">But, he was volunteered some nights ago.</text>
+      <text speed ="1800" color ="Brown" type ="dialog">Find what he hid.</text>
+      <text speed ="2000" color ="Brown" type ="dialog">Set me free from this hole!</text>
+      <text speed ="2000" color ="Brown" type ="dialog">And I will tell you what you want to know.</text>
+      <text speed ="1800" color ="White" type ="text">Something hidden...</text>
+      <text speed ="1800" color ="White" type ="text">You think for a moment.</text>
     </event>
     
-    <event id="2" type="proximity" command="clear">
+    <event id="2" type="proximity" command="none">
       <text speed ="200" color ="White" type ="text">The door is locked.</text>
     </event>
     <event id="3" type="death" command="none">
@@ -45,5 +56,11 @@
     <event id="4" type="proximity" command="next hallway">
       <text speed="1500" color="White" type="dialog"></text>
     </event>
-  </level>
+  </area>
+  <area id="hallway">
+    <initial>
+    </initial>
+    <timed>
+    </timed>
+  </area>
 </levels>
