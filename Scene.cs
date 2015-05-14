@@ -51,7 +51,6 @@ namespace RogueLikeGame
             foreach (XmlNode node in levels) { if (node.Attributes[0].Value == area) { level = node; break; } }
             foreach (XmlNode node in level)
             {
-                Debug.Print(node.Name);
                 if (node.Name.Equals("initial"))
                 {
                     foreach (XmlNode initial in node.ChildNodes)
@@ -59,7 +58,7 @@ namespace RogueLikeGame
                         switch (initial.Name)
                         {
                             case "text": { textBox.addLine(initial.InnerText, Convert.ToInt16(initial.Attributes[0].Value), initial.Attributes[1].Value, initial.Attributes[2].Value); break; }
-                            case "enemy": { playing.addEnemy(new Enemy(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, Convert.ToInt16(initial.Attributes[2].Value), initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value), initial.Attributes[5].Value)); break; }
+                            case "enemy": { playing.addEnemy(new Enemy(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, Convert.ToInt16(initial.Attributes[2].Value), initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value), initial.Attributes[5].Value, playing)); break; }
                             case "item": { playing.addItem(new Item(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, initial.Attributes[2].Value)); break; }
                             case "box": { playing.addBox(new Box(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, initial.Attributes[2].Value, initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value))); break; }
                         }
@@ -69,7 +68,6 @@ namespace RogueLikeGame
                 {
                     foreach (XmlNode timed in node.ChildNodes)
                     {
-                        Debug.Print(timed.InnerText);
                         textBox.addWaitLine(timed.InnerText, Convert.ToInt32(timed.Attributes[0].Value), timed.Attributes[1].Value, timed.Attributes[2].Value);
                     }
                 }
@@ -108,7 +106,7 @@ namespace RogueLikeGame
     {
         Tile[,] tileArray;
         string currentLevel;
-        string[] tileTypes = { "floor", "wall","hatch","window","box" };
+        string[] tileTypes = { "floor", "wall","hatch","window","fire" };
 
         public Constructor()
         {

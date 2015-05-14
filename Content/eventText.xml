@@ -9,14 +9,16 @@
       <text speed ="1500" color ="Brown" type ="dialog">I keep a secret...</text>
       <text speed ="1500" color ="White" type ="text">You listen closer.</text>
       <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger"></enemy>
-      <enemy x="3" y="5" health="20" drop="bow" deathEvent ="-1" tag="guard"></enemy>
+      <enemy x="3" y="5" health="20" drop="bow" deathEvent ="-1" tag="arrow"></enemy>
+      <enemy x="20" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
+      <enemy x="20" y="19" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
+      <enemy x="19" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
+      <enemy x="21" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
+      <enemy x="20" y="21" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
       <item x="3" y="18" tag="life"></item>
-      <item x="13" y="18" tag="copper tome"></item>
-      <item x="13" y="20" tag="malachite tome"></item>
-      <item x="13" y="19" tag="long sword"></item>
       <box x="13" y="23" uniVal="25A6" drop="key" destroyEvent="-1"></box>
       <box x="13" y="22" uniVal="25A6" drop="food" destroyEvent="-1"></box>
-      <box x="12" y="23" uniVal="25A6" drop="life" destroyEvent="-1"></box>
+      <box x="12" y="23" uniVal="25A6" drop="bow" destroyEvent="-1"></box>
     </initial>
     
     <timed>

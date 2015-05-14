@@ -51,7 +51,7 @@ namespace RogueLikeGame
             if (output.Count > 0 && textTimer > output.Peek().time) { writing = true; text.Enqueue(output.Dequeue()); textTimer = 0; }
             else 
             {
-                if (output.Count == 0) { writing = false; }
+                if (output.Count == 0) { writing = false; textTimer = 2000; }
                 waitTimer += gameTime.ElapsedGameTime.Milliseconds;
                 if (waitOutput.Count > 0 && waitTimer >= waitOutput.Peek().time) { text.Enqueue(waitOutput.Dequeue()); waitTimer = 0; }
             }

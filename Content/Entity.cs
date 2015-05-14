@@ -87,6 +87,10 @@ namespace RogueLikeGame
     }
     //FIRE: 25BD  25CF 25BF
     //      25BC  2666 25BE
+    class Static : Drawable
+    {
+
+    }
     class Projectile : Drawable
     {
         //\u2736
@@ -94,7 +98,7 @@ namespace RogueLikeGame
         int decayTimer = 0;
         public int[] direction;
         public int[] velocity;
-        int[] decay = new int[] {0 , 0};
+        int[] decay = new int[] { 0, 0 };
         public int[] pixMod = new int[] { 0, 0 };
         public Color color;
         public string icon;
@@ -102,6 +106,7 @@ namespace RogueLikeGame
 
         public Projectile(int[] coords, int[] direction, string type, Scene scene)
         {
+            Debug.Print("Make");
             this.coords = coords;
             this.direction = direction;
             this.type = type;
@@ -119,7 +124,7 @@ namespace RogueLikeGame
             this.time += gameTime.ElapsedGameTime.Milliseconds;
             this.decayTimer += gameTime.ElapsedGameTime.Milliseconds;
             if (decayTimer > 150) { this.velocity = new int[] { velocity[0] + decay[0], velocity[1] + decay[1] }; decayTimer = 0; }
-            this.pixMod = new int[] { (int)(4 * velocity[0]) + pixMod[0], (int)(4 * velocity[1]) + pixMod[1]};
+            this.pixMod = new int[] { (int)(4 * velocity[0]) + pixMod[0], (int)(4 * velocity[1]) + pixMod[1] };
 
         }
         public static int getDamage(string type)
@@ -168,7 +173,7 @@ namespace RogueLikeGame
                     }
                 case "magic":
                     {
-                        this.icon = new string[] { "\u25CB", "\u25E6", "\u25B9", "\u25E6", "\u25E6" };
+                        this.icon = new string[] { "\u25CB", "\u25E6", "\u25CC", "\u25E6", "\u25E6" };
                         this.setTag(icon[0]);
                         this.direction = new int[] { direction[0] + rand.Next(-1, 2), direction[1] + rand.Next(-1, 2) };
                         break;
@@ -287,17 +292,20 @@ namespace RogueLikeGame
 
         public int health;
         public int eventId;
+        public int[] direction = new int[] { 0, 1 };
 
         public string uniVal;
         public Queue<TextLine> dialog = new Queue<TextLine>();
+        Playing playing;
         public string drop;
 
-        public Enemy(int[] coords, Scene scene, int health, string drop, int eventId, string tag)
+        public Enemy(int[] coords, Scene scene, int health, string drop, int eventId, string tag, Playing playing)
         {
             Debug.Print(uniVal);
             this.setTag(tag);
             this.coords = coords;
             this.scene = scene;
+            this.playing = playing;
             this.color = Color.White;
             this.health = health;
             this.uniVal = "\u2646";
@@ -316,16 +324,24 @@ namespace RogueLikeGame
 
             if (this.damaged) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
             if (damageTimer >= 180) { color = Color.White; damageTimer = 0; this.damaged = false; }
+
+            if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; }
+            if (attackTimer > 1600) { attacking = false; attackTimer = 0; }
         }
         public TextLine getDialog()
         {
             return dialog.Peek();
         }
 
-        public void attack(GameTime gameTime)
+        public void attack(GameTime gameTime, int[] playerLocation)
         {
-            attackTimer += gameTime.ElapsedGameTime.Milliseconds;
-            if (attackTimer > 80) { attacking = false; attackTimer = 0; }
+            if (!attacking)
+            {
+                attacking = true;
+                if (coords[0] - playerLocation[0] == 0) { direction = new int[] { 0, playerLocation[1] / playerLocation[1] }; }
+                if (coords[1] - playerLocation[1] == 0) { direction = new int[] { playerLocation[0] / playerLocation[0], 0 }; }
+            }
+
         }
         public void death(GameTime gameTime)
         {
@@ -339,7 +355,7 @@ namespace RogueLikeGame
                 if (time > 160) { this.color = Color.White; }
             }
         }
-        public void hit(int damage, int[] direction)
+        public void hit(int damage, int[] facing)
         {
             this.damaged = true;
             this.color = Color.Red;
@@ -348,8 +364,8 @@ namespace RogueLikeGame
             else
             {
                 int[] oldcoords = coords;
-                this.coords[0] += direction[0];
-                this.coords[1] += direction[1];
+                this.coords[0] += facing[0];
+                this.coords[1] += facing[1];
             }
         }
     }

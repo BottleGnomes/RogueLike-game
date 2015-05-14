@@ -149,6 +149,7 @@ namespace RogueLikeGame
             //enemies
             foreach (Enemy enemy in enemies)
             {
+                if (enemy.attacking) {  }
                 if (drawArray[enemy.coords[0], enemy.coords[1]] == 1)
                 {
                     spriteBatch.DrawString(symbols, enemy.uniVal, new Vector2((enemy.coords[0] - currentCorner[0]) * tileWidth - 5, (enemy.coords[1] - currentCorner[1]) * tileHeight), enemy.color);
@@ -243,7 +244,7 @@ namespace RogueLikeGame
 
         public void drawTiles()
         {
-            string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592" };
+            string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592"};
             Color[] colors = { Color.DimGray, Color.DarkCyan, Color.BurlyWood, Color.Aqua };
             int[] startingTile = new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] };
             List<List<int[]>> tileQuerry = new List<List<int[]>>();
@@ -346,6 +347,7 @@ namespace RogueLikeGame
         public Projectile getProjectile(int index) { return projectiles[index]; }
         public Enemy getEnemy(string tag) { return enemies.Find(a => a.getTag() == tag); }
         public Item getItem(int index) { return items[index]; }
+        public bool isSeen(int[] coordinates) { return drawArray[coordinates[0], coordinates[1]] == 1; }
 
         public void entering()
         {
