@@ -41,12 +41,13 @@ namespace RogueLikeGame
         int swing = 0;
         int swingTimer = 0;
 
-        Player player;
-        List<Enemy> enemies = new List<Enemy>();
-        List<Item> items = new List<Item>();
-        List<Particle> particles = new List<Particle>();
-        List<Projectile> projectiles = new List<Projectile>();
-        List<Box> boxes = new List<Box>();
+        public Player player;
+        public List<Enemy> enemies = new List<Enemy>();
+        public List<Item> items = new List<Item>();
+        public List<Particle> particles = new List<Particle>();
+        public List<Projectile> projectiles = new List<Projectile>();
+        public List<Box> boxes = new List<Box>();
+        public List<StaticObject> staticObjects = new List<StaticObject>();
 
         private bool collide;
 
@@ -73,7 +74,7 @@ namespace RogueLikeGame
             player = new Player(new int[] { 24, 6 }, scene);
             ui = new UI(player);
 
-            unpaused = new Unpaused(this, scene, player, enemies, items, particles, projectiles, textBox, boxes);
+            unpaused = new Unpaused(this, scene, player, enemies, items, particles, projectiles, textBox, boxes, staticObjects);
             paused = new Paused(this, menu);
 
             state = unpaused;
@@ -164,21 +165,30 @@ namespace RogueLikeGame
                 }
             }
 
+            //static objects
+            foreach (StaticObject staticObject in staticObjects)
+            {
+                if (drawArray[staticObject.coords[0], staticObject.coords[1]] == 1)
+                {
+                    spriteBatch.DrawString(symbols, staticObject.icon, new Vector2((staticObject.coords[0] - currentCorner[0]) * tileWidth, (staticObject.coords[1] - currentCorner[1]) * tileHeight), Color.Brown);
+                }
+            }
             //particles
             foreach (Particle particle in particles)
             {
-                //Debug.Print(Convert.ToString(particle.getLocation()[0] - currentCorner[0]) + "," + Convert.ToString(particle.getLocation()[1] - currentCorner[1]));
-                spriteBatch.DrawString(symbols, particle.getTag(), new Vector2((particle.getLocation()[0] - currentCorner[0]) * tileWidth + particle.pixMod[0], (particle.getLocation()[1] - currentCorner[1]) * tileHeight + particle.pixMod[1]), particle.color);
+                if (drawArray[particle.coords[0], particle.coords[1]] == 1)
+                {
+                    //Debug.Print(Convert.ToString(particle.getLocation()[0] - currentCorner[0]) + "," + Convert.ToString(particle.getLocation()[1] - currentCorner[1]));
+                    spriteBatch.DrawString(symbols, particle.getTag(), new Vector2((particle.getLocation()[0] - currentCorner[0]) * tileWidth + particle.pixMod[0], (particle.getLocation()[1] - currentCorner[1]) * tileHeight + particle.pixMod[1]), particle.color);
+                }
             }
             //projectiles
             foreach (Projectile projectile in projectiles)
             {
-                spriteBatch.DrawString(symbols, projectile.icon, new Vector2((projectile.coords[0] - currentCorner[0]) * tileWidth + projectile.pixMod[0], (projectile.coords[1] - currentCorner[1]) * tileHeight + projectile.pixMod[1]), projectile.color);
-            }
-            //boxes
-            foreach (Box box in boxes)
-            {
-                spriteBatch.DrawString(symbols, box.uniVal, new Vector2((box.coords[0] - currentCorner[0]) * tileWidth, (box.coords[1] - currentCorner[1]) * tileHeight), Color.Beige);
+                if (drawArray[projectile.coords[0], projectile.coords[1]] == 1)
+                {
+                    spriteBatch.DrawString(symbols, projectile.icon, new Vector2((projectile.coords[0] - currentCorner[0]) * tileWidth + projectile.pixMod[0], (projectile.coords[1] - currentCorner[1]) * tileHeight + projectile.pixMod[1]), projectile.color);
+                }
             }
             //items
             foreach (Item item in items)
@@ -187,6 +197,11 @@ namespace RogueLikeGame
                 {
                     spriteBatch.DrawString(symbols, item.getUniVal(), new Vector2(((item.coords[0] - currentCorner[0]) * tileWidth), ((item.coords[1] - currentCorner[1]) * tileHeight) + textScroll[textScrollIndex]), item.color);
                 }
+            }
+            //boxes
+            foreach (Box box in boxes)
+            {
+                spriteBatch.DrawString(symbols, box.uniVal, new Vector2((box.coords[0] - currentCorner[0]) * tileWidth, (box.coords[1] - currentCorner[1]) * tileHeight), Color.Beige);
             }
 
             //UI
@@ -237,6 +252,7 @@ namespace RogueLikeGame
             spriteBatch.DrawString(output, "Facing: " + Convert.ToString(player.facing[0] + "," + player.facing[1]), new Vector2(1150, 35), Color.White);
             spriteBatch.DrawString(output, "Corner: " + Convert.ToString(currentCorner[0] + "," + currentCorner[1]), new Vector2(1150, 65), Color.White);
             spriteBatch.DrawString(output, "Area: " + scene.currentArea, new Vector2(1150, 95), Color.White);
+            spriteBatch.DrawString(output, "Player: " + Convert.ToString(player.coords[0] + "," + player.coords[1]), new Vector2(1150, 125), Color.White);
 
         }
         //gainsboro, gray, darkslategray, black
@@ -281,6 +297,7 @@ namespace RogueLikeGame
             }
             //foreach (int[] a in tileQuerry) { Debug.Print(Convert.ToString(a[0]) + "," + Convert.ToString(a[1])); }
             spriteBatch.DrawString(symbols, tiles[scene.getTile(new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] }).getNum()], new Vector2(player.coords[0] * tileWidth, player.coords[1] * tileHeight), colors[scene.getTile(new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] }).getNum()]);
+            drawArray[player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1]] = 1;
 
             foreach (List<int[]> tileList in tileQuerry)
             {
@@ -316,7 +333,7 @@ namespace RogueLikeGame
             }
 
         }
-        public List<int[]> getTilesInbetween(int[] A, int[] B)
+        public static List<int[]> getTilesInbetween(int[] A, int[] B)
         {
             List<int[]> tileArray = new List<int[]>();
             if (((A[0] + B[0]) / 2 == A[0] && (A[1] + B[1]) / 2 == A[1]) || ((A[0] + B[0]) / 2 == B[0] && (A[1] + B[1]) / 2 == B[1]))
@@ -327,22 +344,49 @@ namespace RogueLikeGame
             return tileArray;
 
         }
-        public List<Tile> getTilesInbetween(Tile A, Tile B)
+
+        public Stack<int[]> AstarSearch(int[] A, int[] B)
         {
-            List<Tile> tileArray = new List<Tile>();
-            if (((A.coords[0] + B.coords[0]) / 2 == A.coords[0] && (A.coords[1] + B.coords[1]) / 2 == A.coords[1]) || ((A.coords[0] + B.coords[0]) / 2 == B.coords[0] && (A.coords[1] + B.coords[1]) / 2 == B.coords[1]))
-            { return tileArray; }
-            tileArray.Add(scene.getTile((A.coords[0] + B.coords[0]) / 2, (A.coords[1] + B.coords[1]) / 2));
-            tileArray.AddRange(getTilesInbetween(A, scene.getTile((A.coords[0] + B.coords[0]) / 2, (A.coords[1] + B.coords[1]) / 2)));
-            tileArray.AddRange(getTilesInbetween(scene.getTile((A.coords[0] + B.coords[0]) / 2, (A.coords[1] + B.coords[1]) / 2), B));
-            return tileArray;
+            Queue<Tile> frontier = new Queue<Tile>();
+            frontier.Enqueue(scene.getTile(A));
+            Dictionary<Tile, Tile> cameFrom = new Dictionary<Tile, Tile>();
+            cameFrom.Add(scene.getTile(A), scene.getTile(new int[] { 0, 0 }));
+
+            while (frontier.Count > 0) 
+            {
+                Tile current = frontier.Dequeue();
+                if (current.coords[0] == scene.getTile(B).coords[0] && current.coords[1] == scene.getTile(B).coords[1]) { break; }
+                if (!cameFrom.ContainsKey(scene.getTile(current.coords[0]+1,current.coords[1])) 
+                    && !scene.collidesAbsolute(new int[] { current.coords[0] + 1, current.coords[1] })) 
+                        { frontier.Enqueue(scene.getTile(current.coords[0] + 1, current.coords[1])); cameFrom.Add(scene.getTile(current.coords[0]+1,current.coords[1]), current);}
+                
+                if (!cameFrom.ContainsKey(scene.getTile(current.coords[0], current.coords[1] + 1))
+                    && !scene.collidesAbsolute(new int[] { current.coords[0], current.coords[1] + 1 }))
+                        { frontier.Enqueue(scene.getTile(current.coords[0], current.coords[1] + 1)); cameFrom.Add(scene.getTile(current.coords[0], current.coords[1] + 1), current); }
+                
+                if (!cameFrom.ContainsKey(scene.getTile(current.coords[0] - 1, current.coords[1]))
+                    && !scene.collidesAbsolute(new int[] { current.coords[0] - 1, current.coords[1] }))
+                        { frontier.Enqueue(scene.getTile(current.coords[0] - 1, current.coords[1])); cameFrom.Add(scene.getTile(current.coords[0] - 1, current.coords[1]), current); }
+                
+                if (!cameFrom.ContainsKey(scene.getTile(current.coords[0], current.coords[1] - 1))
+                    && !scene.collidesAbsolute(new int[] { current.coords[0], current.coords[1] - 1 }))
+                        { frontier.Enqueue(scene.getTile(current.coords[0], current.coords[1] - 1)); cameFrom.Add(scene.getTile(current.coords[0], current.coords[1] - 1), current); }
+
+            }
+            Stack<int[]> path = new Stack<int[]>();
+            path.Push(B);
+            Tile next = cameFrom[scene.getTile(B)];
+            while (cameFrom[next].coords[0] > 0 && cameFrom[next].coords[1] > 0) { path.Push(next.coords); next = cameFrom[next]; }
+            return path;
         }
+
         public int getScreenDimension(int dim) { return screenDim[dim]; }
         public void addParticle(Particle particle) { this.particles.Add(particle); }
         public void addProjectile(Projectile projectile) { this.projectiles.Add(projectile); }
         public void addEnemy(Enemy enemy) { this.enemies.Add(enemy); }
         public void addItem(Item item) { this.items.Add(item); }
         public void addBox(Box box) { this.boxes.Add(box); }
+        public void addStatic(StaticObject staticObject) { this.staticObjects.Add(staticObject); }
 
         public Projectile getProjectile(int index) { return projectiles[index]; }
         public Enemy getEnemy(string tag) { return enemies.Find(a => a.getTag() == tag); }

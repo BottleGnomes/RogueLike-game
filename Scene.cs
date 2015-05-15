@@ -23,7 +23,7 @@ namespace RogueLikeGame
         {
             this.textBox = textBox;
             this.playing = playing;
-            this.constructor = new Constructor();
+            this.constructor = new Constructor("Collision.csv");
             dimensions = constructor.getDimensions();
 
 
@@ -58,9 +58,10 @@ namespace RogueLikeGame
                         switch (initial.Name)
                         {
                             case "text": { textBox.addLine(initial.InnerText, Convert.ToInt16(initial.Attributes[0].Value), initial.Attributes[1].Value, initial.Attributes[2].Value); break; }
-                            case "enemy": { playing.addEnemy(new Enemy(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, Convert.ToInt16(initial.Attributes[2].Value), initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value), initial.Attributes[5].Value, playing)); break; }
+                            case "enemy": { bool aggro = initial.Attributes[6].Value == "true"; playing.addEnemy(new Enemy(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, Convert.ToInt16(initial.Attributes[2].Value), initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value), initial.Attributes[5].Value, playing, aggro)); break; }
                             case "item": { playing.addItem(new Item(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, initial.Attributes[2].Value)); break; }
                             case "box": { playing.addBox(new Box(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, this, initial.Attributes[2].Value, initial.Attributes[3].Value, Convert.ToInt16(initial.Attributes[4].Value))); break; }
+                            case "static": { playing.addStatic(new StaticObject(new int[] { Convert.ToInt16(initial.Attributes[0].Value), Convert.ToInt16(initial.Attributes[1].Value) }, initial.Attributes[2].Value, initial.Attributes[3].Value, initial.Attributes[4].Value, initial.Attributes[5].Value, Convert.ToInt16(initial.Attributes[6].Value))); break; }
                         }
                     }
                 }
@@ -87,8 +88,28 @@ namespace RogueLikeGame
         public Tile[,] getArray() { return constructor.getTileArray(); }
         public int[] getDimensions() { return dimensions; }
 
-        public bool collides(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
+        public bool collides(int[] coordinates) 
+        { 
+            if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() != 0) { return true; }
+            if (playing.enemies.Find(a => a.coords[0] == coordinates[0] + playing.currentCorner[0] && a.coords[1] == coordinates[1] + playing.currentCorner[1]) != null) { return true; }
+            if (playing.staticObjects.Find(a => a.coords[0] == coordinates[0] + playing.currentCorner[0] && a.coords[1] == coordinates[1] + playing.currentCorner[1]) != null) { return true; }
+            if (playing.boxes.Find(a => a.coords[0] == coordinates[0] + playing.currentCorner[0] && a.coords[1] == coordinates[1] + playing.currentCorner[1]) != null) { return true; }
+            if (coordinates[0] == playing.player.coords[0] && coordinates[1] == playing.player.coords[1]) { return true; }
+            return false; 
+        }
         public bool collides(int x, int y) { if (constructor.getTile(new int[] { x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() != 0) { return true; } return false; }
+        
+        public bool collidesAbsolute(int[] coordinates) 
+        { 
+            if (constructor.getTile(new int[] { coordinates[0], coordinates[1] }).getNum() != 0) { return true; }
+            if (playing.enemies.Find(a => a.coords[0] == coordinates[0]&& a.coords[1] == coordinates[1]) != null) { return true; }
+            if (playing.staticObjects.Find(a => a.coords[0] == coordinates[0]&& a.coords[1] == coordinates[1]) != null) { return true; }
+            if (playing.boxes.Find(a => a.coords[0] == coordinates[0] && a.coords[1] == coordinates[1]) != null) { return true; }
+            if (coordinates[0] == playing.player.coords[0] && coordinates[1] == playing.player.coords[1]) { return true; }
+            return false; 
+        }
+        public bool collidesAbsolute(int x, int y) { if (constructor.getTile(new int[] { x , y }).getNum() != 0) { return true; } return false; }
+        
         public bool isSolid(int[] coordinates) { if (constructor.getTile(new int[] { coordinates[0] + playing.currentCorner[0], coordinates[1] + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
         public bool isSolid(int x, int y) { if (constructor.getTile(new int[] { x + playing.currentCorner[0], y + playing.currentCorner[1] }).getNum() == 1) { return true; } return false; }
         public void setCollision(int x, int y, int coll) { constructor.getTile(new int[] { x, y }).setNum(coll); }
@@ -108,15 +129,15 @@ namespace RogueLikeGame
         string currentLevel;
         string[] tileTypes = { "floor", "wall","hatch","window","fire" };
 
-        public Constructor()
+        public Constructor(string currentLevel)
         {
+            this.currentLevel = currentLevel;
             this.build();
-            currentLevel = "Collision.csv";
         }
 
         public void build()
         {
-            string[] ioArray = File.ReadAllText(string.Format("Content//Collision.csv",this.currentLevel)).Split('\n');
+            string[] ioArray = File.ReadAllText(string.Format("Content//{0}",this.currentLevel)).Split('\n');
             tileArray = new Tile[(ioArray[0].Length + 1) / 2, ioArray.GetLength(0)];
             for (int i = 0; i < ioArray.Length; i++)
             {

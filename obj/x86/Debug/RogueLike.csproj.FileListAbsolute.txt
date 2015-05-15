@@ -55,3 +55,4 @@ C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Wind
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Event.csv
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\symbols.xnb
 C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\eventText.xml
+C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Testing.csv

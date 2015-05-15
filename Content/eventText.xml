@@ -4,28 +4,22 @@
     <initial>
       <text speed ="1500" color ="White" type ="text">You are awake.</text>
       <text speed ="1500" color ="White" type ="text">It's dark.</text>
-      <text speed ="2000" color ="White" type ="text">You hear a voice slither out of the corner...</text>
-      <text speed ="1500" color ="Brown" type ="dialog">Fallen one - you're awake.</text>
-      <text speed ="1500" color ="Brown" type ="dialog">I keep a secret...</text>
-      <text speed ="1500" color ="White" type ="text">You listen closer.</text>
-      <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger"></enemy>
-      <enemy x="3" y="5" health="20" drop="bow" deathEvent ="-1" tag="arrow"></enemy>
-      <enemy x="20" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
-      <enemy x="20" y="19" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
-      <enemy x="19" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
-      <enemy x="21" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
-      <enemy x="20" y="21" health="20" drop="life" deathEvent ="-1" tag="arrow"></enemy>
+      <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger" aggro ="false"></enemy>
+      <enemy x="20" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true"></enemy>
+      <enemy x="20" y="19" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true"></enemy>
+      <enemy x="19" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true"></enemy>
+      <enemy x="21" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true"></enemy>
+      <enemy x="20" y="21" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true"></enemy>
       <item x="3" y="18" tag="life"></item>
+      <static x ="10" y="19" icon="25C9" type="fire" collision="true" particles="fire" frequency="50"></static>
       <box x="13" y="23" uniVal="25A6" drop="key" destroyEvent="-1"></box>
-      <box x="13" y="22" uniVal="25A6" drop="food" destroyEvent="-1"></box>
+      <box x="13" y="22" uniVal="25A6" drop="life" destroyEvent="-1"></box>
       <box x="12" y="23" uniVal="25A6" drop="bow" destroyEvent="-1"></box>
     </initial>
     
     <timed>
       <text speed ="50000" color ="White" type ="text">You were a wizard, once.</text>
       <text speed ="1500" color ="White" type ="text">Not anymore, though.</text>
-      <text speed ="1500" color ="White" type ="text">You swish your finger, but nothing happens.</text>
-      <text speed ="1000" color ="White" type ="text">Magic's all gone.</text>
       <text speed ="50000" color ="White" type ="text">You kick around the dust a bit.</text>
       <text speed ="1500" color ="White" type ="text">There's a long wait ahead of you.</text>
       <text speed ="60000" color ="White" type ="text">It seems without your magic you are useless...</text>
@@ -33,19 +27,11 @@
     </timed>
     
     <event id ="1" type="proximity" command="speak stranger">
-      <text speed ="2000" color ="Brown" type ="dialog">I keep a secret, I said.</text>
-      <text speed ="2000" color ="Brown" type ="dialog">Your magic has been lost?</text>
-      <text speed ="2000" color ="Brown" type ="dialog">Your spells won't move dust!</text>
-      <text speed ="2800" color ="Brown" type ="dialog">I know! I know, But I won't tell.</text>
-      <text speed ="2000" color ="Brown" type ="dialog">Not before you unbind me!</text>
-      <text speed ="2800" color ="Brown" type ="dialog">The one before you had a plan, you see.</text>
-      <text speed ="2400" color ="Brown" type ="dialog">Stole something very important...</text>
-      <text speed ="1800" color ="Brown" type ="dialog">Hid it away...</text>
-      <text speed ="2800" color ="Brown" type ="dialog">But, he was volunteered some nights ago.</text>
-      <text speed ="1800" color ="Brown" type ="dialog">Find what he hid.</text>
-      <text speed ="2000" color ="Brown" type ="dialog">Set me free from this hole!</text>
-      <text speed ="2000" color ="Brown" type ="dialog">And I will tell you what you want to know.</text>
-      <text speed ="1800" color ="White" type ="text">Something hidden...</text>
+      <text speed ="2000" color ="Brown" type ="dialog">I keep a secret.</text>
+      <text speed ="2000" color ="Brown" type ="dialog">Your magic has been stolen.</text>
+      <text speed ="2000" color ="Brown" type ="dialog">And I know how.</text>
+      <text speed ="2000" color ="Brown" type ="dialog">The secret is yours if you release me.</text>
+      <text speed ="1800" color ="White" type ="text">Release...</text>
       <text speed ="1800" color ="White" type ="text">You think for a moment.</text>
     </event>
     
@@ -59,11 +45,15 @@
     </event>
 
     <event id="4" type="proximity" command="next hallway">
-      <text speed="1500" color="White" type="dialog"></text>
+      <text speed="1500" color="White" type="dialog">The door opens.</text>
     </event>
   </area>
+  
   <area id="hallway">
     <initial>
+      <text speed ="1500" color ="White" type ="text">You're out.</text>
+      <text speed ="1500" color ="White" type ="text">How do you leave this place?</text>
+      <enemy x="3" y="5" health="20" drop="sword" deathEvent ="-1" tag="sword" aggro="true"></enemy>
     </initial>
     <timed>
     </timed>

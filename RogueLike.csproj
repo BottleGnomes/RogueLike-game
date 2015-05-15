@@ -81,7 +81,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Collision.csv">
+    <Content Include="Content\Testing.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -92,6 +92,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\symbols.xnb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Collision.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

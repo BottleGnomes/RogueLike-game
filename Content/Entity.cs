@@ -13,6 +13,7 @@ namespace RogueLikeGame
         Scene scene;
         public int[] facing = { 0, 1 };
 
+        public bool onFire = false;
         public bool attacking = false;
         public bool damaged = false;
         public int damageTimer = 0;
@@ -21,7 +22,7 @@ namespace RogueLikeGame
         public int health = 4;
         public int select = 0;
         public Color color = Color.White;
-        public int sight = 18;
+        public int sight = 12;
         public List<string> inventory = new List<string>();
 
         public Player(int[] coords, Scene scene)
@@ -85,11 +86,28 @@ namespace RogueLikeGame
             this.eventId = eventId;
         }
     }
-    //FIRE: 25BD  25CF 25BF
-    //      25BC  2666 25BE
-    class Static : Drawable
+    class StaticObject : Drawable
     {
+        public string icon;
+        public string type;
+        public bool collision;
+        public string particles;
+        public int frequency;
+        public int particleTimer = 0;
 
+        public StaticObject(int[] coords, string icon, string type, string collision, string particles, int frequency) 
+        {
+            this.coords = coords;
+            this.icon = "\u25B2";
+            this.type = type;
+            this.collision = collision == "true";
+            this.particles = particles;
+            this.frequency = frequency;
+        }
+        public void update(GameTime gameTime) 
+        {
+            particleTimer += gameTime.ElapsedGameTime.Milliseconds;
+        }
     }
     class Projectile : Drawable
     {
@@ -106,7 +124,6 @@ namespace RogueLikeGame
 
         public Projectile(int[] coords, int[] direction, string type, Scene scene)
         {
-            Debug.Print("Make");
             this.coords = coords;
             this.direction = direction;
             this.type = type;
@@ -142,7 +159,7 @@ namespace RogueLikeGame
     {
         int[] direction;
         double[] velocity;
-        int[] location;
+        int[] decay = new int[] { 0, 0 };
         public int[] pixMod = new int[] { 0, 0 };
         public Color color;
         string[] icon;
@@ -178,6 +195,18 @@ namespace RogueLikeGame
                         this.direction = new int[] { direction[0] + rand.Next(-1, 2), direction[1] + rand.Next(-1, 2) };
                         break;
                     }
+                case "fire":
+                    {
+                        this.icon = new string[] { "\u25BC", "\u2666", "\u25BE", "\u25BD", "\u25CF", "\u25BF" };
+                        this.setTag(icon[0]);
+                        this.direction = new int[] { 0, -1 };
+                        Color[] colors = new Color[] { Color.Red, Color.Orange, Color.DarkOrange, Color.Yellow };
+                        this.color = colors[rand.Next(colors.Length)];
+                        this.pixMod[0] = rand.Next(-10, 11);
+                        break;
+                        //FIRE: 25BD  25CF 25BF
+                        //      25BC  2666 25BE
+                    }
                 default:
                     {
                         this.icon = new string[] { type, type, type, type, type };
@@ -186,7 +215,7 @@ namespace RogueLikeGame
                         break;
                     }
             }
-            location = start;
+            this.coords = start;
             velocity = new double[] { rand.NextDouble() + .5, rand.NextDouble() + .5 };
         }
         public void update(GameTime gameTime)
@@ -202,7 +231,7 @@ namespace RogueLikeGame
                 this.pixMod = new int[] { (int)(4 * direction[0] * velocity[0]) + pixMod[0], (int)(4 * direction[1] * velocity[1]) + pixMod[1] };
             }
         }
-        public int[] getLocation() { return location; }
+        public int[] getLocation() { return coords; }
     }
 
     class Item : Drawable
@@ -282,6 +311,7 @@ namespace RogueLikeGame
         int dialogTimer = 0;
         int damageTimer = 0;
         int attackTimer = 0;
+        int moveTimer = 0;
 
         public Color color;
 
@@ -289,19 +319,25 @@ namespace RogueLikeGame
         public bool damaged = false;
         public bool dying;
         public bool attacking;
+        public bool aggressive;
+        public bool moving = false;
 
         public int health;
         public int eventId;
         public int[] direction = new int[] { 0, 1 };
+        public int[] destination;
+        public Stack<int[]> path;
 
         public string uniVal;
         public Queue<TextLine> dialog = new Queue<TextLine>();
         Playing playing;
         public string drop;
 
-        public Enemy(int[] coords, Scene scene, int health, string drop, int eventId, string tag, Playing playing)
+        Random rand = new Random(Guid.NewGuid().GetHashCode());
+
+        public Enemy(int[] coords, Scene scene, int health, string drop, int eventId, string tag, Playing playing, bool aggressive)
         {
-            Debug.Print(uniVal);
+            //Debug.Print(uniVal);
             this.setTag(tag);
             this.coords = coords;
             this.scene = scene;
@@ -311,12 +347,23 @@ namespace RogueLikeGame
             this.uniVal = "\u2646";
             this.drop = drop;
             this.eventId = eventId;
+            this.aggressive = aggressive;
             dying = false;
         }
         public void speak(TextLine dialog) { this.dialog.Enqueue(dialog); this.speaking = true; }
         public void speak(Queue<TextLine> dialog) { this.dialog = dialog; this.speaking = true; }
         public void update(GameTime gameTime)
         {
+            //if (!moving) { moving = true; path = playing.AstarSearch(coords, new int[] { rand.Next(2,29),rand.Next(2,20) }); }
+            if (moving)
+            {
+                if (path.Count == 0) { moving = false; }
+                else
+                {
+                    moveTimer += gameTime.ElapsedGameTime.Milliseconds;
+                    if (moveTimer > 240 && !scene.collides(new int[]{path.Peek()[0] - playing.currentCorner[0],path.Peek()[1] - playing.currentCorner[1]})) { moveTimer = 0; coords = path.Pop(); }
+                }
+            }
             if (this.speaking) { dialogTimer += gameTime.ElapsedGameTime.Milliseconds; }
 
             if (dialog.Count > 0 && dialogTimer > dialog.Peek().time) { dialog.Dequeue(); dialogTimer = 0; }
@@ -338,15 +385,15 @@ namespace RogueLikeGame
             if (!attacking)
             {
                 attacking = true;
-                if (coords[0] - playerLocation[0] == 0) { direction = new int[] { 0, playerLocation[1] / playerLocation[1] }; }
-                if (coords[1] - playerLocation[1] == 0) { direction = new int[] { playerLocation[0] / playerLocation[0], 0 }; }
+                if (coords[1] - playerLocation[1] == 0) { direction = new int[] {(playerLocation[0] - coords[0]) / (Math.Abs(playerLocation[0] - coords[0])),0 }; }
+                if (coords[0] - playerLocation[0] == 0) { direction = new int[] { 0, (playerLocation[1] - coords[1]) / (Math.Abs(playerLocation[1] - coords[1])) }; }
             }
 
         }
         public void death(GameTime gameTime)
         {
             this.time += gameTime.ElapsedGameTime.Milliseconds;
-            if (time > 200) { this.toBeDeleted = true; if (this.eventId > 0) { scene.events.Find(a => a.id == this.eventId).trigger(); } }
+            if (time > 200) { this.toBeDeleted = true; if (this.eventId > 0 && scene.events.Contains(scene.events.Find(a => a.id == this.eventId))) { scene.events.Find(a => a.id == this.eventId).trigger(); } }
             else
             {
                 if (time > 40) { this.color = Color.Red; }
@@ -361,12 +408,17 @@ namespace RogueLikeGame
             this.color = Color.Red;
             this.health -= damage;
             if (health <= 0) { this.dying = true; }
-            else
+            else if(!scene.collides(new int[] {coords[0] - playing.currentCorner[0] + facing[0], coords[1] - playing.currentCorner[1] + facing[1]}))
             {
-                int[] oldcoords = coords;
                 this.coords[0] += facing[0];
                 this.coords[1] += facing[1];
             }
+        }
+        public void setDestination(int[] destination)
+        {
+            this.destination = destination;
+            this.path = playing.AstarSearch(coords, destination);
+            moving = true;
         }
     }
 
