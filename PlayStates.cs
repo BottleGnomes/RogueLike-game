@@ -51,6 +51,7 @@ namespace RogueLikeGame
 
         public void update(GameTime gameTime)
         {
+            //if (player.health <= 0) { playing.changeState("Paused"); }
             state = Keyboard.GetState();
 
             hitUpdate += gameTime.ElapsedGameTime.Milliseconds;
@@ -174,9 +175,16 @@ namespace RogueLikeGame
                                 if (!enemy.attacking) 
                                 {
                                     enemy.setDestination(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] });
-                                    enemy.attack(gameTime, new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] });
-                                    if (player.coords[0] - playing.currentCorner[0] == enemy.coords[0] + enemy.direction[0] && player.coords[1] - playing.currentCorner[1] == enemy.coords[1] + enemy.direction[1])
-                                    { player.hit(Item.getDamage(enemy.getTag()), enemy.direction); }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + 1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1]
+                                        || player.coords[0] + playing.currentCorner[0] == enemy.coords[0] && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + 1
+                                        || player.coords[0] + playing.currentCorner[0] == enemy.coords[0] -1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1]
+                                        || player.coords[0] + playing.currentCorner[0] == enemy.coords[0]  && player.coords[1] + playing.currentCorner[1] == enemy.coords[1]-1)
+                                    {
+                                        enemy.attack(gameTime, new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] });
+                                    }
+                                }
+                                if (enemy.attacking) { if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + enemy.direction[0] && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + enemy.direction[1])
+                                { player.hit(2, enemy.direction); }
                                 }
                                 break;
                             }

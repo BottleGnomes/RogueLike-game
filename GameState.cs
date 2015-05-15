@@ -51,6 +51,7 @@ namespace RogueLikeGame
 
         private bool collide;
 
+        string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592" };
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame)
         {
@@ -150,7 +151,7 @@ namespace RogueLikeGame
             //enemies
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.attacking) {  }
+                if (enemy.attacking) { spriteBatch.DrawString(symbols, Item.getAttackSymbol(enemy.getTag()), new Vector2((enemy.coords[0] - currentCorner[0] + enemy.direction[0])*tileWidth, (enemy.coords[1] - currentCorner[1] + enemy.direction[1])*tileHeight), Item.getColor(enemy.getTag())); }
                 if (drawArray[enemy.coords[0], enemy.coords[1]] == 1)
                 {
                     spriteBatch.DrawString(symbols, enemy.uniVal, new Vector2((enemy.coords[0] - currentCorner[0]) * tileWidth - 5, (enemy.coords[1] - currentCorner[1]) * tileHeight), enemy.color);
@@ -221,6 +222,7 @@ namespace RogueLikeGame
                 spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 55), Item.getColor(player.inventory[i]));
             }
             spriteBatch.DrawString(output, player.inventory[player.select], new Vector2(10, 105), Color.White);
+            spriteBatch.DrawString(symbols, tiles[scene.getTile(new int[] { player.coords[0] + currentCorner[0] + player.facing[0], player.coords[1] + currentCorner[1] + player.facing[1] }).getNum()], new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Color.Silver);
 
             spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight + 4), player.color);
 
@@ -260,7 +262,7 @@ namespace RogueLikeGame
 
         public void drawTiles()
         {
-            string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592"};
+            //string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592"};
             Color[] colors = { Color.DimGray, Color.DarkCyan, Color.BurlyWood, Color.Aqua };
             int[] startingTile = new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] };
             List<List<int[]>> tileQuerry = new List<List<int[]>>();
@@ -327,7 +329,7 @@ namespace RogueLikeGame
                     if (seenArray[i, j] == 1 && drawArray[i, j] != 1)
                     {
                         Tile tile = scene.getTile(new int[] { i, j });
-                        spriteBatch.DrawString(symbols, tiles[tile.getNum()], new Vector2((tile.coords[0] - currentCorner[0]) * tileWidth, (tile.coords[1] - currentCorner[1]) * tileHeight), Color.LightGray);
+                        spriteBatch.DrawString(symbols, tiles[tile.getNum()], new Vector2((i - currentCorner[0]) * tileWidth, (j - currentCorner[1]) * tileHeight), Color.LightGray);
                     }
                 }
             }
@@ -375,7 +377,8 @@ namespace RogueLikeGame
             }
             Stack<int[]> path = new Stack<int[]>();
             path.Push(B);
-            Tile next = cameFrom[scene.getTile(B)];
+            Tile next = new Tile(0, "0", 0, 0);
+            next = cameFrom[scene.getTile(B)];
             while (cameFrom[next].coords[0] > 0 && cameFrom[next].coords[1] > 0) { path.Push(next.coords); next = cameFrom[next]; }
             return path;
         }

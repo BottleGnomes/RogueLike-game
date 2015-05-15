@@ -49,9 +49,9 @@ namespace RogueLikeGame
                         //!!! add code to move on to next region
                         //"hallway"
                         scene.events.Clear();
+                        textBox.addLines(lines);
                         scene.processXML(command.Split(' ')[1]);
                         textBox.waitOutput.Clear();
-                        textBox.addLines(lines);
                         break; 
                     }
                 default: { if (!textBox.writing) { textBox.setLines(lines); scene.events.Remove(this); } break; }

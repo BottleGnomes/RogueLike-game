@@ -81,7 +81,7 @@ namespace RogueLikeGame
         {
             this.scene = scene;
             this.coords = coords;
-            this.uniVal = "\u25A6";
+            this.uniVal = char.ConvertFromUtf32(Convert.ToInt32(uniVal));
             this.drop = drop;
             this.eventId = eventId;
         }
@@ -98,7 +98,8 @@ namespace RogueLikeGame
         public StaticObject(int[] coords, string icon, string type, string collision, string particles, int frequency) 
         {
             this.coords = coords;
-            this.icon = "\u25B2";
+            this.icon = char.ConvertFromUtf32(Convert.ToInt32(icon));
+            //this.icon = "\u25B2";
             this.type = type;
             this.collision = collision == "true";
             this.particles = particles;
@@ -233,7 +234,6 @@ namespace RogueLikeGame
         }
         public int[] getLocation() { return coords; }
     }
-
     class Item : Drawable
     {
         Scene scene;
@@ -312,6 +312,7 @@ namespace RogueLikeGame
         int damageTimer = 0;
         int attackTimer = 0;
         int moveTimer = 0;
+        int swingTimer = 0;
 
         public Color color;
 
@@ -319,6 +320,7 @@ namespace RogueLikeGame
         public bool damaged = false;
         public bool dying;
         public bool attacking;
+        public bool swinging;
         public bool aggressive;
         public bool moving = false;
 
@@ -335,7 +337,7 @@ namespace RogueLikeGame
 
         Random rand = new Random(Guid.NewGuid().GetHashCode());
 
-        public Enemy(int[] coords, Scene scene, int health, string drop, int eventId, string tag, Playing playing, bool aggressive)
+        public Enemy(int[] coords, Scene scene, int health, string drop, int eventId, string tag, Playing playing, bool aggressive, string uniVal)
         {
             //Debug.Print(uniVal);
             this.setTag(tag);
@@ -344,7 +346,7 @@ namespace RogueLikeGame
             this.playing = playing;
             this.color = Color.White;
             this.health = health;
-            this.uniVal = "\u2646";
+            this.uniVal = char.ConvertFromUtf32(Convert.ToInt32(uniVal));
             this.drop = drop;
             this.eventId = eventId;
             this.aggressive = aggressive;
@@ -355,7 +357,7 @@ namespace RogueLikeGame
         public void update(GameTime gameTime)
         {
             //if (!moving) { moving = true; path = playing.AstarSearch(coords, new int[] { rand.Next(2,29),rand.Next(2,20) }); }
-            if (moving)
+            if (moving && !damaged && !attacking)
             {
                 if (path.Count == 0) { moving = false; }
                 else
@@ -372,8 +374,13 @@ namespace RogueLikeGame
             if (this.damaged) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
             if (damageTimer >= 180) { color = Color.White; damageTimer = 0; this.damaged = false; }
 
-            if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; }
-            if (attackTimer > 1600) { attacking = false; attackTimer = 0; }
+            if (swinging)
+            {
+                swingTimer += gameTime.ElapsedGameTime.Milliseconds;
+                if (swingTimer > 350) { attacking = true; }
+                 attackTimer += gameTime.ElapsedGameTime.Milliseconds;
+                if (attackTimer > 1600) { attacking = false; swinging = false; attackTimer = 0; swingTimer = 0; }
+            }
         }
         public TextLine getDialog()
         {
@@ -383,8 +390,8 @@ namespace RogueLikeGame
         public void attack(GameTime gameTime, int[] playerLocation)
         {
             if (!attacking)
-            {
-                attacking = true;
+            {   
+                swinging = true;
                 if (coords[1] - playerLocation[1] == 0) { direction = new int[] {(playerLocation[0] - coords[0]) / (Math.Abs(playerLocation[0] - coords[0])),0 }; }
                 if (coords[0] - playerLocation[0] == 0) { direction = new int[] { 0, (playerLocation[1] - coords[1]) / (Math.Abs(playerLocation[1] - coords[1])) }; }
             }
@@ -408,11 +415,11 @@ namespace RogueLikeGame
             this.color = Color.Red;
             this.health -= damage;
             if (health <= 0) { this.dying = true; }
-            else if(!scene.collides(new int[] {coords[0] - playing.currentCorner[0] + facing[0], coords[1] - playing.currentCorner[1] + facing[1]}))
-            {
-                this.coords[0] += facing[0];
-                this.coords[1] += facing[1];
-            }
+            //else if(!scene.collides(new int[] {coords[0] - playing.currentCorner[0] + facing[0], coords[1] - playing.currentCorner[1] + facing[1]}))
+            //{
+                //this.coords[0] += facing[0];
+                //this.coords[1] += facing[1];
+            //}
         }
         public void setDestination(int[] destination)
         {
