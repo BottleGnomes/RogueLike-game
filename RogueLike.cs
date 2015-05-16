@@ -108,7 +108,7 @@ namespace RogueLikeGame
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(new Color(20,12,28));
             spriteBatch.Begin();
 
             state.draw();

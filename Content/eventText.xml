@@ -37,32 +37,32 @@
       <static x ="21" y="3" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
       <static x ="21" y="4" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
       
-      <static x ="18" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="18" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="19" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="19" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="20" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="20" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="21" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="21" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="18" y="3" icon="9615" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="18" y="4" icon="9615" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
-      <static x ="21" y="3" icon="9621" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="28" mody="0"></static>
-      <static x ="21" y="4" icon="9621" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="28" mody="0"></static>
+      <static x ="18" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="18" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="19" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="19" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="20" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="20" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="21" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="21" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="18" y="3" icon="9615" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="18" y="4" icon="9615" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
+      <static x ="21" y="3" icon="9621" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="28" mody="0"></static>
+      <static x ="21" y="4" icon="9621" type="table" collision="true" particles="barrier" frequency="0" color="Yellow" modx="28" mody="0"></static>
 
       <static x ="22" y="3" icon="9679" type="chair" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
-      <static x ="22" y="3" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="22" y="3" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
 
       <static x ="22" y="4" icon="9679" type="chair" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
-      <static x ="22" y="4" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="22" y="4" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
 
       <static x ="19" y="2" icon="9679" type="chair" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
-      <static x ="19" y="2" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="19" y="2" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
       
       <static x ="18" y="6" icon="9679" type="chair" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
-      <static x ="18" y="6" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="18" y="6" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
       
-      <static x ="21" y="3" icon="9679" type="plate" collision="true" particles="barrier" frequency="0" color="Gold" modx="0" mody="0"></static>
+      <static x ="21" y="3" icon="9679" type="plate" collision="true" particles="barrier" frequency="0" color="White" modx="0" mody="0"></static>
       <static x ="21" y="3" icon="9675" type="plate" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
       
       <box x="13" y="23" uniVal="9638" drop="key" destroyEvent="-1"></box>

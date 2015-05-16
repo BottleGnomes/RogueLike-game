@@ -22,7 +22,6 @@ namespace RogueLikeGame
         SpriteBatch spriteBatch;
         ingameMenu menu;
         TextBox textBox;
-        public Dictionary<string, Color> colorDict = new Dictionary<string, Color>();
 
         public int[] currentCorner = { -13, 12 };
         public int tileWidth = 26;
@@ -55,17 +54,6 @@ namespace RogueLikeGame
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame)
         {
-            colorDict["White"] = Color.White;
-            colorDict["Red"] = Color.Red;
-            colorDict["Blue"] = Color.Blue;
-            colorDict["Yellow"] = Color.Yellow;
-            colorDict["Brown"] = Color.Brown;
-            colorDict["Gold"] = Color.Gold;
-            colorDict["Salmon"] = Color.Salmon;
-            colorDict["Gray"] = Color.Gray;
-            colorDict["Sienna"] = Color.Sienna;
-            colorDict["Orange"] = Color.Orange;
-            colorDict["Firebrick"] = Color.Firebrick;
 
             this.ingame = ingame;
             symbols = ingame.Content.Load<SpriteFont>("symbols");
@@ -163,9 +151,9 @@ namespace RogueLikeGame
                 if (enemy.speaking)
                 {
                     textVector = new Vector2(((enemy.coords[0] - currentCorner[0]) * tileWidth) - (enemy.getDialog().text.Length / 2 * 13), ((enemy.coords[1] - currentCorner[1]) * tileHeight) - (tileHeight) + textScroll[textScrollIndex]);
-                    spriteBatch.DrawString(output, enemy.getDialog().text, new Vector2(textVector.X - 2, textVector.Y - 1), Color.Black);
-                    spriteBatch.DrawString(output, enemy.getDialog().text, new Vector2(textVector.X + 2, textVector.Y + 1), Color.Black);
-                    spriteBatch.DrawString(output, enemy.getDialog().text, textVector, Color.White);
+                    spriteBatch.DrawString(output, enemy.getDialog().text, new Vector2(textVector.X - 2, textVector.Y - 1), Playing.getColor("Black"));
+                    spriteBatch.DrawString(output, enemy.getDialog().text, new Vector2(textVector.X + 2, textVector.Y + 1), Playing.getColor("Black"));
+                    spriteBatch.DrawString(output, enemy.getDialog().text, textVector, Playing.getColor("White"));
 
                 }
             }
@@ -206,53 +194,53 @@ namespace RogueLikeGame
             //boxes
             foreach (Box box in boxes)
             {
-                spriteBatch.DrawString(symbols, box.uniVal, new Vector2((box.coords[0] - currentCorner[0]) * tileWidth, (box.coords[1] - currentCorner[1]) * tileHeight), Color.Beige);
+                spriteBatch.DrawString(symbols, box.uniVal, new Vector2((box.coords[0] - currentCorner[0]) * tileWidth, (box.coords[1] - currentCorner[1]) * tileHeight), Playing.getColor("Sienna"));
             }
 
             //UI
-            for (int i = 0; i < player.health; i++) { spriteBatch.DrawString(symbols, "\u2665", new Vector2(10 + (i * 30), 10), Color.Red); }
-            for (int i = 0; i < ui.getMaxHealth() - player.health; i++) { spriteBatch.DrawString(symbols, "\u2665", new Vector2(10 + (30 * player.health) + (i * 30), 10), Color.Gray); }
+            for (int i = 0; i < player.health; i++) { spriteBatch.DrawString(symbols, "\u2665", new Vector2(10 + (i * 30), 10), Playing.getColor("Red")); }
+            for (int i = 0; i < ui.getMaxHealth() - player.health; i++) { spriteBatch.DrawString(symbols, "\u2665", new Vector2(10 + (30 * player.health) + (i * 30), 10), Playing.getColor("Gray")); }
             for (int i = 0; i < player.inventory.Count; i++)
             {
                 if (i == player.select)
                 {
-                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i) - 2, 55), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i) + 2, 55), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 57), Color.Yellow);
-                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 53), Color.Yellow);
+                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i) - 2, 55), Playing.getColor("White"));
+                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i) + 2, 55), Playing.getColor("White"));
+                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 57), Playing.getColor("White"));
+                    spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 53), Playing.getColor("White"));
                 }
 
                 //player
                 spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 55), Item.getColor(player.inventory[i]));
             }
-            spriteBatch.DrawString(output, player.inventory[player.select], new Vector2(10, 105), Color.White);
-            spriteBatch.DrawString(symbols, tiles[scene.getTile(new int[] { player.coords[0] + currentCorner[0] + player.facing[0], player.coords[1] + currentCorner[1] + player.facing[1] }).getNum()], new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Color.Silver);
+            spriteBatch.DrawString(output, player.inventory[player.select], new Vector2(10, 105), Playing.getColor("White"));
+            spriteBatch.DrawString(symbols, tiles[scene.getTile(new int[] { player.coords[0] + currentCorner[0] + player.facing[0], player.coords[1] + currentCorner[1] + player.facing[1] }).getNum()], new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Playing.getColor("White"));
 
             spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight + 4), player.color);
 
             //textBox
             Texture2D textBox1 = new Texture2D(ingame.GraphicsDevice, 1, 1);
             Texture2D textBox2 = new Texture2D(ingame.GraphicsDevice, 1, 1);
-            textBox1.SetData(new Color[] { Color.Gray });
-            spriteBatch.Draw(textBox1, new Rectangle(0, 618, 1380, 600), Color.Gray);
-            textBox2.SetData(new Color[] { Color.Black });
-            spriteBatch.Draw(textBox2, new Rectangle(0, 628, 1380, 600), Color.Gray);
+            textBox1.SetData(new Color[] { Playing.getColor("Gray") });
+            spriteBatch.Draw(textBox1, new Rectangle(0, 618, 1380, 600), Playing.getColor("Gray"));
+            textBox2.SetData(new Color[] { Playing.getColor("Black") });
+            spriteBatch.Draw(textBox2, new Rectangle(0, 628, 1380, 600), Playing.getColor("Gray"));
             List<TextLine> lines = textBox.getText().ToList<TextLine>();
             for (int i = 0; i < lines.Count; i++)
             {
-                spriteBatch.DrawString(output, lines[i].text, new Vector2(20, 633 + (20 * i)), colorDict[lines[i].color]);
+                spriteBatch.DrawString(output, lines[i].text, new Vector2(20, 633 + (20 * i)), Playing.getColor(lines[i].color));
             }
             if (state == paused)
             {
                 Texture2D dummyTexture = new Texture2D(ingame.GraphicsDevice, 1, 1);
                 Texture2D dummyTexture2 = new Texture2D(ingame.GraphicsDevice, 1, 1);
-                dummyTexture.SetData(new Color[] { Color.Gray });
-                spriteBatch.Draw(dummyTexture, new Rectangle(200, 50, 900, 600), Color.Gray);
-                dummyTexture2.SetData(new Color[] { Color.Black });
-                spriteBatch.Draw(dummyTexture2, new Rectangle(215, 65, 870, 570), Color.Gray);
+                dummyTexture.SetData(new Color[] { Playing.getColor("Gray") });
+                spriteBatch.Draw(dummyTexture, new Rectangle(200, 50, 900, 600), Playing.getColor("Gray"));
+                dummyTexture2.SetData(new Color[] { Playing.getColor("Black") });
+                spriteBatch.Draw(dummyTexture2, new Rectangle(215, 65, 870, 570), Playing.getColor("Gray"));
 
                 menu.update();
-                spriteBatch.DrawString(output, menu.draw(), new Vector2(225, 75), Color.White);
+                spriteBatch.DrawString(output, menu.draw(), new Vector2(225, 75), Playing.getColor("White"));
             }
             spriteBatch.DrawString(output, "FPS: " + Convert.ToString(frames), new Vector2(1150, 5), Color.White);
             spriteBatch.DrawString(output, "Facing: " + Convert.ToString(player.facing[0] + "," + player.facing[1]), new Vector2(1150, 35), Color.White);
@@ -268,7 +256,7 @@ namespace RogueLikeGame
         public void drawTiles()
         {
             //string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592"};
-            Color[] colors = { Color.DimGray, Color.DarkCyan, Color.BurlyWood, Color.Aqua };
+            Color[] colors = { Playing.getColor("LightGray"), Playing.getColor("Gray"), Playing.getColor("Brown"), Playing.getColor("LightGray") };
             int[] startingTile = new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] };
             List<List<int[]>> tileQuerry = new List<List<int[]>>();
             drawArray = new int[scene.getArray().GetLength(0), scene.getArray().GetLength(1)];
@@ -334,7 +322,7 @@ namespace RogueLikeGame
                     if (seenArray[i, j] == 1 && drawArray[i, j] != 1)
                     {
                         Tile tile = scene.getTile(new int[] { i, j });
-                        spriteBatch.DrawString(symbols, tiles[tile.getNum()], new Vector2((i - currentCorner[0]) * tileWidth, (j - currentCorner[1]) * tileHeight), Color.LightGray);
+                        spriteBatch.DrawString(symbols, tiles[tile.getNum()], new Vector2((i - currentCorner[0]) * tileWidth, (j - currentCorner[1]) * tileHeight), Playing.getColor("Gray"));
                     }
                 }
             }
@@ -386,6 +374,30 @@ namespace RogueLikeGame
             next = cameFrom[scene.getTile(B)];
             while (cameFrom[next].coords[0] > 0 && cameFrom[next].coords[1] > 0) { path.Push(next.coords); next = cameFrom[next]; }
             return path;
+        }
+        public static Color getColor(string color)
+        {
+            switch(color)
+            {
+                
+                case "Black": return new Color(20, 12, 28);
+                case "DarkBlue": return new Color(48, 52, 109);
+                case "Green": return new Color(52,101,36);
+                case "LightGreen": return new Color(109,170,44);
+                case "White": return new Color(222,218,214);
+                case "Red": return new Color(208,70,72);
+                case "Blue":return new Color(89, 125, 206);
+                case "Yellow": return new Color(218, 212, 94);
+                case "Brown": return new Color(133, 76, 48);
+                case "Salmon": return new Color(210, 170, 153);
+                case "LightGray": return new Color(133,149,151);
+                case "Gray": return new Color(117,113,97);
+                case "Sienna": return new Color(210, 125, 44);
+                case "LightBlue": return new Color(109,194,202);
+                case "DarkGray": return new Color(78,74,78);
+                case "Purple": return new Color(68, 36, 52);
+                default: return new Color(255, 255, 255);
+            }
         }
 
         public int getScreenDimension(int dim) { return screenDim[dim]; }
