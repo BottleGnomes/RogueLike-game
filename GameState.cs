@@ -22,7 +22,7 @@ namespace RogueLikeGame
         SpriteBatch spriteBatch;
         ingameMenu menu;
         TextBox textBox;
-        Dictionary<string, Color> colorDict = new Dictionary<string, Color>();
+        public Dictionary<string, Color> colorDict = new Dictionary<string, Color>();
 
         public int[] currentCorner = { -13, 12 };
         int tileWidth = 26;
@@ -55,6 +55,15 @@ namespace RogueLikeGame
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame)
         {
+            colorDict["White"] = Color.White;
+            colorDict["Red"] = Color.Red;
+            colorDict["Blue"] = Color.Blue;
+            colorDict["Yellow"] = Color.Yellow;
+            colorDict["Brown"] = Color.Brown;
+            colorDict["Gold"] = Color.Gold;
+            colorDict["Salmon"] = Color.Salmon;
+            colorDict["Gray"] = Color.Gray;
+
             this.ingame = ingame;
             symbols = ingame.Content.Load<SpriteFont>("symbols");
             output = ingame.Content.Load<SpriteFont>("Output18pt");
@@ -64,15 +73,7 @@ namespace RogueLikeGame
             scene = new Scene(this, textBox);
             seenArray = new int[scene.getDimensions()[0], scene.getDimensions()[1]];
 
-            colorDict["White"] = Color.White;
-            colorDict["Red"] = Color.Red;
-            colorDict["Blue"] = Color.Blue;
-            colorDict["Yellow"] = Color.Yellow;
-            colorDict["Brown"] = Color.Brown;
-            colorDict["Gold"] = Color.Gold;
-            colorDict["Salmon"] = Color.Salmon;
-
-            player = new Player(new int[] { 24, 6 }, scene);
+            player = new Player(new int[] { 24, 6 }, scene, this);
             ui = new UI(player);
 
             unpaused = new Unpaused(this, scene, player, enemies, items, particles, projectiles, textBox, boxes, staticObjects);
@@ -171,7 +172,7 @@ namespace RogueLikeGame
             {
                 if (drawArray[staticObject.coords[0], staticObject.coords[1]] == 1)
                 {
-                    spriteBatch.DrawString(symbols, staticObject.icon, new Vector2((staticObject.coords[0] - currentCorner[0]) * tileWidth, (staticObject.coords[1] - currentCorner[1]) * tileHeight), Color.Brown);
+                    spriteBatch.DrawString(symbols, staticObject.icon, new Vector2((staticObject.coords[0] - currentCorner[0]) * tileWidth, (staticObject.coords[1] - currentCorner[1]) * tileHeight), staticObject.color);
                 }
             }
             //particles
@@ -255,6 +256,7 @@ namespace RogueLikeGame
             spriteBatch.DrawString(output, "Corner: " + Convert.ToString(currentCorner[0] + "," + currentCorner[1]), new Vector2(1150, 65), Color.White);
             spriteBatch.DrawString(output, "Area: " + scene.currentArea, new Vector2(1150, 95), Color.White);
             spriteBatch.DrawString(output, "Player: " + Convert.ToString(player.coords[0] + "," + player.coords[1]), new Vector2(1150, 125), Color.White);
+            spriteBatch.DrawString(output, "Hits: " + Convert.ToString(player.hitcount), new Vector2(1150, 155), Color.White);
 
         }
         //gainsboro, gray, darkslategray, black

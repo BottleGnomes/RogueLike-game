@@ -86,7 +86,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Event.csv">
+    <Content Include="Content\Level1Event.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -96,7 +96,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Collision.csv">
+    <Content Include="Content\Level1.csv">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

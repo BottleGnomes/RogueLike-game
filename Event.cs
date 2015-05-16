@@ -44,6 +44,14 @@ namespace RogueLikeGame
                         }
                         break;
                     }
+                case "move":
+                    {
+                        Enemy enemy = playing.getEnemy(command.Split(' ')[1]);
+                        enemy.setDestination(new int[] { Convert.ToInt32(command.Split(' ')[2]), Convert.ToInt32(command.Split(' ')[3]) });
+                        textBox.addLines(lines);
+                        scene.events.Remove(this);
+                        break;
+                    }
                 case "next": 
                     { 
                         //!!! add code to move on to next region

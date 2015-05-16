@@ -5,16 +5,23 @@
       <text speed ="1500" color ="White" type ="text">You are awake.</text>
       <text speed ="1500" color ="White" type ="text">It's dark.</text>
       <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger" aggro ="false" uniVal="9798"></enemy>
-      <enemy x="20" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true" uniVal="9797"></enemy>
-      <enemy x="20" y="19" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true" uniVal="9809"></enemy>
-      <enemy x="19" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true" uniVal="9797"></enemy>
-      <enemy x="21" y="20" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true" uniVal="9797"></enemy>
-      <enemy x="20" y="21" health="20" drop="life" deathEvent ="-1" tag="arrow" aggro="true" uniVal="9797"></enemy>
+      <enemy x="20" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9797"></enemy>
+      <enemy x="20" y="19" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9809"></enemy>
+      <enemy x="19" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9797"></enemy>
+      <enemy x="21" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9797"></enemy>
+      <enemy x="20" y="21" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9797"></enemy>
       <item x="3" y="18" tag="life"></item>
-      <static x ="10" y="19" icon="9650" type="fire" collision="true" particles="fire" frequency="50"></static>
+      <static x ="8" y="11" icon="9650" type="fire" collision="true" particles="fire" frequency="50" color="Brown"></static>
+      <static x ="11" y="8" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
+      <static x ="11" y="13" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
+      <static x ="7" y="8" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
+      <static x ="7" y="13" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
+      <static x ="3" y="8" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
+      <static x ="3" y="13" icon="10075" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
+      
       <box x="13" y="23" uniVal="9638" drop="key" destroyEvent="-1"></box>
       <box x="13" y="22" uniVal="9638" drop="life" destroyEvent="-1"></box>
-      <box x="12" y="23" uniVal="9638" drop="bow" destroyEvent="-1"></box>
+      <box x="12" y="23" uniVal="9638" drop="food" destroyEvent="-1"></box>
     </initial>
     
     <timed>
@@ -51,11 +58,14 @@
   
   <area id="hallway">
     <initial>
-      <text speed ="1500" color ="White" type ="text">You're out.</text>
-      <text speed ="1500" color ="White" type ="text">How do you leave this place?</text>
+      <text speed ="0" color ="White" type ="text">You're out.</text>
       <enemy x="3" y="5" health="20" drop="sword" deathEvent ="-1" tag="sword" aggro="true" uniVal="9797"></enemy>
     </initial>
     <timed>
     </timed>
+    <event id="5" type="proximity" command="move sword 5 12">
+      <text speed="1500" color="White" type="text">A guard.</text>
+      <text speed="1500" color="White" type="text">He doesn't look happy.</text>
+    </event>
   </area>
 </levels>

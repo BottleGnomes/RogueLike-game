@@ -38,7 +38,7 @@ namespace RogueLikeGame
         }
         public void draw()
         {
-            spriteBatch.DrawString(output128, "Rogue Like", textLocation, Color.White);
+            spriteBatch.DrawString(output128, "Wizard Game", textLocation, Color.White);
             spriteBatch.Draw(overlay, new Rectangle(0, 0, 1360, 960), Color.White);
         }
         public void entering()

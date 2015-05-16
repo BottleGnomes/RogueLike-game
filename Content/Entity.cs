@@ -11,6 +11,7 @@ namespace RogueLikeGame
     class Player : Drawable
     {
         Scene scene;
+        Playing playing;
         public int[] facing = { 0, 1 };
 
         public bool onFire = false;
@@ -21,12 +22,14 @@ namespace RogueLikeGame
         int attackTimer = 0;
         public int health = 4;
         public int select = 0;
+        public int hitcount = 0;
         public Color color = Color.White;
         public int sight = 12;
         public List<string> inventory = new List<string>();
 
-        public Player(int[] coords, Scene scene)
+        public Player(int[] coords, Scene scene, Playing playing)
         {
+            this.playing = playing;
             inventory.Add("fist");
             this.coords = coords;
             this.scene = scene;
@@ -62,11 +65,15 @@ namespace RogueLikeGame
         }
         public void hit(int damage, int[] direction)
         {
+            hitcount++;
             damaged = true;
             this.color = Color.Red;
             this.health -= damage;
-            this.coords[0] += direction[0];
-            this.coords[1] += direction[1];
+            if (!scene.collides(new int[] { coords[0] + direction[0], coords[1] + direction[1] }))
+            {
+                playing.currentCorner[0] += direction[0];
+                playing.currentCorner[1] += direction[1];
+            }
         }
     }
 
@@ -88,17 +95,21 @@ namespace RogueLikeGame
     }
     class StaticObject : Drawable
     {
+        Playing playing;
         public string icon;
         public string type;
         public bool collision;
         public string particles;
         public int frequency;
         public int particleTimer = 0;
-
-        public StaticObject(int[] coords, string icon, string type, string collision, string particles, int frequency) 
+        public Color color;
+        //9604 , 9607 , 9749 (table?
+        public StaticObject(int[] coords, string icon, string type, string collision, string particles, int frequency, string color, Playing playing, params Tuple<string,int,Color>[] objects) 
         {
             this.coords = coords;
             this.icon = char.ConvertFromUtf32(Convert.ToInt32(icon));
+            this.playing = playing;
+            this.color = playing.colorDict[color];
             //this.icon = "\u25B2";
             this.type = type;
             this.collision = collision == "true";
@@ -208,11 +219,21 @@ namespace RogueLikeGame
                         //FIRE: 25BD  25CF 25BF
                         //      25BC  2666 25BE
                     }
+                case "barrier":
+                    {
+                        this.icon = new string[] { "\u25CB", "\u25E6", "\u25CC", "\u25E6", "\u25E6" };
+                        this.setTag(icon[0]);
+                        this.direction = new int[] { 3, 0 };
+                        Color[] colors = new Color[] { Color.MediumSpringGreen, Color.MediumPurple, Color.Magenta, Color.Yellow };
+                        this.color = colors[rand.Next(colors.Length)];
+                        this.pixMod[1] = rand.Next(-10, 11);
+                        break;
+                    }
                 default:
                     {
                         this.icon = new string[] { type, type, type, type, type };
                         this.setTag(icon[0]);
-                        this.direction = new int[] { rand.Next(-1, 2), rand.Next(-1, 2) };
+                        this.direction = new int[] { 0,-1 };
                         break;
                     }
             }
@@ -323,6 +344,7 @@ namespace RogueLikeGame
         public bool swinging;
         public bool aggressive;
         public bool moving = false;
+        public bool hasHit = false;
 
         public int health;
         public int eventId;
@@ -363,23 +385,31 @@ namespace RogueLikeGame
                 else
                 {
                     moveTimer += gameTime.ElapsedGameTime.Milliseconds;
-                    if (moveTimer > 240 && !scene.collides(new int[]{path.Peek()[0] - playing.currentCorner[0],path.Peek()[1] - playing.currentCorner[1]})) { moveTimer = 0; coords = path.Pop(); }
+                    if (moveTimer > 240 && !scene.collides(new int[] { path.Peek()[0] - playing.currentCorner[0], path.Peek()[1] - playing.currentCorner[1] })) { moveTimer = 0; coords = path.Pop(); }
                 }
             }
             if (this.speaking) { dialogTimer += gameTime.ElapsedGameTime.Milliseconds; }
 
             if (dialog.Count > 0 && dialogTimer > dialog.Peek().time) { dialog.Dequeue(); dialogTimer = 0; }
             if (dialog.Count == 0) { speaking = false; }
-
             if (this.damaged) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
             if (damageTimer >= 180) { color = Color.White; damageTimer = 0; this.damaged = false; }
 
-            if (swinging)
+            //switch for different attack types
+            switch (getTag())
             {
-                swingTimer += gameTime.ElapsedGameTime.Milliseconds;
-                if (swingTimer > 350) { attacking = true; }
-                 attackTimer += gameTime.ElapsedGameTime.Milliseconds;
-                if (attackTimer > 1600) { attacking = false; swinging = false; attackTimer = 0; swingTimer = 0; }
+                case "sword":
+                    {
+                        if (swinging) { swingTimer += gameTime.ElapsedGameTime.Milliseconds; if (swingTimer > 350) { attacking = true; swinging = false; swingTimer = 0; } }
+                        if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; if (attackTimer > 1600) { attacking = false; attackTimer = 0; hasHit = false; } }
+                        break;
+                    }
+                case "bow":
+                    {
+                        if (swinging) { this.attacking = true; }
+                        if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; if (attackTimer > 800) { swinging = false; attacking = false; attackTimer = 0; } }
+                        break;
+                    }
             }
         }
         public TextLine getDialog()
