@@ -95,6 +95,7 @@ namespace RogueLikeGame
     }
     class StaticObject : Drawable
     {
+        public int[] pixMod;
         Playing playing;
         public string icon;
         public string type;
@@ -104,8 +105,9 @@ namespace RogueLikeGame
         public int particleTimer = 0;
         public Color color;
         //9604 , 9607 , 9749 (table?
-        public StaticObject(int[] coords, string icon, string type, string collision, string particles, int frequency, string color, Playing playing, params Tuple<string,int,Color>[] objects) 
+        public StaticObject(int[] coords, string icon, string type, string collision, string particles, int frequency, string color, Playing playing, int[] pixMod) 
         {
+            this.pixMod = pixMod;
             this.coords = coords;
             this.icon = char.ConvertFromUtf32(Convert.ToInt32(icon));
             this.playing = playing;
@@ -401,7 +403,7 @@ namespace RogueLikeGame
                 case "sword":
                     {
                         if (swinging) { swingTimer += gameTime.ElapsedGameTime.Milliseconds; if (swingTimer > 350) { attacking = true; swinging = false; swingTimer = 0; } }
-                        if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; if (attackTimer > 1600) { attacking = false; attackTimer = 0; hasHit = false; } }
+                        if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; if (attackTimer > 850) { attacking = false; attackTimer = 0; hasHit = false; } }
                         break;
                     }
                 case "bow":

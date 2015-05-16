@@ -62,7 +62,7 @@ namespace RogueLikeGame
             selectSwitchUpdate += gameTime.ElapsedGameTime.Milliseconds;
 
             player.update(gameTime);
-            textBox.update(gameTime);
+            textBox.update(gameTime);   
 
             if (scene.trigger(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] })) { scene.getEvent(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }).trigger(); }
             if (player.onFire) { playing.addParticle(new Particle(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }, new int[] { 0, 0 }, 140, "fire", Color.Red)); }

@@ -25,8 +25,8 @@ namespace RogueLikeGame
         public Dictionary<string, Color> colorDict = new Dictionary<string, Color>();
 
         public int[] currentCorner = { -13, 12 };
-        int tileWidth = 26;
-        int tileHeight = 44;
+        public int tileWidth = 26;
+        public int tileHeight = 44;
         int[] screenDim = { 50, 20 };
         int[,] drawArray;
         int[,] seenArray;
@@ -63,6 +63,9 @@ namespace RogueLikeGame
             colorDict["Gold"] = Color.Gold;
             colorDict["Salmon"] = Color.Salmon;
             colorDict["Gray"] = Color.Gray;
+            colorDict["Sienna"] = Color.Sienna;
+            colorDict["Orange"] = Color.Orange;
+            colorDict["Firebrick"] = Color.Firebrick;
 
             this.ingame = ingame;
             symbols = ingame.Content.Load<SpriteFont>("symbols");
@@ -172,7 +175,7 @@ namespace RogueLikeGame
             {
                 if (drawArray[staticObject.coords[0], staticObject.coords[1]] == 1)
                 {
-                    spriteBatch.DrawString(symbols, staticObject.icon, new Vector2((staticObject.coords[0] - currentCorner[0]) * tileWidth, (staticObject.coords[1] - currentCorner[1]) * tileHeight), staticObject.color);
+                    spriteBatch.DrawString(symbols, staticObject.icon, new Vector2((staticObject.coords[0] - currentCorner[0]) * tileWidth + staticObject.pixMod[0], (staticObject.coords[1] - currentCorner[1]) * tileHeight + staticObject.pixMod[1]), staticObject.color);
                 }
             }
             //particles

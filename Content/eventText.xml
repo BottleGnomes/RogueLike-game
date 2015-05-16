@@ -4,20 +4,66 @@
     <initial>
       <text speed ="1500" color ="White" type ="text">You are awake.</text>
       <text speed ="1500" color ="White" type ="text">It's dark.</text>
-      <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger" aggro ="false" uniVal="9798"></enemy>
-      <enemy x="20" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9797"></enemy>
-      <enemy x="20" y="19" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9809"></enemy>
-      <enemy x="19" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9797"></enemy>
-      <enemy x="21" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9797"></enemy>
-      <enemy x="20" y="21" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9797"></enemy>
+      <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger" aggro ="false" uniVal="9820"></enemy>
+      <enemy x="20" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9817"></enemy>
+      <enemy x="20" y="19" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9823"></enemy>
+      <enemy x="19" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9823"></enemy>
+      <enemy x="21" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9823"></enemy>
+      <enemy x="20" y="21" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9823"></enemy>
       <item x="3" y="18" tag="life"></item>
-      <static x ="8" y="11" icon="9650" type="fire" collision="true" particles="fire" frequency="50" color="Brown"></static>
-      <static x ="11" y="8" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
-      <static x ="11" y="13" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
-      <static x ="7" y="8" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
-      <static x ="7" y="13" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
-      <static x ="3" y="8" icon="9679" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
-      <static x ="3" y="13" icon="10075" type="rock" collision="true" particles="barrier" frequency="0" color="Gray"></static>
+      <static x ="8" y="11" icon="9650" type="fire" collision="true" particles="fire" frequency="50" color="Brown" modx="0" mody="0"></static>
+      <static x ="11" y="8" icon="9679" type="column" collision="true" particles="barrier" frequency="0" color="Gray" modx="0" mody="0"></static>
+      <static x ="11" y="13" icon="9679" type="column" collision="true" particles="barrier" frequency="0" color="Gray" modx="0" mody="0"></static>
+      <static x ="7" y="8" icon="9679" type="column" collision="true" particles="barrier" frequency="0" color="Gray" modx="0" mody="0"></static>
+      <static x ="7" y="13" icon="9679" type="column" collision="true" particles="barrier" frequency="0" color="Gray" modx="0" mody="0"></static>
+      <static x ="3" y="8" icon="9679" type="column" collision="true" particles="barrier" frequency="0" color="Gray" modx="0" mody="0"></static>
+      <static x ="3" y="13" icon="9679" type="column" collision="true" particles="barrier" frequency="0" color="Gray" modx="0" mody="0"></static>
+
+      <static x ="18" y="3" icon="9609" type="table" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="18" y="4" icon="9609" type="table" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="19" y="3" icon="9609" type="table" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="19" y="4" icon="9609" type="table" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="20" y="3" icon="9609" type="table" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="20" y="4" icon="9609" type="table" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="21" y="3" icon="9609" type="table" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="21" y="4" icon="9609" type="table" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      
+      <static x ="18" y="3" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
+      <static x ="18" y="4" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
+      <static x ="19" y="3" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
+      <static x ="19" y="4" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
+      <static x ="20" y="3" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
+      <static x ="20" y="4" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
+      <static x ="21" y="3" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
+      <static x ="21" y="4" icon="9617" type="table" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0"></static>
+      
+      <static x ="18" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="18" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="19" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="19" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="20" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="20" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="21" y="3" icon="9620" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="21" y="4" icon="9601" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="18" y="3" icon="9615" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="18" y="4" icon="9615" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      <static x ="21" y="3" icon="9621" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="28" mody="0"></static>
+      <static x ="21" y="4" icon="9621" type="table" collision="true" particles="barrier" frequency="0" color="Orange" modx="28" mody="0"></static>
+
+      <static x ="22" y="3" icon="9679" type="chair" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="22" y="3" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+
+      <static x ="22" y="4" icon="9679" type="chair" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="22" y="4" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+
+      <static x ="19" y="2" icon="9679" type="chair" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="19" y="2" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      
+      <static x ="18" y="6" icon="9679" type="chair" collision="true" particles="barrier" frequency="0" color="Sienna" modx="0" mody="0"></static>
+      <static x ="18" y="6" icon="9675" type="chair" collision="true" particles="barrier" frequency="0" color="Orange" modx="0" mody="0"></static>
+      
+      <static x ="21" y="3" icon="9679" type="plate" collision="true" particles="barrier" frequency="0" color="Gold" modx="0" mody="0"></static>
+      <static x ="21" y="3" icon="9675" type="plate" collision="true" particles="barrier" frequency="0" color="Yellow" modx="0" mody="0"></static>
       
       <box x="13" y="23" uniVal="9638" drop="key" destroyEvent="-1"></box>
       <box x="13" y="22" uniVal="9638" drop="life" destroyEvent="-1"></box>
@@ -59,13 +105,16 @@
   <area id="hallway">
     <initial>
       <text speed ="0" color ="White" type ="text">You're out.</text>
-      <enemy x="3" y="5" health="20" drop="sword" deathEvent ="-1" tag="sword" aggro="true" uniVal="9797"></enemy>
+      <enemy x="3" y="5" health="20" drop="sword" deathEvent ="-1" tag="sword" aggro="true" uniVal="9817"></enemy>
     </initial>
     <timed>
     </timed>
     <event id="5" type="proximity" command="move sword 5 12">
       <text speed="1500" color="White" type="text">A guard.</text>
       <text speed="1500" color="White" type="text">He doesn't look happy.</text>
+    </event>
+    <event id="6" type="proximity" command="clear">
+      <text speed="1500" color="White" type="text">You need a different key.</text>
     </event>
   </area>
 </levels>
