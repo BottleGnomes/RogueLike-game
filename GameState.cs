@@ -49,17 +49,18 @@ namespace RogueLikeGame
         public List<StaticObject> staticObjects = new List<StaticObject>();
 
         private bool collide;
+        public bool collisionMarkers = false;
 
         string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592" };
+        Color[] colors = { Playing.getColor("LightGray"), Playing.getColor("Gray"), Playing.getColor("Brown"), Playing.getColor("LightGray") };
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame)
         {
-
             this.ingame = ingame;
             symbols = ingame.Content.Load<SpriteFont>("symbols");
             output = ingame.Content.Load<SpriteFont>("Output18pt");
             this.spriteBatch = spriteBatch;
-            menu = new ingameMenu(ingame, output);
+            menu = new ingameMenu(ingame, output,this);
             this.textBox = new TextBox(scene);
             scene = new Scene(this, textBox);
             seenArray = new int[scene.getDimensions()[0], scene.getDimensions()[1]];
@@ -73,6 +74,9 @@ namespace RogueLikeGame
             state = unpaused;
 
         }
+
+        public void setColors(params string[] colors) { for (int i = 0; i < colors.Length; i++) { this.colors[i] = Playing.getColor(colors[i]); } }
+
         public void changeState(string inState)
         {
             switch (inState)
@@ -109,6 +113,7 @@ namespace RogueLikeGame
             projectiles.RemoveAll(a => a.toBeDeleted);
             enemies.RemoveAll(a => a.toBeDeleted);
             boxes.RemoveAll(a => a.toBeDeleted);
+            staticObjects.RemoveAll(a => a.toBeDeleted);
             state.update(gameTime);
 
             frameCount++;
@@ -120,6 +125,14 @@ namespace RogueLikeGame
             //Debug.Print(Convert.ToString(currentCorner[0]) + "," + Convert.ToString(currentCorner[1]));
             this.drawTiles();
 
+            //static objects
+            foreach (StaticObject staticObject in staticObjects)
+            {
+                if (drawArray[staticObject.coords[0], staticObject.coords[1]] == 1)
+                {
+                    spriteBatch.DrawString(symbols, staticObject.icon, new Vector2((staticObject.coords[0] - currentCorner[0]) * tileWidth + staticObject.pixMod[0], (staticObject.coords[1] - currentCorner[1]) * tileHeight + staticObject.pixMod[1]), staticObject.color);
+                }
+            }
 
             //attack
             if (player.attacking)
@@ -158,14 +171,6 @@ namespace RogueLikeGame
                 }
             }
 
-            //static objects
-            foreach (StaticObject staticObject in staticObjects)
-            {
-                if (drawArray[staticObject.coords[0], staticObject.coords[1]] == 1)
-                {
-                    spriteBatch.DrawString(symbols, staticObject.icon, new Vector2((staticObject.coords[0] - currentCorner[0]) * tileWidth + staticObject.pixMod[0], (staticObject.coords[1] - currentCorner[1]) * tileHeight + staticObject.pixMod[1]), staticObject.color);
-                }
-            }
             //particles
             foreach (Particle particle in particles)
             {
@@ -214,7 +219,7 @@ namespace RogueLikeGame
                 spriteBatch.DrawString(symbols, Item.getUniVal(player.inventory[i]), new Vector2(10 + (40 * i), 55), Item.getColor(player.inventory[i]));
             }
             spriteBatch.DrawString(output, player.inventory[player.select], new Vector2(10, 105), Playing.getColor("White"));
-            spriteBatch.DrawString(symbols, tiles[scene.getTile(new int[] { player.coords[0] + currentCorner[0] + player.facing[0], player.coords[1] + currentCorner[1] + player.facing[1] }).getNum()], new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Playing.getColor("White"));
+            spriteBatch.DrawString(symbols, tiles[0], new Vector2((player.coords[0] + player.facing[0]) * tileWidth, (player.coords[1] + player.facing[1]) * tileHeight), Playing.getColor("White"));
 
             spriteBatch.DrawString(symbols, "\u265E", new Vector2(player.coords[0] * tileWidth - 5, player.coords[1] * tileHeight + 4), player.color);
 
@@ -242,21 +247,35 @@ namespace RogueLikeGame
                 menu.update();
                 spriteBatch.DrawString(output, menu.draw(), new Vector2(225, 75), Playing.getColor("White"));
             }
+
+
             spriteBatch.DrawString(output, "FPS: " + Convert.ToString(frames), new Vector2(1150, 5), Color.White);
             spriteBatch.DrawString(output, "Facing: " + Convert.ToString(player.facing[0] + "," + player.facing[1]), new Vector2(1150, 35), Color.White);
             spriteBatch.DrawString(output, "Corner: " + Convert.ToString(currentCorner[0] + "," + currentCorner[1]), new Vector2(1150, 65), Color.White);
             spriteBatch.DrawString(output, "Area: " + scene.currentArea, new Vector2(1150, 95), Color.White);
             spriteBatch.DrawString(output, "Player: " + Convert.ToString(player.coords[0] + "," + player.coords[1]), new Vector2(1150, 125), Color.White);
             spriteBatch.DrawString(output, "Hits: " + Convert.ToString(player.hitcount), new Vector2(1150, 155), Color.White);
+            spriteBatch.DrawString(output, "Particles: " + Convert.ToString(particles.Count), new Vector2(1150, 185), Color.White);
 
+            if (this.collisionMarkers)
+            {
+                for (int i = 0; i < screenDim[0]; i++)
+                {
+                    for (int j = 0; j < screenDim[1]; j++)
+                    {
+                        if (scene.includesTile(new int[] { i + currentCorner[0], j + currentCorner[1] }))
+                        {
+                            if (scene.collides(new int[] { i, j })) { spriteBatch.DrawString(symbols, "|", new Vector2((i) * tileWidth, (j) * tileHeight), Color.Red); }
+                            if (scene.collidesAbsolute(new int[] { i + currentCorner[0], j + currentCorner[1] })) { spriteBatch.DrawString(symbols, "=", new Vector2(i * tileWidth, j * tileHeight), Color.Blue); }
+                        }
+                    }
+                }
+            }
         }
-        //gainsboro, gray, darkslategray, black
-        //blue, midnightblue, darkslatgray, black
 
         public void drawTiles()
         {
             //string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592"};
-            Color[] colors = { Playing.getColor("LightGray"), Playing.getColor("Gray"), Playing.getColor("Brown"), Playing.getColor("LightGray") };
             int[] startingTile = new int[] { player.coords[0] + currentCorner[0], player.coords[1] + currentCorner[1] };
             List<List<int[]>> tileQuerry = new List<List<int[]>>();
             drawArray = new int[scene.getArray().GetLength(0), scene.getArray().GetLength(1)];
@@ -264,7 +283,6 @@ namespace RogueLikeGame
             int x = player.sight;
             int y = 0;
             int radiusError = 1 - x;
-            int r = player.sight;
             while (x >= y)
             {
                 tileQuerry.Add(getTilesInbetween(startingTile, new int[] { startingTile[0] + x, startingTile[1] + y }));
@@ -315,17 +333,18 @@ namespace RogueLikeGame
                     }
                 }
             }
-            for (int i = 0; i < seenArray.GetLength(0); i++)
-            {
-                for (int j = 0; j < seenArray.GetLength(1); j++)
+                for (int i = 0; i < screenDim[0]; i++)
                 {
-                    if (seenArray[i, j] == 1 && drawArray[i, j] != 1)
+                    for (int j = 0; j < screenDim[1]; j++)
                     {
-                        Tile tile = scene.getTile(new int[] { i, j });
-                        spriteBatch.DrawString(symbols, tiles[tile.getNum()], new Vector2((i - currentCorner[0]) * tileWidth, (j - currentCorner[1]) * tileHeight), Playing.getColor("Gray"));
+                        if (scene.includesTile(new int[] { i + currentCorner[0], j + currentCorner[1] }) && seenArray[i + currentCorner[0], j + currentCorner[1]] == 1 && drawArray[i + currentCorner[0], j + currentCorner[1]] != 1)
+                        {
+                            Tile tile = scene.getTile(new int[] { i + currentCorner[0], j + currentCorner[1] });
+                            spriteBatch.DrawString(symbols, tiles[tile.getNum()], new Vector2(i * tileWidth, j * tileHeight), Playing.getColor("Gray"));
+                        }
                     }
                 }
-            }
+            
 
         }
         public static List<int[]> getTilesInbetween(int[] A, int[] B)
@@ -350,29 +369,31 @@ namespace RogueLikeGame
             while (frontier.Count > 0) 
             {
                 Tile current = frontier.Dequeue();
-                if (current.coords[0] == scene.getTile(B).coords[0] && current.coords[1] == scene.getTile(B).coords[1]) { break; }
-                if (!cameFrom.ContainsKey(scene.getTile(current.coords[0]+1,current.coords[1])) 
-                    && !scene.collidesAbsolute(new int[] { current.coords[0] + 1, current.coords[1] })) 
-                        { frontier.Enqueue(scene.getTile(current.coords[0] + 1, current.coords[1])); cameFrom.Add(scene.getTile(current.coords[0]+1,current.coords[1]), current);}
-                
-                if (!cameFrom.ContainsKey(scene.getTile(current.coords[0], current.coords[1] + 1))
-                    && !scene.collidesAbsolute(new int[] { current.coords[0], current.coords[1] + 1 }))
-                        { frontier.Enqueue(scene.getTile(current.coords[0], current.coords[1] + 1)); cameFrom.Add(scene.getTile(current.coords[0], current.coords[1] + 1), current); }
-                
-                if (!cameFrom.ContainsKey(scene.getTile(current.coords[0] - 1, current.coords[1]))
-                    && !scene.collidesAbsolute(new int[] { current.coords[0] - 1, current.coords[1] }))
-                        { frontier.Enqueue(scene.getTile(current.coords[0] - 1, current.coords[1])); cameFrom.Add(scene.getTile(current.coords[0] - 1, current.coords[1]), current); }
-                
-                if (!cameFrom.ContainsKey(scene.getTile(current.coords[0], current.coords[1] - 1))
-                    && !scene.collidesAbsolute(new int[] { current.coords[0], current.coords[1] - 1 }))
-                        { frontier.Enqueue(scene.getTile(current.coords[0], current.coords[1] - 1)); cameFrom.Add(scene.getTile(current.coords[0], current.coords[1] - 1), current); }
+                if (current.getCoords()[0] == scene.getTile(B).getCoords()[0] && current.getCoords()[1] == scene.getTile(B).getCoords()[1]) { break; }
+                if (!cameFrom.ContainsKey(scene.getTile(current.getCoords()[0] + 1, current.getCoords()[1]))
+                    && !scene.collidesAbsolute(new int[] { current.getCoords()[0] + 1, current.getCoords()[1] }))
+                { frontier.Enqueue(scene.getTile(current.getCoords()[0] + 1, current.getCoords()[1])); cameFrom.Add(scene.getTile(current.getCoords()[0] + 1, current.getCoords()[1]), current); }
+
+                if (!cameFrom.ContainsKey(scene.getTile(current.getCoords()[0], current.getCoords()[1] + 1))
+                    && !scene.collidesAbsolute(new int[] { current.getCoords()[0], current.getCoords()[1] + 1 }))
+                { frontier.Enqueue(scene.getTile(current.getCoords()[0], current.getCoords()[1] + 1)); cameFrom.Add(scene.getTile(current.getCoords()[0], current.getCoords()[1] + 1), current); }
+
+                if (!cameFrom.ContainsKey(scene.getTile(current.getCoords()[0] - 1, current.getCoords()[1]))
+                    && !scene.collidesAbsolute(new int[] { current.getCoords()[0] - 1, current.getCoords()[1] }))
+                { frontier.Enqueue(scene.getTile(current.getCoords()[0] - 1, current.getCoords()[1])); cameFrom.Add(scene.getTile(current.getCoords()[0] - 1, current.getCoords()[1]), current); }
+
+                if (!cameFrom.ContainsKey(scene.getTile(current.getCoords()[0], current.getCoords()[1] - 1))
+                    && !scene.collidesAbsolute(new int[] { current.getCoords()[0], current.getCoords()[1] - 1 }))
+                { frontier.Enqueue(scene.getTile(current.getCoords()[0], current.getCoords()[1] - 1)); cameFrom.Add(scene.getTile(current.getCoords()[0], current.getCoords()[1] - 1), current); }
 
             }
             Stack<int[]> path = new Stack<int[]>();
-            path.Push(B);
-            Tile next = new Tile(0, "0", 0, 0);
-            next = cameFrom[scene.getTile(B)];
-            while (cameFrom[next].coords[0] > 0 && cameFrom[next].coords[1] > 0) { path.Push(next.coords); next = cameFrom[next]; }
+            if (cameFrom.ContainsKey(scene.getTile(B)))
+            {
+                path.Push(B);
+                Tile next = cameFrom[scene.getTile(B)];
+                while (cameFrom[next].getCoords()[0] > 0 && cameFrom[next].getCoords()[1] > 0) { path.Push(next.getCoords()); next = cameFrom[next]; }
+            }
             return path;
         }
         public static Color getColor(string color)

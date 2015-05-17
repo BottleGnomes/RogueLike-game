@@ -60,7 +60,7 @@ namespace RogueLikeGame
             spriteBatch.DrawString(output18,
                 "> " + entry + "\n" + outputText,
                 new Vector2(40, 20),
-                Color.White);
+                Playing.getColor("White"));
         }
         public void parseCommand(string command)
         {

@@ -5,12 +5,7 @@
       <initial>
         <text speed ="1500" color ="White" type ="text">You are awake.</text>
         <text speed ="1500" color ="White" type ="text">It's dark.</text>
-        <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger" aggro ="false" uniVal="9820"></enemy>
-        <enemy x="20" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9817"></enemy>
-        <enemy x="20" y="19" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9823"></enemy>
-        <enemy x="19" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9823"></enemy>
-        <enemy x="21" y="20" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9823"></enemy>
-        <enemy x="20" y="21" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9823"></enemy>
+        <enemy x="3" y="21" health="20" drop="key" deathEvent ="3" tag="stranger" aggro ="false" uniVal="9820" speed="0"></enemy>
         <item x="3" y="18" tag="life"></item>
         <static x ="8" y="11" icon="9650" type="fire" collision="true" particles="fire" frequency="50" color="Brown" modx="0" mody="0" destructible="true" solid="false" particleLife="140"></static>
         <static x ="10" y="8" icon="9679" type="column" collision="true" particles="barrier" frequency="0" color="Gray" modx="0" mody="0" destructible="false" solid="false" particleLife="0"></static>
@@ -19,26 +14,16 @@
         <static x ="3" y="13" icon="9679" type="column" collision="true" particles="barrier" frequency="0" color="Gray" modx="0" mody="0" destructible="false" solid="false" particleLife="0"></static>
 
         <static x ="14" y="10" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
-        <static x ="14" y="11" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
+        <static x ="14" y="9" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
 
-        <static x ="20" y="0" icon="9608" type="window" collision="true" particles="light" frequency="0" color="Brown" modx="0" mody="0" destructible="false" solid="true" particleLife="0"></static>
-        <static x ="20" y="0" icon="9608" type="window" collision="true" particles="light" frequency="60" color="White" modx="0" mody="0" destructible="true" solid="true" particleLife="260"></static>
+        <static x ="40" y="0" icon="9608" type="window" collision="true" particles="light" frequency="0" color="Brown" modx="0" mody="0" destructible="false" solid="true" particleLife="0"></static>
+        <static x ="40" y="0" icon="9608" type="window" collision="true" particles="light" frequency="60" color="White" modx="0" mody="0" destructible="true" solid="true" particleLife="360"></static>
         
-        <static x ="19" y="4" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="20" y="4" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="19" y="5" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="20" y="5" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="19" y="3" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="20" y="3" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="18" y="4" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="21" y="4" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="18" y="5" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="21" y="5" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="18" y="3" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
-        <static x ="21" y="3" icon="9618" type="carpet" collision="false" particles="light" frequency="0" color="Purple" modx="0" mody="0" destructible="false" solid="false" particleLife="260"></static>
+        <static x ="45" y="11" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
+        <static x ="45" y="12" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
 
-        <static x ="25" y="11" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
-        <static x ="25" y="12" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
+        <static x ="46" y="15" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
+        <static x ="47" y="15" icon="9608" type="door" collision="true" particles="barrier" frequency="0" color="Brown" modx="0" mody="0" destructible="true" solid="true" particleLife="0"></static>
 
         <box x="13" y="23" uniVal="9638" drop="key" destroyEvent="-1"></box>
         <box x="13" y="22" uniVal="9638" drop="life" destroyEvent="-1"></box>
@@ -80,9 +65,9 @@
     <area id="hallway">
       <initial>
         <text speed ="0" color ="White" type ="text">You're out.</text>
-        <enemy x="3" y="5" health="20" drop="sword" deathEvent ="-1" tag="sword" aggro="true" uniVal="9817"></enemy>
-        <enemy x="20" y="6" health="20" drop="life" deathEvent ="-1" tag="sword" aggro="true" uniVal="9817"></enemy>
-        <enemy x="18" y="5" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9815"></enemy>
+        <enemy x="3" y="5" health="20" drop="sword" deathEvent ="-1" tag="sword" aggro="true" uniVal="9817" speed="240"></enemy>
+        <enemy x="22" y="9" health="20" drop="life" deathEvent ="-1" tag="sword" aggro="true" uniVal="9817" speed="240"></enemy>
+        <enemy x="21" y="12" health="20" drop="life" deathEvent ="-1" tag="bow" aggro="true" uniVal="9815" speed="300"></enemy>
       </initial>
       <timed>
       </timed>
@@ -100,6 +85,19 @@
         <text speed="1500" color="White" type="text">It's freezing outside.</text>
         <text speed="1500" color="White" type="text">You would die in the wastes...</text>
       </event>
+      <event id="9" type="proximity" command="next warden 1">
+        <text speed="1500" color="White" type="text">It's freezing outside.</text>
+        <text speed="1500" color="White" type="text">You would die in the wastes...</text>
+      </event>
+    </area>
+
+    <area id="warden">
+      <initial>
+        <text speed ="0" color ="White" type ="text">The warden's office...</text>
+        <enemy x="41" y="18" health="40" drop="life" deathEvent ="-1" tag="galvanized tome" aggro="true" uniVal="9819" speed="600"></enemy>
+      </initial>
+      <timed>
+      </timed>
     </area>
   </level>
   

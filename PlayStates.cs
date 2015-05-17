@@ -34,6 +34,8 @@ namespace RogueLikeGame
         private int attackUpdate = 0;
         private int hitUpdate = 0;
         private int selectSwitchUpdate = 0;
+        private int bossTimerA = 0;
+        private int bossTimerB = 0;
 
         public Unpaused(Playing playing, Scene scene, Player player, List<Enemy> enemies, List<Item> items, List<Particle> particles, List<Projectile> projectiles, TextBox textBox, List<Box> boxes, List<StaticObject> staticObjects)
         {
@@ -51,7 +53,7 @@ namespace RogueLikeGame
 
         public void update(GameTime gameTime)
         {
-            if (player.health <= 0) { playing.changeState("Paused"); }
+            //if (player.health <= 0) { playing.changeState("Paused"); }
             state = Keyboard.GetState();
 
             hitUpdate += gameTime.ElapsedGameTime.Milliseconds;
@@ -188,6 +190,52 @@ namespace RogueLikeGame
                                 if (!enemy.swinging && (enemy.coords[0] - player.coords[0] - playing.currentCorner[0] == 0 || enemy.coords[1] - player.coords[1] - playing.currentCorner[1] == 0))
                                 { enemy.attack(gameTime, new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] });}
                                 if (!enemy.hasHit) { enemy.hasHit = true; playing.addProjectile(new Projectile(new int[] { enemy.coords[0] + enemy.direction[0], enemy.coords[1] + enemy.direction[1] }, enemy.direction, "arrow", scene)); }
+                                break;
+                            }
+                        case "galvanized tome":
+                            {
+                                if (enemy.hasHit) { bossTimerA += gameTime.ElapsedGameTime.Milliseconds; if (bossTimerA > 650) { enemy.hasHit = false; } }
+                                if (!enemy.swinging && !enemy.hasHit)
+                                { enemy.attack(gameTime, new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }); }
+                                if (enemy.swinging && !enemy.attacking) 
+                                {
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
+                                }
+                                if (enemy.attacking)
+                                {
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
+                                    enemy.hasHit = true;
+                                }
                                 break;
                             }
                     }

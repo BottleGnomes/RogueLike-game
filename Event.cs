@@ -54,11 +54,9 @@ namespace RogueLikeGame
                     }
                 case "next": 
                     { 
-                        //!!! add code to move on to next region
-                        //"hallway"
                         scene.events.Clear();
                         textBox.addLines(lines);
-                        scene.processXML(command.Split(' ')[1]);
+                        scene.processXML(command.Split(' ')[1], Convert.ToInt16(command.Split(' ')[2]));
                         textBox.waitOutput.Clear();
                         break; 
                     }

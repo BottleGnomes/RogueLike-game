@@ -70,6 +70,7 @@ namespace RogueLikeGame
             damaged = true;
             this.color = Playing.getColor("Red");
             this.health -= damage;
+            playing.addParticle(new Particle(new int[] {coords[0] + playing.currentCorner[0],coords[1]+playing.currentCorner[1]},new int[] {0,0},240,string.Format("-{0}",damage),Playing.getColor("Red")));
             if (!scene.collides(new int[] { coords[0] + direction[0], coords[1] + direction[1] }))
             {
                 playing.currentCorner[0] += direction[0];
@@ -101,13 +102,19 @@ namespace RogueLikeGame
         public string icon;
         public string type;
         public bool collision;
+        public bool destructible;
+        public bool solid;
         public string particles;
         public int frequency;
         public int particleTimer = 0;
+        public int particleLife;
         public Color color;
         //9604 , 9607 , 9749 (table?
-        public StaticObject(int[] coords, string icon, string type, string collision, string particles, int frequency, string color, Playing playing, int[] pixMod) 
+        public StaticObject(int[] coords, string icon, string type, string collision, string particles, int frequency, string color, Playing playing, int[] pixMod, bool destructible, bool solid, int particleLife) 
         {
+            this.particleLife = particleLife;
+            this.solid = solid;
+            this.destructible = destructible;
             this.pixMod = pixMod;
             this.coords = coords;
             this.icon = char.ConvertFromUtf32(Convert.ToInt32(icon));
@@ -119,6 +126,7 @@ namespace RogueLikeGame
             this.particles = particles;
             this.frequency = frequency;
         }
+        public void destroy() { if (destructible) { this.toBeDeleted = true; playing.addParticle(new Particle(coords, new int[] { 0, 0 }, 120, "stars", Playing.getColor("LightBlue"))); } }
         public void update(GameTime gameTime) 
         {
             particleTimer += gameTime.ElapsedGameTime.Milliseconds;
@@ -232,6 +240,36 @@ namespace RogueLikeGame
                         this.pixMod[1] = rand.Next(-10, 11);
                         break;
                     }
+                case "light":
+                    { //\u25AA  \u25BE
+                        this.icon = new string[] { "*", "+", ":", "-", "`" };
+                        this.setTag(icon[0]);
+                        this.direction = new int[] { rand.Next(-1,2), 1 };
+                        Color[] colors = new Color[] { Playing.getColor("White"), Playing.getColor("LightBlue"), Playing.getColor("White"), Playing.getColor("Blue") };
+                        this.color = colors[rand.Next(colors.Length)];
+                        this.pixMod[0] = rand.Next(-10, 11);
+                        break;
+                    }
+                case "boss1prefire":
+                    {
+                        this.icon = new string[] { "\u2591", "\u2588", "\u2588", "\u2588", "\u2588" };
+                        this.setTag(icon[0]);
+                        this.direction = new int[] { 0, 0 };
+                        Color[] colors = new Color[] { Playing.getColor("Red"), Playing.getColor("Yellow"), Playing.getColor("Yellow"), Playing.getColor("Orange") };
+                        this.color = colors[rand.Next(colors.Length)];
+                        this.pixMod = new int[] {rand.Next(-1, 2),rand.Next(-1,2)};
+                        break;
+                    }
+                case "boss1fire":
+                    {
+                        this.icon = new string[] { "\u2593", "\u2593", "\u2588", "\u2588", "\u2588" };
+                        this.setTag(icon[0]);
+                        this.direction = new int[] { 0, 0 };
+                        Color[] colors = new Color[] { Playing.getColor("Red"), Playing.getColor("Red"), Playing.getColor("Red"), Playing.getColor("Orange") };
+                        this.color = colors[rand.Next(colors.Length)];
+                        this.pixMod = new int[] { rand.Next(-4, 5), rand.Next(-4, 5) };
+                        break;
+                    }
                 default:
                     {
                         this.icon = new string[] { type, type, type, type, type };
@@ -286,6 +324,7 @@ namespace RogueLikeGame
                 case "key": { return Playing.getColor("Yellow"); }
                 case "copper tome": { return Playing.getColor("Sienna"); }
                 case "malachite tome": { return Playing.getColor("Green"); }
+                case "galvanized tome": { return Playing.getColor("Red"); }
                 default: { return Playing.getColor("Purple"); }
             }
         }
@@ -302,6 +341,7 @@ namespace RogueLikeGame
                 case "key": { return "\u2669"; }
                 case "copper tome": { return "\u25C8"; }
                 case "malachite tome": { return "\u25CD"; }
+                case "galvanized tome": { return "\u2638"; }
                 default: { return "\u2639"; }
             }
         }
@@ -325,6 +365,7 @@ namespace RogueLikeGame
                 case "fist": { return "\u2666"; }
                 case "copper tome": { return "\u25CC"; }
                 case "malachite tome": { return "\u25CD"; }
+                case "galvanized tome": { return "\u2638"; }
                 default: { return "?"; }
             }
         }
@@ -349,6 +390,7 @@ namespace RogueLikeGame
         public bool moving = false;
         public bool hasHit = false;
 
+        public int speed;
         public int health;
         public int eventId;
         public int[] direction = new int[] { 0, 1 };
@@ -362,9 +404,11 @@ namespace RogueLikeGame
 
         Random rand = new Random(Guid.NewGuid().GetHashCode());
 
-        public Enemy(int[] coords, Scene scene, int health, string drop, int eventId, string tag, Playing playing, bool aggressive, string uniVal)
+        public Enemy(int[] coords, Scene scene, int health, string drop, int eventId, string tag, Playing playing, bool aggressive, string uniVal, int speed)
         {
             //Debug.Print(uniVal);
+
+            this.speed = speed;
             this.setTag(tag);
             this.coords = coords;
             this.scene = scene;
@@ -388,7 +432,7 @@ namespace RogueLikeGame
                 else
                 {
                     moveTimer += gameTime.ElapsedGameTime.Milliseconds;
-                    if (moveTimer > 240 && !scene.collides(new int[] { path.Peek()[0] - playing.currentCorner[0], path.Peek()[1] - playing.currentCorner[1] })) { moveTimer = 0; coords = path.Pop(); }
+                    if (moveTimer > speed && !scene.collides(new int[] { path.Peek()[0] - playing.currentCorner[0], path.Peek()[1] - playing.currentCorner[1] })) { moveTimer = 0; coords = path.Pop(); }
                 }
             }
             if (this.speaking) { dialogTimer += gameTime.ElapsedGameTime.Milliseconds; }
@@ -409,8 +453,14 @@ namespace RogueLikeGame
                     }
                 case "bow":
                     {
-                        if (swinging) { this.attacking = true; }
-                        if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; if (attackTimer > 800) { swinging = false; attacking = false; attackTimer = 0; } }
+                        if (swinging && !attacking) { swingTimer += gameTime.ElapsedGameTime.Milliseconds; if (swingTimer > 350) { attacking = true; hasHit = false; } }
+                        if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; if (attackTimer > 850) { swinging = false; swingTimer = 0; attacking = false; attackTimer = 0; } }
+                        break;
+                    }
+                case "galvanized tome":
+                    {
+                        if (swinging && !attacking) { swingTimer += gameTime.ElapsedGameTime.Milliseconds; if (swingTimer > 1250) { attacking = true; hasHit = false; } }
+                        if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; if (attackTimer > 650) { swinging = false; swingTimer = 0; attacking = false; attackTimer = 0; } }
                         break;
                     }
             }
@@ -489,8 +539,6 @@ namespace RogueLikeGame
         }
     }
 
-
-    //for A*
     public class PrioQueue
     {
         int total_size;
