@@ -51,8 +51,10 @@ C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\obj\x86\
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Output18pt.xnb
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\overlay.png
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Output128pt.xnb
-C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\symbols.xnb
 C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\eventText.xml
 C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Testing.csv
 C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Level1Event.csv
 C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Level1.csv
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\symbols.xnb
+C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Level2.csv
+C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Level2Event.csv
