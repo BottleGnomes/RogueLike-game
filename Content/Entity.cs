@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Input;
 
 namespace RogueLikeGame
 {
@@ -16,17 +17,21 @@ namespace RogueLikeGame
 
         public bool onFire = false;
         public bool attacking = false;
+        public bool charging = false;
         public bool damaged = false;
         public int damageTimer = 0;
+        public int chargeTimer = 0;
 
         int attackTimer = 0;
         public int health = 4;
         public int select = 0;
         public int hitcount = 0;
+        public int speed = 120;
         public Color color;
         public int sight = 12;
         public List<string> inventory = new List<string>();
-
+        KeyboardState state;
+        public Dictionary<Keys, int[]> facingDict = new Dictionary<Keys,int[]>();
         public Player(int[] coords, Scene scene, Playing playing)
         {
             this.playing = playing;
@@ -39,12 +44,30 @@ namespace RogueLikeGame
         {
             if (damaged) { damageTimer += gameTime.ElapsedGameTime.Milliseconds; }
             if (damageTimer > 180) { this.color = Playing.getColor("White"); damageTimer = 0; damaged = false; }
+            if (charging)
+            {
+                chargeTimer += gameTime.ElapsedGameTime.Milliseconds;
+                if (chargeTimer > 820) { this.color = Playing.getColor("Gray"); }
+                else if (chargeTimer > 520) { this.color = Playing.getColor("LightBlue"); if (chargeTimer % 10 < 3) { playing.addParticle(new Particle(new int[] { coords[0] + playing.currentCorner[0], coords[1] + playing.currentCorner[1] }, new int[] { 0, -1 }, 120, "charge", Playing.getColor("LightBlue"))); } }
+                else if (chargeTimer > 280) { this.color = Playing.getColor("Blue"); playing.addParticle(new Particle(new int[] { coords[0] + playing.currentCorner[0], coords[1] + playing.currentCorner[1] }, new int[] { 0, -1 }, 100, "charge", Playing.getColor("Blue"))); }
+                else if (chargeTimer > 80) { this.color = Playing.getColor("LightGray"); playing.addParticle(new Particle(new int[] { coords[0] + playing.currentCorner[0], coords[1] + playing.currentCorner[1] }, new int[] { 0, -1 }, 80, "charge", Playing.getColor("Purple"))); }
+            }
+            else { chargeTimer = 0; this.color = Playing.getColor("White"); }
+        }
+        public bool getFacing(KeyboardState state) 
+        {
+            this.state = state;
+            if (state.IsKeyDown(Keys.Left)) { facing = new int[] { -1, 0 }; return true; }
+            if (state.IsKeyDown(Keys.Right)) { facing = new int[] { 1, 0 }; return true; }
+            if (state.IsKeyDown(Keys.Up)) { facing = new int[] { 0, -1 }; return true; }
+            if (state.IsKeyDown(Keys.Down)) { facing = new int[] { 0, 1 }; return true; }
+            return false;
         }
 
-        public bool moveLeft() { facing = new int[] { -1, 0 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
-        public bool moveRight() { facing = new int[] { 1, 0 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
-        public bool moveUp() { facing = new int[] { 0, -1 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
-        public bool moveDown() { facing = new int[] { 0, 1 }; if (scene.collides(new int[] { this.coords[0] + facing[0], this.coords[1] + facing[1] })) { return false; } return true; }
+        public bool moveLeft(KeyboardState state) { this.state = state; if (!this.getFacing(state)) { facing = new int[] { -1, 0 }; } if (scene.collides(new int[] { this.coords[0] - 1, this.coords[1] })) { return false; } return true; }
+        public bool moveRight(KeyboardState state) { this.state = state; if (!this.getFacing(state)) { facing = new int[] { 1, 0 }; } if (scene.collides(new int[] { this.coords[0] + 1, this.coords[1] })) { return false; } return true; }
+        public bool moveUp(KeyboardState state) { this.state = state; if (!this.getFacing(state)) { facing = new int[] { 0, -1 }; } if (scene.collides(new int[] { this.coords[0], this.coords[1] - 1 })) { return false; } return true; }
+        public bool moveDown(KeyboardState state) { this.state = state; if (!this.getFacing(state)) { facing = new int[] { 0, 1 }; } if (scene.collides(new int[] { this.coords[0], this.coords[1] + 1})) { return false; } return true; }
 
         public void attack(GameTime gameTime)
         {
@@ -66,6 +89,7 @@ namespace RogueLikeGame
         }
         public void hit(int damage, int[] direction)
         {
+            playing.hit.Play();
             hitcount++;
             damaged = true;
             this.color = Playing.getColor("Red");
@@ -145,7 +169,7 @@ namespace RogueLikeGame
         public string icon;
         public string type;
 
-        public Projectile(int[] coords, int[] direction, string type, Scene scene)
+        public Projectile(int[] coords, int[] direction, int[] decay, string type, Scene scene)
         {
             this.coords = coords;
             this.direction = direction;
@@ -155,6 +179,7 @@ namespace RogueLikeGame
                 case "arrow": { this.velocity = new int[] { 3 * direction[0], 3 * direction[1] }; this.icon = "\u2727"; this.color = Playing.getColor("Red"); break; }
                 case "copper": { this.velocity = new int[] { 3 * direction[0], 3 * direction[1] }; this.decay = new int[] { direction[0] * (-1), direction[1] * (-1) }; this.icon = "\u2600"; this.color = Playing.getColor("Yellow"); break; }
                 case "malachite": { this.velocity = new int[] { 3 * direction[0], 3 * direction[1] }; this.icon = "\u2600"; this.color = Playing.getColor("Green"); break; }
+                case "fireball": { this.velocity = new int[] { 3 * direction[0], 3 * direction[1] }; this.icon = "\u2600"; this.color = Playing.getColor("Red"); break; }
             }
             this.coords = coords;
             this.scene = scene;
@@ -195,6 +220,7 @@ namespace RogueLikeGame
             this.lifespan = lifespan;
             this.level = 1;
             this.color = color;
+            this.direction = direction;
             switch (type)
             {
                 case "stars":
@@ -208,7 +234,6 @@ namespace RogueLikeGame
                     {
                         this.icon = new string[] { "\u273F", "\u273F", "\u273F", "\u273E", "\u273E" };
                         this.setTag(icon[0]);
-                        this.direction = direction;
                         break;
                     }
                 case "magic":
@@ -255,19 +280,26 @@ namespace RogueLikeGame
                         this.icon = new string[] { "\u2591", "\u2588", "\u2588", "\u2588", "\u2588" };
                         this.setTag(icon[0]);
                         this.direction = new int[] { 0, 0 };
-                        Color[] colors = new Color[] { Playing.getColor("Red"), Playing.getColor("Yellow"), Playing.getColor("Yellow"), Playing.getColor("Orange") };
+                        Color[] colors = new Color[] { Playing.getColor("Red"), Playing.getColor("Yellow"), Playing.getColor("Yellow"), Playing.getColor("Sienna") };
                         this.color = colors[rand.Next(colors.Length)];
                         this.pixMod = new int[] {rand.Next(-1, 2),rand.Next(-1,2)};
                         break;
                     }
                 case "boss1fire":
                     {
-                        this.icon = new string[] { "\u2593", "\u2593", "\u2588", "\u2588", "\u2588" };
+                        this.icon = new string[] { "\u2593", "\u2588", "\u2588", "\u2588", "\u2593" };
                         this.setTag(icon[0]);
                         this.direction = new int[] { 0, 0 };
-                        Color[] colors = new Color[] { Playing.getColor("Red"), Playing.getColor("Red"), Playing.getColor("Red"), Playing.getColor("Orange") };
+                        Color[] colors = new Color[] { Playing.getColor("Red"), Playing.getColor("Red"), Playing.getColor("Red"), Playing.getColor("Red") };
                         this.color = colors[rand.Next(colors.Length)];
-                        this.pixMod = new int[] { rand.Next(-4, 5), rand.Next(-4, 5) };
+                        this.pixMod = new int[] { 0, 0 };
+                        break;
+                    }
+                case "charge":
+                    {
+                        this.icon = new string[] { "\u25B5", "\u25B5", "\u25B5", "\u25B5", "\u25B5" };
+                        this.setTag(icon[0]);
+                        this.pixMod = new int[] { rand.Next(-15,15), 0 };
                         break;
                     }
                 default:
@@ -426,7 +458,7 @@ namespace RogueLikeGame
         public void update(GameTime gameTime)
         {
             //if (!moving) { moving = true; path = playing.AstarSearch(coords, new int[] { rand.Next(2,29),rand.Next(2,20) }); }
-            if (moving && !damaged && !attacking)
+            if (moving && !damaged && !attacking && !swinging)
             {
                 if (path.Count == 0) { moving = false; }
                 else
@@ -459,7 +491,7 @@ namespace RogueLikeGame
                     }
                 case "galvanized tome":
                     {
-                        if (swinging && !attacking) { swingTimer += gameTime.ElapsedGameTime.Milliseconds; if (swingTimer > 1250) { attacking = true; hasHit = false; } }
+                        if (swinging && !attacking) { swingTimer += gameTime.ElapsedGameTime.Milliseconds; if (swingTimer > 650) { attacking = true; hasHit = false; } }
                         if (attacking) { attackTimer += gameTime.ElapsedGameTime.Milliseconds; if (attackTimer > 650) { swinging = false; swingTimer = 0; attacking = false; attackTimer = 0; } }
                         break;
                     }
@@ -480,6 +512,13 @@ namespace RogueLikeGame
             }
 
         }
+        public int[] getDirection(int[] location)
+        {
+            if (coords[1] - location[1] == 0) { return new int[] { (location[0] - coords[0]) / (Math.Abs(location[0] - coords[0])), 0 }; }
+            if (coords[0] - location[0] == 0) { return new int[] { 0, (location[1] - coords[1]) / (Math.Abs(location[1] - coords[1])) }; }
+            return new int[] { 0, 0 };
+            
+        }
         public void death(GameTime gameTime)
         {
             this.time += gameTime.ElapsedGameTime.Milliseconds;
@@ -494,6 +533,7 @@ namespace RogueLikeGame
         }
         public void hit(int damage, int[] facing)
         {
+            playing.hit.Play();
             this.damaged = true;
             this.color = Playing.getColor("Red");
             this.health -= damage;

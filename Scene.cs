@@ -123,10 +123,10 @@ namespace RogueLikeGame
             }
         }
         public bool collidesPlayer(int[] coordinates) 
-        {
-            if (coordinates[0] == playing.player.coords[0] && coordinates[1] == playing.player.coords[1]) { return true; }
-            return false;
-        }
+        { return coordinates[0] == playing.player.coords[0] && coordinates[1] == playing.player.coords[1]; }
+
+        public bool collidesEnemy(int[] coordinates)
+        { return playing.enemies.Find(a => a.coords[0] == coordinates[0] && a.coords[1] == coordinates[1]) != null; }
 
         //ONLY FOR A* PATHFINDING
         public bool collidesAbsolute(int[] coordinates) 

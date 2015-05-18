@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SourceFile>C:/Users/HANK/Documents/Visual Studio 2010/Projects/RogueLike/RogueLike/Content/ambiance.mp3</SourceFile>
+  <SourceTime>2015-05-17T23:19:11.4650358-04:00</SourceTime>
+  <DestFile>C:/Users/HANK/Documents/Visual Studio 2010/Projects/RogueLike/RogueLike/Content/bin/ambiance.xnb</DestFile>
+  <DestTime>2015-05-17T23:23:51.9630794-04:00</DestTime>
+  <Importer>Mp3Importer</Importer>
+  <ImporterTime>2015-03-15T23:01:46-04:00</ImporterTime>
+  <Processor>SongProcessor</Processor>
+  <ProcessorTime>2015-03-15T23:01:46-04:00</ProcessorTime>
+  <Parameters>
+    <Key>Quality</Key>
+    <Value>Best</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput>
+    <string>C:/Users/HANK/Documents/Visual Studio 2010/Projects/RogueLike/RogueLike/Content/bin/ambiance.wma</string>
+  </BuildOutput>
+</PipelineBuildEvent>

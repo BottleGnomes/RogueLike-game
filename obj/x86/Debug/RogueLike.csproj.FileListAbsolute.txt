@@ -58,3 +58,7 @@ C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Wind
 C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\symbols.xnb
 C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Level2.csv
 C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\Level2Event.csv
+C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\ambiance.mp3
+C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\ambiance.wma
+C:\Users\HANK\documents\visual studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\ambiance.xnb
+C:\Users\HANK\Documents\Visual Studio 2010\Projects\RogueLike\RogueLike\bin\Windows\Debug\Content\hit.xnb

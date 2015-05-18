@@ -26,7 +26,7 @@ namespace RogueLikeGame
 
         Random rand = new Random();
         Color[] magicColors = { Playing.getColor("Yellow"), Playing.getColor("LightBlue"), Playing.getColor("Purple"), Playing.getColor("Purple"), Playing.getColor("Red"), Playing.getColor("Red") };
-
+        
         //timers
         private int moveUpdate = 100;
         private int pauseUpdate = 128;
@@ -34,8 +34,10 @@ namespace RogueLikeGame
         private int attackUpdate = 0;
         private int hitUpdate = 0;
         private int selectSwitchUpdate = 0;
+
         private int bossTimerA = 0;
         private int bossTimerB = 0;
+        private int bossTimerC = 0;
 
         public Unpaused(Playing playing, Scene scene, Player player, List<Enemy> enemies, List<Item> items, List<Particle> particles, List<Projectile> projectiles, TextBox textBox, List<Box> boxes, List<StaticObject> staticObjects)
         {
@@ -109,22 +111,16 @@ namespace RogueLikeGame
                         }
                     case "arrow":
                         {
-
-                            Enemy hit = null;
-                            hit = enemies.Find(a => a.coords[0] - playing.currentCorner[0] == projectile.coords[0] + projectile.pixMod[0] / 26 - playing.currentCorner[0] && a.coords[1] - playing.currentCorner[1] == projectile.coords[1] + projectile.pixMod[1] / 44 - playing.currentCorner[1]);
-                            if (hit != null)
-                            {
-                                //add destroyEnemy function
-                                //public void destroyEnemy(Enemy enemy){}
-                                projectile.toBeDeleted = true;
-                                hit.hit(Projectile.getDamage(projectile.type), projectile.direction);
-                                if (scene.collides(hit.coords[0] - playing.currentCorner[0], hit.coords[1] - playing.currentCorner[1]))
-                                { hit.coords[0] -= projectile.direction[0]; hit.coords[1] -= projectile.direction[1]; }
-                                playing.addParticle(new Particle(hit.coords, projectile.direction, 120, "fire", Playing.getColor("Red")));
-                                playing.addParticle(new Particle(hit.coords, projectile.direction, 240, string.Format("-{0}", Projectile.getDamage(projectile.type)), Playing.getColor("Red")));
-                            }
                             if (scene.collidesPlayer(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0) - playing.currentCorner[0], projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) - playing.currentCorner[1] }))
                             { player.hit(1, projectile.direction); projectile.toBeDeleted = true; }
+                            if (scene.collidesEnemy(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0), projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) }))
+                            { 
+                                enemies.Find(a => a.coords[0] == projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0) && a.coords[1] == projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0)).hit(2, projectile.direction);
+                                projectile.toBeDeleted = true;
+                                playing.addParticle(new Particle(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0), projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) }, projectile.direction, 120, "fire", Playing.getColor("Red")));
+                                playing.addParticle(new Particle(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0), projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) }, projectile.direction, 240, string.Format("-{0}", Projectile.getDamage(projectile.type)), Playing.getColor("Red")));
+                            }
+
                             if (scene.collides(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0) - playing.currentCorner[0], projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) - playing.currentCorner[1] })) { 
                                 projectile.toBeDeleted = true; 
                                 scene.breakObject(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0) - playing.currentCorner[0], projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) - playing.currentCorner[1] }); 
@@ -134,17 +130,38 @@ namespace RogueLikeGame
 
                             break;
                         }
+                    case "fireball":
+                        {
+                            if (scene.collidesPlayer(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0) - playing.currentCorner[0], projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) - playing.currentCorner[1] }))
+                            { player.hit(2, projectile.direction); projectile.toBeDeleted = true; }
+                            if (scene.collides(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0) - playing.currentCorner[0], projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) - playing.currentCorner[1] }))
+                            {
+                                projectile.toBeDeleted = true;
+                                scene.breakObject(new int[] { projectile.coords[0] + (int)Math.Round(projectile.pixMod[0] / 26.0) - playing.currentCorner[0], projectile.coords[1] + (int)Math.Round(projectile.pixMod[1] / 44.0) - playing.currentCorner[1] });
+                                playing.addParticle(new Particle(new int[] { projectile.coords[0] + projectile.pixMod[0] / 26, projectile.coords[1] + projectile.pixMod[1] / 44 }, projectile.direction, 140, "fire", Playing.getColor("Red")));
+                                playing.addParticle(new Particle(new int[] { projectile.coords[0] + projectile.pixMod[0] / 26, projectile.coords[1] + projectile.pixMod[1] / 44 }, projectile.direction, 140, "fire", Playing.getColor("Sienna")));
+                                playing.addParticle(new Particle(new int[] { projectile.coords[0] + projectile.pixMod[0] / 26, projectile.coords[1] + projectile.pixMod[1] / 44 }, projectile.direction, 140, "fire", Playing.getColor("Red")));
+                                playing.addParticle(new Particle(new int[] { projectile.coords[0] + projectile.pixMod[0] / 26, projectile.coords[1] + projectile.pixMod[1] / 44 }, projectile.direction, 140, "fire", Playing.getColor("Yellow")));
+                                playing.addParticle(new Particle(new int[] { projectile.coords[0] + projectile.pixMod[0] / 26, projectile.coords[1] + projectile.pixMod[1] / 44 }, projectile.direction, 140, "fire", Playing.getColor("Red")));
+                                playing.addParticle(new Particle(new int[] { projectile.coords[0] + projectile.pixMod[0] / 26, projectile.coords[1] + projectile.pixMod[1] / 44 }, projectile.direction, 140, "fire", Playing.getColor("Red")));
+                            }
+                            else { projectile.update(gameTime); }
+
+                            break;
+                        }
                 }
             }
 
-            if (moveUpdate >= 120)
+            if (moveUpdate >= player.speed)
             {
                 moveUpdate = 0;
-                if (state.IsKeyDown(Keys.W)) { if (player.moveUp()) { playing.currentCorner[1]--; } }
-                else if (state.IsKeyDown(Keys.A)) { if (player.moveLeft()) { playing.currentCorner[0]--; } }
-                else if (state.IsKeyDown(Keys.D)) { if (player.moveRight()) { playing.currentCorner[0]++; } }
-                else if (state.IsKeyDown(Keys.S)) { if (player.moveDown()) { playing.currentCorner[1]++; } }
+                if (state.IsKeyDown(Keys.W)) { if (player.moveUp(state)) { playing.currentCorner[1]--; } }
+                else if (state.IsKeyDown(Keys.A)) { if (player.moveLeft(state)) { playing.currentCorner[0]--; } }
+                else if (state.IsKeyDown(Keys.D)) { if (player.moveRight(state)) { playing.currentCorner[0]++; } }
+                else if (state.IsKeyDown(Keys.S)) { if (player.moveDown(state)) { playing.currentCorner[1]++; } }
             }
+            player.getFacing(state);
+            
             Item pickup = null;
             pickup = items.Find(item => item.coords[0] - playing.currentCorner[0] == player.coords[0] && item.coords[1] - playing.currentCorner[1] == player.coords[1]);
             if (pickup != null && player.inventory.Count < 8) { player.process(pickup); items.Remove(pickup); }
@@ -164,7 +181,7 @@ namespace RogueLikeGame
 
                         case "sword":
                             {
-                                if (!enemy.attacking && !enemy.swinging) 
+                                if (!enemy.attacking && !enemy.swinging && !enemy.dying) 
                                 {
                                     Debug.Print(Convert.ToString((player.coords[0] + playing.currentCorner[0])+","+ (player.coords[1] + playing.currentCorner[1])));
                                     enemy.setDestination(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] });
@@ -187,16 +204,25 @@ namespace RogueLikeGame
                                 else if (Playing.getTilesInbetween( player.coords, new int[] { enemy.coords[0] - playing.currentCorner[0], enemy.coords[1] - playing.currentCorner[1]}).Find(a => scene.isSolid(a)) != null) { enemy.setDestination(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }); }
                                 if (Math.Abs(enemy.coords[0] - player.coords[0] + playing.currentCorner[0]) + Math.Abs(enemy.coords[1] - player.coords[1] + playing.currentCorner[1]) < 6) { enemy.path.Clear(); }
                                 
-                                if (!enemy.swinging && (enemy.coords[0] - player.coords[0] - playing.currentCorner[0] == 0 || enemy.coords[1] - player.coords[1] - playing.currentCorner[1] == 0))
+                                if (!enemy.dying && !enemy.swinging && (enemy.coords[0] - player.coords[0] - playing.currentCorner[0] == 0 || enemy.coords[1] - player.coords[1] - playing.currentCorner[1] == 0))
                                 { enemy.attack(gameTime, new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] });}
-                                if (!enemy.hasHit) { enemy.hasHit = true; playing.addProjectile(new Projectile(new int[] { enemy.coords[0] + enemy.direction[0], enemy.coords[1] + enemy.direction[1] }, enemy.direction, "arrow", scene)); }
+                                if (!enemy.hasHit) { enemy.hasHit = true; playing.addProjectile(new Projectile(new int[] { enemy.coords[0] + enemy.direction[0], enemy.coords[1] + enemy.direction[1] }, enemy.direction, new int[] {0,0}, "arrow", scene)); }
                                 break;
                             }
                         case "galvanized tome":
                             {
-                                if (enemy.hasHit) { bossTimerA += gameTime.ElapsedGameTime.Milliseconds; if (bossTimerA > 650) { enemy.hasHit = false; } }
-                                if (!enemy.swinging && !enemy.hasHit)
+                                if (enemy.hasHit) { bossTimerA += gameTime.ElapsedGameTime.Milliseconds; if (bossTimerA > 1500) { bossTimerA = 0; enemy.hasHit = false; } }
+                                if (!enemy.swinging && !enemy.hasHit && Math.Abs(player.coords[0] + playing.currentCorner[0] - enemy.coords[0]) + Math.Abs(player.coords[1] + playing.currentCorner[1] - enemy.coords[1]) < 4)
                                 { enemy.attack(gameTime, new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }); }
+                                else if (!enemy.swinging) { enemy.setDestination(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }); }
+
+                                bossTimerC += gameTime.ElapsedGameTime.Milliseconds;
+                                if (!enemy.swinging && !enemy.attacking && bossTimerC > 650 && Math.Abs(player.coords[0] + playing.currentCorner[0] - enemy.coords[0]) + Math.Abs(player.coords[1] + playing.currentCorner[1] - enemy.coords[1]) > 3 && (enemy.coords[0] - player.coords[0] - playing.currentCorner[0] == 0 || enemy.coords[1] - player.coords[1] - playing.currentCorner[1] == 0)) 
+                                { 
+                                    bossTimerC = 0;
+                                    playing.addProjectile(new Projectile(new int[] { enemy.coords[0] + enemy.getDirection(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] })[0], enemy.coords[1] + enemy.getDirection(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] })[1] }, enemy.getDirection(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }), new int[] { 0, 0 }, "fireball", scene)); 
+                                }
+
                                 if (enemy.swinging && !enemy.attacking) 
                                 {
                                     playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1prefire", Playing.getColor("Yellow")));
@@ -218,23 +244,64 @@ namespace RogueLikeGame
                                 }
                                 if (enemy.attacking)
                                 {
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] + 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] - 1 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] - 2 }, new int[] { 0, 0 }, 10, "boss1fire", Playing.getColor("Yellow")));
-                                    enemy.hasHit = true;
+                                    if (!enemy.hasHit)
+                                    {
+                                        if(scene.includesTile(new int[] { enemy.coords[0] + 1, enemy.coords[1] })){playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] }, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow")));}
+                                        if (scene.includesTile(new int[] { enemy.coords[0] + 1, enemy.coords[1] + 1 })) { playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] + 1, enemy.coords[1] - 1 })) { playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] - 1, enemy.coords[1] })) { playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] }, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] - 1, enemy.coords[1] + 1})) { playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] - 1, enemy.coords[1] - 1})) { playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] - 1}, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] , enemy.coords[1] + 1})) { playing.addParticle(new Particle(new int[] { enemy.coords[0] , enemy.coords[1] +1}, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] , enemy.coords[1] - 1})) { playing.addParticle(new Particle(new int[] { enemy.coords[0] , enemy.coords[1] -1}, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] + 2, enemy.coords[1] })) { playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] }, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] + 2, enemy.coords[1] + 2})) { playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] + 2, enemy.coords[1] - 2})) { playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] -2}, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] - 2, enemy.coords[1] })) { playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] }, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] - 2, enemy.coords[1] + 2})) { playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] +2}, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0] - 2, enemy.coords[1] - 2})) { playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] -2}, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0], enemy.coords[1] + 2})) { playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] +2}, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        if (scene.includesTile(new int[] { enemy.coords[0], enemy.coords[1] - 2})) { playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] -2}, new int[] { 0, 0 }, 600, "boss1fire", Playing.getColor("Yellow"))); }
+                                        enemy.hasHit = true;
+                                    }
+
+                                    bossTimerB += gameTime.ElapsedGameTime.Milliseconds;
+                                    if (bossTimerB > 30)
+                                    {
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] + 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] + 1 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] - 1, enemy.coords[1] - 1 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] + 1 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] - 1 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] + 2 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0], enemy.coords[1] - 2 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] + 2, enemy.coords[1] - 2 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] + 2 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        playing.addParticle(new Particle(new int[] { enemy.coords[0] - 2, enemy.coords[1] - 2 }, new int[] { 0, 0 }, 140, "fire", Playing.getColor("Yellow")));
+                                        bossTimerB = 0;
+                                    }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + 1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1]) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + 1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + 1) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + 1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] - 1) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] - 1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1]) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] - 1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + 1) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] - 1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] - 1) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + 1) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] - 1) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + 2 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1]) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + 2 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + 2) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + 2 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] - 2) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] - 2 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1]) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] - 2 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + 2) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] - 2 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] - 2) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + 2) { player.onFire = true; }
+                                    if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] - 2) { player.onFire = true; }
                                 }
                                 break;
                             }
@@ -271,8 +338,7 @@ namespace RogueLikeGame
                         }
                     case "bow":
                         {
-                            player.attacking = true;
-                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0] + player.facing[0], player.coords[1] + playing.currentCorner[1] + player.facing[1] }, player.facing, "arrow",scene));
+                            if (!player.charging) { player.charging = true; player.speed = 420; }
                             break;
                         }
                     case "sword": { goto case "fist"; }
@@ -323,19 +389,32 @@ namespace RogueLikeGame
                     case "copper tome":
                         {
                             player.attacking = true;
-                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }, player.facing, "copper", scene));
+                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }, player.facing, new int[] { 0, 0 }, "copper", scene));
                             break;
                         }
                     case "malachite tome":
                         {
                             player.attacking = true;
-                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }, player.facing, "malachite", scene));
+                            playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] }, player.facing, new int[] { 0, 0 }, "malachite", scene));
                             break;
                         }
                 }
                 scene.breakObject(new int[] { player.coords[0] + player.facing[0], player.coords[1] + player.facing[1]});
             }
             else if (player.attacking) { player.attack(gameTime); }
+            if ((state.IsKeyUp(Keys.Space) && player.charging) || (player.charging && !player.inventory[player.select].Equals("bow")))
+            {
+                player.charging = false; player.speed = 120;
+                if (player.inventory[player.select].Equals("bow"))
+                {
+                    //if (player.chargeTimer > 820) { playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0] + player.facing[0], player.coords[1] + playing.currentCorner[1] + player.facing[1] }, player.facing, new int[] { player.facing[0]*-3, player.facing[1]*-3 }, "arrow", scene)); }
+                    //else if (player.chargeTimer > 520) { playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0] + player.facing[0], player.coords[1] + playing.currentCorner[1] + player.facing[1] }, player.facing, new int[] { 0,0 }, "arrow", scene)); }
+                    //else if (player.chargeTimer > 280) { playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0] + player.facing[0], player.coords[1] + playing.currentCorner[1] + player.facing[1] }, player.facing, new int[] { player.facing[0] * -1, player.facing[1] * -1 }, "arrow", scene)); }
+                    //else if (player.chargeTimer > 80) { playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0] + player.facing[0], player.coords[1] + playing.currentCorner[1] + player.facing[1] }, player.facing, new int[] { player.facing[0] * -2, player.facing[1] * -2 }, "arrow", scene)); }
+                    //else { playing.addProjectile(new Projectile(new int[] { player.coords[0] + playing.currentCorner[0] + player.facing[0], player.coords[1] + playing.currentCorner[1] + player.facing[1] }, player.facing, new int[] { player.facing[0] * -3, player.facing[1] * -3 }, "arrow", scene)); }
+                }
+                player.chargeTimer = 0;
+            }
 
         }
 

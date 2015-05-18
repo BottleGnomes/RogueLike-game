@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace RogueLikeGame
 {
@@ -17,6 +19,8 @@ namespace RogueLikeGame
         UI ui;
         GameState state;
         Scene scene;
+        Song ambiance;
+        public SoundEffect hit;
         SpriteFont symbols;
         SpriteFont output;
         SpriteBatch spriteBatch;
@@ -59,11 +63,15 @@ namespace RogueLikeGame
             this.ingame = ingame;
             symbols = ingame.Content.Load<SpriteFont>("symbols");
             output = ingame.Content.Load<SpriteFont>("Output18pt");
+            ambiance = ingame.Content.Load<Song>("ambiance");
+            hit = ingame.Content.Load<SoundEffect>("hit");
             this.spriteBatch = spriteBatch;
             menu = new ingameMenu(ingame, output,this);
             this.textBox = new TextBox(scene);
             scene = new Scene(this, textBox);
             seenArray = new int[scene.getDimensions()[0], scene.getDimensions()[1]];
+            MediaPlayer.Play(ambiance);
+            MediaPlayer.Volume = 0.1f;
 
             player = new Player(new int[] { 24, 6 }, scene, this);
             ui = new UI(player);

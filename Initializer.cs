@@ -72,7 +72,7 @@ namespace RogueLikeGame
                 case "NEW": { if (key.Length == 1) { ingame.changeGameState("title"); } else if (key[1].Equals("SKIP")) { ingame.changeGameState("playing"); } else { goto default; } break; }
                 case "LOAD": { outputText += "\n<" + command + ">" + "\nOutput text if is broken"; break; }
                 case "SAVED": { outputText += "\n<" + command + ">" + "\nList saved games here"; break; }
-                case "ABOUT": { outputText += "\n<" + command + ">" + "\nRogue like game~"; break; }
+                case "ABOUT": { outputText += "\n<" + command + ">" + "\nJust like make game~\nby Rain Frogs\n\nAmbiance by reillocb \nhttps://soundcloud.com/reilloc"; break; }
                 case "DELETE": { outputText += "\n<" + command + ">" + "\nFile successfully deleted (not currently implemented)"; break; }
                 case "QUIT": { ingame.Exit(); break; }
                 case "EXIT": { ingame.Exit(); break; }
