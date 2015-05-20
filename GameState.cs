@@ -15,6 +15,7 @@ namespace RogueLikeGame
         private string tag = "Playing";
         Unpaused unpaused;
         Paused paused;
+        public Transition transition;
         RogueLike ingame;
         UI ui;
         GameState state;
@@ -55,8 +56,8 @@ namespace RogueLikeGame
         private bool collide;
         public bool collisionMarkers = false;
 
-        string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592" };
-        Color[] colors = { Playing.getColor("LightGray"), Playing.getColor("Gray"), Playing.getColor("Brown"), Playing.getColor("LightGray") };
+        string[] tiles = { "\u2591", "\u2588", "\u2593", "\u2592", "\u2593" };
+        Color[] colors = { Playing.getColor("LightGray"), Playing.getColor("Gray"), Playing.getColor("Brown"), Playing.getColor("LightGray"), Playing.getColor("Purple") };
 
         public Playing(SpriteBatch spriteBatch, RogueLike ingame)
         {
@@ -78,6 +79,7 @@ namespace RogueLikeGame
 
             unpaused = new Unpaused(this, scene, player, enemies, items, particles, projectiles, textBox, boxes, staticObjects);
             paused = new Paused(this, menu);
+            transition = new Transition(this, scene, spriteBatch, ingame.Content.Load<SpriteFont>("TransText78pt"),ingame.Content.Load<Texture2D>("TopFade"),ingame.Content.Load<Texture2D>("BottomFade"));
 
             state = unpaused;
 
@@ -87,23 +89,14 @@ namespace RogueLikeGame
 
         public void changeState(string inState)
         {
+            //state.leaving();
             switch (inState)
             {
-                case "Paused":
-                    {
-                        state.leaving();
-                        state = paused;
-                        state.entering();
-                        break;
-                    }
-                case "Unpaused":
-                    {
-                        state.leaving();
-                        state = unpaused;
-                        state.entering();
-                        break;
-                    }
+                case "Paused": { state = paused; break; }
+                case "Unpaused": { paused.menu.clear(); state = unpaused; break; }
+                case "Transition": { state.leaving(); state = transition; state.entering(); break; }
             }
+            //state.entering();
         }
 
         public string getTag()
@@ -113,22 +106,40 @@ namespace RogueLikeGame
 
         public void update(GameTime gameTime)
         {
-            scrollTimer += gameTime.ElapsedGameTime.Milliseconds;
-            frameTimer += gameTime.ElapsedGameTime.Milliseconds;
-            swingTimer += gameTime.ElapsedGameTime.Milliseconds;
+            switch (state.getTag())
+            {
+                case "Unpaused":
+                    {
+                        scrollTimer += gameTime.ElapsedGameTime.Milliseconds;
+                        frameTimer += gameTime.ElapsedGameTime.Milliseconds;
+                        swingTimer += gameTime.ElapsedGameTime.Milliseconds;
 
-            particles.RemoveAll(a => a.toBeDeleted);
-            projectiles.RemoveAll(a => a.toBeDeleted);
-            enemies.RemoveAll(a => a.toBeDeleted);
-            boxes.RemoveAll(a => a.toBeDeleted);
-            staticObjects.RemoveAll(a => a.toBeDeleted);
-            state.update(gameTime);
+                        particles.RemoveAll(a => a.toBeDeleted);
+                        projectiles.RemoveAll(a => a.toBeDeleted);
+                        enemies.RemoveAll(a => a.toBeDeleted);
+                        boxes.RemoveAll(a => a.toBeDeleted);
+                        staticObjects.RemoveAll(a => a.toBeDeleted);
+                        state.update(gameTime);
 
-            frameCount++;
-            if (frameTimer >= 1000) { frames = frameCount; frameCount = 0; frameTimer = 0; }
+                        frameCount++;
+                        if (frameTimer >= 1000) { frames = frameCount; frameCount = 0; frameTimer = 0; }
+                        break;
+                    }
+                case "Transition": { state.update(gameTime); break; }
+                case "Paused": { goto case "Unpaused"; }
+            }
+        }
+        public void draw() 
+        {
+            switch (state.getTag())
+            {
+                case "Transition": { transition.draw(); break; }
+                case "Unpaused": { this.drawPlaying(); break; }
+                case "Paused": { goto case "Unpaused"; }
+            }
         }
 
-        public void draw()
+        public void drawPlaying()
         {
             //Debug.Print(Convert.ToString(currentCorner[0]) + "," + Convert.ToString(currentCorner[1]));
             this.drawTiles();

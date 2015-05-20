@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<transitions>
+  <transition id="1">
+    <text x ="40" y="800"  speed ="0" color ="White" type ="text">You and the stranger brave the wastes.</text>
+    <tileArray x ="30" y="15" speed="4500">
+      <tile x ="3" y="13" icon="9608" type="column" particles="barrier" frequency="0" color="White" modx="0" mody="0" particleLife="0"></tile>
+    </tileArray>
+    <text x ="500" y="800"  speed ="6500" color ="White" type ="text">He tells you tales.</text>
+    <text x ="40" y="800"  speed ="6500" color ="White" type ="text">Tales of home warm your bones.</text>
+    <text x ="250" y="800"  speed ="6500" color ="White" type ="text">Tales of tyrants chill your heart.</text>
+    <text x ="40" y="800"  speed ="6500" color ="White" type ="text">You try not to</text>
+    <text x ="150" y="800"  speed ="1250" color ="White" type ="text">ask too many questions.</text>
+    <text x ="500" y="800"  speed ="6500" color ="White" type ="text">But you can tell...</text>
+    <text x ="40" y="800"  speed ="6500" color ="White" type ="text">A long cold has settled here...</text>
+    <tileArray>
+      
+    </tileArray>
+  </transition>
+</transitions>

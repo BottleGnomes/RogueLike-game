@@ -45,6 +45,7 @@ namespace RogueLikeGame
         public void addWaitLine(string line, int timer, string color, string type) { waitOutput.Enqueue(new TextLine(line, timer, color, type)); }
         public void addLine(TextLine line) { output.Enqueue(line); }
         public void addWaitLine(TextLine line) { waitOutput.Enqueue(line); }
+        public void clear() { text.Clear(); output.Clear(); waitOutput.Clear(); }
         public void update(GameTime gameTime)
         {
             textTimer += gameTime.ElapsedGameTime.Milliseconds;

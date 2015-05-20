@@ -98,6 +98,7 @@
       </initial>
       <timed>
       </timed>
+      <event id="10" type="proximity" command="transition 1"></event>
     </area>
   </level>
   
@@ -111,7 +112,6 @@
       <timed>
         <text speed ="50000" color ="White" type ="text">You were a wizard, once.</text>
       </timed>
-      
     </area>
   </level>
 </levels>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
 
 namespace RogueLikeGame
 {
@@ -59,6 +60,12 @@ namespace RogueLikeGame
                         scene.processXML(command.Split(' ')[1], Convert.ToInt16(command.Split(' ')[2]));
                         textBox.waitOutput.Clear();
                         break; 
+                    }
+                case "transition":
+                    {
+                        playing.changeState("Transition");
+                        playing.transition.process(Convert.ToInt16(command.Split(' ')[1]));
+                        break;
                     }
                 default: { if (!textBox.writing) { textBox.setLines(lines); scene.events.Remove(this); } break; }
             }

@@ -51,6 +51,7 @@ namespace RogueLikeGame
             this.textBox = textBox;
             this.boxes = boxes;
             this.staticObjects = staticObjects;
+            this.tag = "Unpaused";
         }
 
         public void update(GameTime gameTime)
@@ -183,7 +184,7 @@ namespace RogueLikeGame
                             {
                                 if (!enemy.attacking && !enemy.swinging && !enemy.dying) 
                                 {
-                                    Debug.Print(Convert.ToString((player.coords[0] + playing.currentCorner[0])+","+ (player.coords[1] + playing.currentCorner[1])));
+                                    //Debug.Print(Convert.ToString((player.coords[0] + playing.currentCorner[0])+","+ (player.coords[1] + playing.currentCorner[1])));
                                     enemy.setDestination(new int[] { player.coords[0] + playing.currentCorner[0], player.coords[1] + playing.currentCorner[1] });
                                     if (player.coords[0] + playing.currentCorner[0] == enemy.coords[0] + 1 && player.coords[1] + playing.currentCorner[1] == enemy.coords[1]
                                         || player.coords[0] + playing.currentCorner[0] == enemy.coords[0] && player.coords[1] + playing.currentCorner[1] == enemy.coords[1] + 1
@@ -430,7 +431,13 @@ namespace RogueLikeGame
 
         public void leaving()
         {
-
+            enemies.Clear();
+            particles.Clear();
+            projectiles.Clear();
+            staticObjects.Clear();
+            boxes.Clear();
+            scene.events.Clear();
+            textBox.clear();
         }
 
         public string getTag()
@@ -444,12 +451,13 @@ namespace RogueLikeGame
         Playing playing;
         KeyboardState state;
         private int escapeUpdate = 0;
-        ingameMenu menu;
+        public ingameMenu menu;
 
         public Paused(Playing playing, ingameMenu menu)
         {
             this.playing = playing;
             this.menu = menu;
+            this.tag = "Paused";
         }
 
         public void update(GameTime gameTime)

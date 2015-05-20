@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Content\Entity.cs" />
+    <Compile Include="Transition.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Initializer.cs" />
     <Compile Include="RogueLike.cs" />
@@ -58,6 +59,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\BottomFade.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\overlay.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -67,6 +71,13 @@
     </Content>
     <Content Include="Content\ambiance.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\TopFade.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Transition.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Icon.ico" />
   </ItemGroup>
@@ -113,6 +124,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\hit.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\TransText78pt.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
